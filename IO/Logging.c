@@ -353,6 +353,22 @@ ParseMessage(
     return T_SUCCESS;
 }
 
+void
+TraceRayer_TRACE(
+    IN pid_t threadId,
+    IN TRCString module,
+    IN TRCString function,
+    IN TRCString message
+) {
+    if ( GlobalArgumentsDefault.LogLevel < 3 )
+        return;
+
+    TRString parsedMessage;
+
+    ParseMessage( LOG_FORMAT, GlobalArgumentsDefault.ColoredTerminalOutput, LOG_CATEGORY_TRACE, threadId, module, function, message, &parsedMessage );
+    fprintf( stdout, "%s", parsedMessage );
+}
+
 TR_STATUS
 InitializeLogging()
 {
@@ -367,9 +383,7 @@ InitializeLogging()
     }
 
     ParseMessage( LOGFILE_HEADER, GlobalArgumentsDefault.ColoredTerminalOutput, LOG_CATEGORY_INFO, 0, nullptr, nullptr, nullptr, &parsedMessage );
-    printf("parsedMessage: %s", parsedMessage);
+    printf("%s", parsedMessage);
     free(parsedMessage);
-    ParseMessage( LOG_FORMAT, GlobalArgumentsDefault.ColoredTerminalOutput, LOG_CATEGORY_WARNING, gettid(), __FILENAME__, __FUNCTION__, "Hello, World!\n", &parsedMessage );
-    printf("parsedMessage: %s", parsedMessage);
     return T_SUCCESS;
 }

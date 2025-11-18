@@ -52,5 +52,8 @@ typedef struct _TR_Log_Token
 } Log_Token;
 
 TR_STATUS InitializeLogging();
+void TraceRayer_TRACE( IN pid_t threadId, IN TRCString module, IN TRCString function, IN TRCString message );
+
+#define TRACE( message ) TraceRayer_TRACE( gettid(), __FILENAME__, __FUNCTION__, message )
 
 #endif //TRACERAYER_LOGGING_H

@@ -26,12 +26,12 @@
 #define TRACERAYER_VERSION "0.0.1"
 
 #define LOGFILE_HEADER "// --- ($DATE) ($TIME) Trace Rayer ($VERSION), A Ray Tracing Demo Written in GTK and Vulkan --- //\n"
-#define LOG_FORMAT "($LOG_CATEGORY): ($THREAD) ($MODULE:$FUNCTION): $MESSAGE"
+#define LOG_FORMAT "[$THREAD] $MODULE::$FUNCTION ($LOG_CATEGORY) $MESSAGE"
 
 // Terminal Colors
 #define RESET_COLOR "\033[0m" // DO NOT CHANGE THIS!
-#define DATE_COLOR OPTIONAL "\033[1;37m" // White Bold
-#define TIME_COLOR OPTIONAL "\033[1;37m" // White Bold
+#define DATE_COLOR "\033[1;37m" // White Bold
+#define TIME_COLOR "\033[1;37m" // White Bold
 #define VERSION_COLOR "\033[1;34m" // Cyan Bold
 #define THREAD_COLOR "\033[0;37m" // White
 #define MODULE_COLOR "\033[1;32m" // Green Bold
