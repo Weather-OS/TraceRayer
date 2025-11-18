@@ -181,7 +181,7 @@ ParseCommandLineArguments(
                             }
                             auto target = (TRPath *)Available_Arguments[secondIterator].Value;
 
-                            status = FetchPath( val, true, T_WRITE, &target );
+                            status = FetchPath( val, true, T_READWRITE, &target );
                             if ( FAILED( status ) ) return status;
 
                             if ( Available_Arguments[secondIterator].Callback != nullptr )

@@ -151,6 +151,32 @@ FetchPath(
     name = strrchr( path, '/' ) + 1;
     newPath->Name = (TRString)malloc( (strlen( name ) + 1) * sizeof( TRString ) );
     strcpy( newPath->Name, name );
+    newPath->AccessType = accessType;
+
+    switch ( accessType )
+    {
+        case T_READ:
+        case T_EXECUTE:
+            if ( create )
+                newPath->FileHandle = fopen( newPath->Location, "r" );
+            else
+                newPath->FileHandle = fopen( newPath->Location, "r+" );
+            break;
+
+        case T_WRITE:
+            if ( create )
+                newPath->FileHandle = fopen( newPath->Location, "w" );
+            else
+                newPath->FileHandle = fopen( newPath->Location, "w+" );
+            break;
+
+        case T_READWRITE:
+            if ( create )
+                newPath->FileHandle = fopen( newPath->Location, "a" );
+            else
+                newPath->FileHandle = fopen( newPath->Location, "a+" );
+            break;
+    }
 
     *pathObject = newPath;
 

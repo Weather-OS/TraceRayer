@@ -53,6 +53,7 @@ typedef enum _TR_STATUS
     T_INVALIDARG = 3,
     T_ACCESSDENIED = 13,
     T_OUTOFMEMORY = 14,
+    T_HANDLE = 38,
 } TR_STATUS;
 
 #define FAILED( status ) \

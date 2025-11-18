@@ -41,6 +41,8 @@ typedef struct _TR_Path
     TRString Name;
     TRString Location;
     TRBool IsDirectory;
+    TR_AccessType AccessType;
+    FILE *FileHandle;
 } TRPath;
 
 TR_STATUS FetchPath( TRString path, TRBool create, TR_AccessType accessType, TRPath **pathObject );
