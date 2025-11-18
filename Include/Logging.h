@@ -24,13 +24,22 @@
 #define TRACERAYER_LOGGING_H
 
 #include <unistd.h>
+#include <sys/syscall.h>
 
 #include <Arguments.h>
 #include <Types.h>
 
+#include <sys/syscall.h>
+
+#ifdef SYS_gettid
+#define gettid() syscall(SYS_gettid)
+#else
+#error "SYS_gettid unavailable on this system"
+#endif
+
 typedef enum _TR_Log_Category
 {
-    LOG_CATEGORY_NONE = 0,
+    LOG_CATEGORY_INFO = 0,
     LOG_CATEGORY_ERROR = 1,
     LOG_CATEGORY_WARNING = 2,
     LOG_CATEGORY_TRACE = 3,

@@ -31,6 +31,7 @@ typedef struct _TR_GlobalArguments
     TRString GPUName;
     TRLong LogLevel;
     TRPath *LogFile;
+    TRBool ColoredTerminalOutput;
 } GlobalArguments;
 
 extern GlobalArguments GlobalArgumentsDefault;
@@ -79,6 +80,11 @@ static Argument Available_Arguments[] =
         .Name         = "log-file",
         .Abbreviation = 'f',
         .ValueType    = TYPE_PATH
+    },
+    {
+        .Name         = "colored-terminal-output",
+        .Abbreviation = 'c',
+        .ValueType   = TYPE_BOOL
     }
 };
 

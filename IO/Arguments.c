@@ -37,6 +37,7 @@ GlobalArguments GlobalArgumentsDefault =
     .GPUName = nullptr,
     .LogLevel = 0,
     .LogFile = nullptr,
+    .ColoredTerminalOutput = true,
 };
 
 static TR_STATUS
@@ -48,6 +49,8 @@ InitGlobalArguments()
     Available_Arguments[3].Value = &GlobalArgumentsDefault.LogLevel;
     // --log-file
     Available_Arguments[4].Value = &GlobalArgumentsDefault.LogFile;
+    // --colored-terminal-output
+    Available_Arguments[5].Value = &GlobalArgumentsDefault.ColoredTerminalOutput;
 
     return T_SUCCESS;
 }

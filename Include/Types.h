@@ -60,5 +60,10 @@ typedef enum _TR_STATUS
 #define FAILED( status ) \
     (status != T_SUCCESS)
 
+#define __FILENAME__ \
+    (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+    strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : \
+    __FILE__)
+
 
 #endif //TRACERAYER_TYPES_H
