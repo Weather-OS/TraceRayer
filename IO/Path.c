@@ -41,10 +41,10 @@
 
 TR_STATUS
 FetchPath(
-    TRString path,
-    TRBool create,
-    TR_AccessType accessType,
-    TRPath **pathObject
+    IN TRString path,
+    IN TRBool create,
+    IN TR_AccessType accessType,
+    OUT TRPath **pathObject
 ) {
     TRPath *newPath;
     TRString name;

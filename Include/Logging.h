@@ -23,6 +23,8 @@
 #ifndef TRACERAYER_LOGGING_H
 #define TRACERAYER_LOGGING_H
 
+#include <unistd.h>
+
 #include <Arguments.h>
 #include <Types.h>
 
@@ -39,5 +41,7 @@ typedef struct _TR_Log_Token
     TRString Module;
     Log_Category Category;
 } Log_Token;
+
+TR_STATUS InitializeLogging();
 
 #endif //TRACERAYER_LOGGING_H

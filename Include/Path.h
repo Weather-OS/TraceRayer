@@ -45,6 +45,6 @@ typedef struct _TR_Path
     FILE *FileHandle;
 } TRPath;
 
-TR_STATUS FetchPath( TRString path, TRBool create, TR_AccessType accessType, TRPath **pathObject );
+TR_STATUS FetchPath( IN TRString path, IN TRBool create, IN TR_AccessType accessType, OUT TRPath **pathObject );
 
 #endif //TRACERAYER_PATH_H

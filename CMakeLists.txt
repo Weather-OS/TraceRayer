@@ -17,7 +17,8 @@ add_executable(TraceRayer main.c
         IO/Logging.c
         Include/Logging.h
         IO/Path.c
-        Include/Path.h)
+        Include/Path.h
+        Include/Statics.h)
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 target_link_libraries(TraceRayer ${GTK4_LIBRARIES})

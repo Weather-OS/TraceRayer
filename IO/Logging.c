@@ -25,18 +25,148 @@
  *  Description: Handling logging.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 
 #include <Logging.h>
+#include <Statics.h>
 
-TR_STATUS InitializeLogging()
+TR_STATUS
+ParseMessage(
+    IN TRCString format,
+    OPTIONAL IN Log_Category logCategory,
+    OPTIONAL IN pid_t threadId,
+    OPTIONAL IN TRString module,
+    OPTIONAL IN TRString function,
+    OPTIONAL IN TRString message,
+    OUT TRString *formattedString
+) {
+    TRString buffer;
+    TRString reallocBuffer;
+    TRSize fmtSize;
+    TRSize currentPos = 0;
+    TRSize iterator;
+
+    if ( !format || !formattedString )
+        return T_INVALIDARG;
+
+    fmtSize = strlen(format) + 1;
+
+    buffer = (TRString)malloc( fmtSize * sizeof( TRChar ) );
+    if ( !buffer )
+        return T_OUTOFMEMORY;
+    buffer[0] = '\0';
+
+    for ( iterator = 0; format[iterator] != '\0'; iterator++ )
+    {
+        if ( format[iterator] == '$' )
+        {
+            if ( strlen(format + iterator) >= 5 && strncmp( format + iterator, "$DATE", 5 ) == 0 )
+            {
+                TRChar dateStr[11];
+                time_t t;
+                struct tm *time_info;
+
+                fmtSize -= strlen( "$DATE" );
+
+                time( &t );
+                time_info = localtime( &t );
+                // date format: YYYY-MM-DD (11 bytes)
+                strftime( dateStr, sizeof( dateStr ), "%Y-%m-%d", time_info );
+                fmtSize += strlen( dateStr );
+
+                reallocBuffer = realloc( buffer, fmtSize );
+                if ( !reallocBuffer )
+                {
+                    free( buffer );
+                    return T_OUTOFMEMORY;
+                }
+
+                buffer = reallocBuffer;
+
+                strncat( buffer, dateStr, 10 );
+                currentPos += 10;
+                iterator += 4;
+                continue;
+            }
+
+            if ( strlen(format + iterator) >= 5 && strncmp( format + iterator, "$TIME", 5 ) == 0 )
+            {
+                TRChar timeStr[9];
+                time_t t;
+                struct tm *time_info;
+
+                fmtSize -= strlen( "$TIME" );
+
+                time( &t );
+                time_info = localtime( &t );
+                // time format: HH:MM:SS (9 bytes)
+                strftime( timeStr, sizeof( timeStr ), "%H:%M:%S", time_info );
+                fmtSize += strlen( timeStr );
+
+                reallocBuffer = realloc( buffer, fmtSize );
+                if ( !reallocBuffer )
+                {
+                    free( buffer );
+                    return T_OUTOFMEMORY;
+                }
+
+                buffer = reallocBuffer;
+
+                strncat( buffer, timeStr, 8 );
+                currentPos += 8;
+                iterator += 4;
+                continue;
+            }
+
+            if ( strlen(format + iterator) >= 7 && strncmp( format + iterator, "$VERSION", 7 ) == 0 )
+            {
+                const auto versionString = TRACERAYER_VERSION;
+                fmtSize -= strlen( "$VERSION" );
+                fmtSize += strlen( versionString );
+
+                reallocBuffer = realloc( buffer, fmtSize );
+                if ( !reallocBuffer )
+                {
+                    free( buffer );
+                    return T_OUTOFMEMORY;
+                }
+
+                buffer = reallocBuffer;
+
+                strncat( buffer, versionString, strlen( versionString ) + 1 );
+                currentPos += strlen( versionString );
+                iterator += 7;
+                continue;
+            }
+        }
+
+        buffer[currentPos++] = format[iterator];
+    }
+
+    // ensure NULL termination.
+    buffer[currentPos] = '\0';
+
+    *formattedString = buffer;
+
+    return T_SUCCESS;
+}
+
+TR_STATUS
+InitializeLogging()
 {
-    TR_STATUS status = T_SUCCESS;
+    TRString parsedMessage;
+    if ( GlobalArgumentsDefault.LogFile && GlobalArgumentsDefault.LogFile->Location )
+    {
+        if ( GlobalArgumentsDefault.LogFile->IsDirectory )
+            return T_INVALIDARG;
 
-    if ( GlobalArgumentsDefault.LogLevel )
-
-    return status;
+        if ( !GlobalArgumentsDefault.LogFile->FileHandle )
+            return T_HANDLE;
+    }
+    ParseMessage( LOGFILE_HEADER, 0, 0, nullptr, nullptr, nullptr, &parsedMessage );
+    printf("parsedMessage: %s", parsedMessage);
+    return T_SUCCESS;
 }

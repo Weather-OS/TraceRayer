@@ -29,10 +29,12 @@
 #include <gtk/gtk.h>
 
 #include <Arguments.h>
+#include <Logging.h>
 
 int main(const int argc, char **argv)
 {
     TR_STATUS status;
     status = ParseCommandLineArguments( argc, argv );
+    status = InitializeLogging();
     printf("status was %d\n", status);
 }
