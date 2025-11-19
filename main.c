@@ -35,7 +35,9 @@ int main(const int argc, char **argv)
 {
     TR_STATUS status;
     status = ParseCommandLineArguments( argc, argv );
+    if ( FAILED( status ) ) return status;
     status = InitializeLogging();
 
-    TRACE("hello there!\n");
+    ERROR("hello %s\n", "there!");
+    return status;
 }

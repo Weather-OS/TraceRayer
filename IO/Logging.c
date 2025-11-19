@@ -27,6 +27,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -354,19 +355,43 @@ ParseMessage(
 }
 
 void
-TraceRayer_TRACE(
+TraceRayer_DEBUG(
+    IN Log_Category category,
     IN pid_t threadId,
     IN TRCString module,
     IN TRCString function,
-    IN TRCString message
+    IN TRCString fmt,
+    ...
 ) {
-    if ( GlobalArgumentsDefault.LogLevel < 3 )
-        return;
+    va_list ap = {};
+    va_list ap_copy = {};
 
     TRString parsedMessage;
+    TRString buffer;
+    TRSize bufferSize;
 
-    ParseMessage( LOG_FORMAT, GlobalArgumentsDefault.ColoredTerminalOutput, LOG_CATEGORY_TRACE, threadId, module, function, message, &parsedMessage );
+    if ( GlobalArgumentsDefault.LogLevel < category )
+        return;
+
+    va_start( ap, fmt );
+    va_copy( ap_copy, ap );
+    bufferSize = vsnprintf( nullptr, 0, fmt, ap_copy );
+    va_end( ap_copy );
+
+    buffer = (TRString)malloc( bufferSize + 1 );
+    if ( !buffer )
+    {
+        va_end( ap );
+        return;
+    }
+
+    vsnprintf( buffer, bufferSize + 1, fmt, ap );
+    va_end( ap );
+
+    ParseMessage( LOG_FORMAT, GlobalArgumentsDefault.ColoredTerminalOutput, category, threadId, module, function, buffer, &parsedMessage );
     fprintf( stdout, "%s", parsedMessage );
+    free( buffer );
+    free( parsedMessage );
 }
 
 TR_STATUS

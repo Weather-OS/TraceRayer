@@ -35,7 +35,7 @@
 GlobalArguments GlobalArgumentsDefault =
 {
     .GPUName = nullptr,
-    .LogLevel = 0,
+    .LogLevel = 2,
     .LogFile = nullptr,
     .ColoredTerminalOutput = true,
 };
