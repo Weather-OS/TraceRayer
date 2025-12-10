@@ -28,8 +28,8 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 
-#include <Arguments.h>
-#include <Include/IO/Logging.h>
+#include <IO/Arguments.h>
+#include <IO/Logging.h>
 
 int main( const int argc, char **argv )
 {

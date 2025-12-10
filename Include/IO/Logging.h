@@ -26,8 +26,7 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-#include <../Arguments.h>
-#include <../Types.h>
+#include <Types.h>
 
 #include <sys/syscall.h>
 

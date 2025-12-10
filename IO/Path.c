@@ -37,7 +37,7 @@
 #include <limits.h>
 #endif
 
-#include <../Include/IO/Path.h>
+#include <IO/Path.h>
 
 TR_STATUS
 FetchPath(
