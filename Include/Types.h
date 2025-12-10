@@ -26,6 +26,7 @@
 #include <wchar.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <uuid/uuid.h>
 
 #define IN
 #define OUT
@@ -42,6 +43,7 @@ typedef long TRLong;
 typedef unsigned long TRULong;
 typedef size_t TRSize;
 typedef double TRFloat;
+typedef uuid_t TRUUID;
 
 typedef wchar_t TRWChar;
 typedef wchar_t *TRWString;
@@ -55,6 +57,7 @@ typedef enum _TR_STATUS
     T_ACCESSDENIED = 13,
     T_OUTOFMEMORY = 14,
     T_HANDLE = 38,
+    T_NOTIMPL = 213
 } TR_STATUS;
 
 #define FAILED( status ) \
@@ -65,5 +68,18 @@ typedef enum _TR_STATUS
     strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : \
     __FILE__)
 
+#ifdef INITGUID
+#define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
+    const uuid_t IID_##name = { \
+        (unsigned char)((l) & 0xff), (unsigned char)(((l) >> 8) & 0xff), \
+        (unsigned char)(((l) >> 16) & 0xff), (unsigned char)(((l) >> 24) & 0xff), \
+        (unsigned char)((w1) & 0xff), (unsigned char)(((w1) >> 8) & 0xff), \
+        (unsigned char)((w2) & 0xff), (unsigned char)(((w2) >> 8) & 0xff), \
+        (unsigned char)(b1), (unsigned char)(b2), (unsigned char)(b3), (unsigned char)(b4), \
+        (unsigned char)(b5), (unsigned char)(b6), (unsigned char)(b7), (unsigned char)(b8) }
+#else
+#define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
+    extern const TRUUID IID_##name
+#endif
 
 #endif //TRACERAYER_TYPES_H

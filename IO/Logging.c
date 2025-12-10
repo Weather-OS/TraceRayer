@@ -403,6 +403,13 @@ TraceRayer_DEBUG(
     free( buffer );
 }
 
+TRChar *debugstr_uuid( IN uuid_t uuid )
+{
+    static _Thread_local TRChar str[37];
+    uuid_unparse( uuid, str );
+    return str;
+}
+
 TR_STATUS
 InitializeLogging()
 {
