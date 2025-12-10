@@ -48,7 +48,6 @@ typedef enum _TR_Argument_ValueType
 typedef struct _TR_Argument
 {
     TRString Name;
-    TRChar Abbreviation;
     Argument_ValueType ValueType;
     OPTIONAL void *Value;
     OPTIONAL TR_STATUS (*Callback)();
@@ -58,32 +57,26 @@ static Argument Available_Arguments[] =
 {
     {
         .Name         = "help",
-        .Abbreviation = 'h',
         .ValueType    = TYPE_EMPTY
     },
     {
         .Name         = "version",
-        .Abbreviation = 'v',
         .ValueType    = TYPE_EMPTY
     },
     {
         .Name         = "gpu-name",
-        .Abbreviation = 'g',
         .ValueType    = TYPE_STRING,
     },
     {
         .Name         = "log-level",
-        .Abbreviation = 'l',
         .ValueType    = TYPE_LONG
     },
     {
         .Name         = "log-file",
-        .Abbreviation = 'f',
         .ValueType    = TYPE_PATH
     },
     {
         .Name         = "colored-terminal-output",
-        .Abbreviation = 'c',
         .ValueType   = TYPE_BOOL
     }
 };

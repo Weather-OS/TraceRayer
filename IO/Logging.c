@@ -390,8 +390,16 @@ TraceRayer_DEBUG(
 
     ParseMessage( LOG_FORMAT, GlobalArgumentsDefault.ColoredTerminalOutput, category, threadId, module, function, buffer, &parsedMessage );
     fprintf( stdout, "%s", parsedMessage );
+    free(parsedMessage);
+
+    if ( GlobalArgumentsDefault.LogFile )
+    {
+        ParseMessage( LOG_FORMAT, false, category, threadId, module, function, buffer, &parsedMessage );
+        fprintf( GlobalArgumentsDefault.LogFile->FileHandle, "%s", parsedMessage );
+        free(parsedMessage);
+    }
+
     free( buffer );
-    free( parsedMessage );
 }
 
 TR_STATUS

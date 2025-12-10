@@ -31,13 +31,12 @@
 #include <Arguments.h>
 #include <Logging.h>
 
-int main(const int argc, char **argv)
+int main( const int argc, char **argv )
 {
     TR_STATUS status;
     status = ParseCommandLineArguments( argc, argv );
     if ( FAILED( status ) ) return status;
     status = InitializeLogging();
 
-    ERROR("hello %s\n", "there!");
     return status;
 }

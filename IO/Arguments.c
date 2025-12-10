@@ -75,7 +75,7 @@ ParseCommandLineArguments(
 
     for ( iterator = 1; iterator < argc; iterator++ )
     {
-        if ( strncmp( arguments[iterator], "--", 2 ) == 0 )
+        if ( !strncmp( arguments[iterator], "--", 2 ) )
         {
             for ( secondIterator = 0; secondIterator < sizeof(Available_Arguments) / sizeof(Argument); secondIterator++ )
             {
@@ -89,9 +89,9 @@ ParseCommandLineArguments(
                      */
                     // Some thing to keep in mind: Values wrapped in "" are automatically unwrapped for us.
 
-                    if ( strlen( arguments[iterator] + 2 ) > strlen( Available_Arguments[secondIterator].Name ) )
+                    if ( strlen(arguments[iterator] + 2) > strlen( Available_Arguments[secondIterator].Name ) )
                     {
-                        if ( (arguments[iterator] + 2)[ strlen( Available_Arguments[secondIterator].Name ) ] == '=' )
+                        if ( (arguments[iterator] + 2)[strlen( Available_Arguments[secondIterator].Name )] == '=' )
                         {
                             val = strdup( arguments[iterator] + strlen(Available_Arguments[secondIterator].Name) + 3 );
                             valSize = strlen( val );
@@ -182,9 +182,9 @@ ParseCommandLineArguments(
                                 //TODO: Handle errors
                                 exit( 1 );
                             }
-                            auto target = (TRPath *)Available_Arguments[secondIterator].Value;
+                            const auto target = (TRPath **)Available_Arguments[secondIterator].Value;
 
-                            status = FetchPath( val, true, T_READWRITE, &target );
+                            status = FetchPath( val, true, T_READWRITE, target );
                             if ( FAILED( status ) ) return status;
 
                             if ( Available_Arguments[secondIterator].Callback != nullptr )
