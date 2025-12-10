@@ -20,31 +20,45 @@
  * THE SOFTWARE.
  */
 
-/**
- *  Project: Ray Tracing using GTK and Vulkan.
- *  Project Description: For my computer science class.
- */
-
-#include <stdio.h>
-
-#include <IO/Arguments.h>
-#include <IO/Logging.h>
+#define INITGUID
 
 #include <UI/GTK.h>
 
-int main( const int argc, char **argv )
+static struct gtk_object *impl_from_GTKObject( IN GTKObject *iface )
 {
-    TR_STATUS status;
-    status = ParseCommandLineArguments( argc, argv );
-    if ( FAILED( status ) ) return status;
-    status = InitializeLogging();
-    if ( FAILED( status ) ) return status;
+    return CONTAINING_RECORD( iface, struct gtk_object, GTKObject_iface );
+}
 
-    GTKObject *obj;
-    status = new_gtk_object( &obj );
+DEFINE_SHALLOW_UNKNOWNOBJECT( GTKObject, gtk_object )
 
-    obj->lpVtbl->CreateWindow( obj, NULL );
-    obj->lpVtbl->Release( obj );
+static TR_STATUS gtk_object_CreateWindow( GTKObject *iface, GTKWindowObject *out )
+{
+    TRACE( "iface %p\n", iface );
+    return T_SUCCESS;
+}
 
-    return status;
+static GTKObjectInterface gtk_object_interface =
+{
+    /* UnknownObject Methods */
+    gtk_object_QueryInterface,
+    gtk_object_AddRef,
+    gtk_object_Release,
+    /* GTKObject Methods */
+    gtk_object_CreateWindow
+};
+
+TR_STATUS new_gtk_object( GTKObject **out )
+{
+    struct gtk_object *impl;
+
+    TRACE( "out %p\n", out );
+
+    if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
+
+    impl->GTKObject_iface.lpVtbl = &gtk_object_interface;
+    impl->ref = 1;
+
+    *out = &impl->GTKObject_iface;
+
+    return T_SUCCESS;
 }

@@ -20,31 +20,44 @@
  * THE SOFTWARE.
  */
 
-/**
- *  Project: Ray Tracing using GTK and Vulkan.
- *  Project Description: For my computer science class.
- */
 
-#include <stdio.h>
+#ifndef TRACERAYER_GTK_H
+#define TRACERAYER_GTK_H
 
-#include <IO/Arguments.h>
-#include <IO/Logging.h>
+#include <gdk/gdk.h>
 
-#include <UI/GTK.h>
+#include <UI/Window/GTKWindow.h>
+#include <Object.h>
+#include <Types.h>
 
-int main( const int argc, char **argv )
+typedef struct _GTKObject GTKObject;
+
+typedef struct _GTKObjectInterface
 {
-    TR_STATUS status;
-    status = ParseCommandLineArguments( argc, argv );
-    if ( FAILED( status ) ) return status;
-    status = InitializeLogging();
-    if ( FAILED( status ) ) return status;
+    BEGIN_INTERFACE
 
-    GTKObject *obj;
-    status = new_gtk_object( &obj );
+    IMPLEMENTS_UNKNOWNOBJECT( GTKObject );
 
-    obj->lpVtbl->CreateWindow( obj, NULL );
-    obj->lpVtbl->Release( obj );
+    TR_STATUS (*CreateWindow)( IN GTKObject *This, OUT GTKWindowObject *out );
 
-    return status;
-}
+    END_INTERFACE
+} GTKObjectInterface;
+
+interface _GTKObject
+{
+    CONST_VTBL GTKObjectInterface *lpVtbl;
+};
+
+struct gtk_object
+{
+    GTKObject GTKObject_iface;
+    atomic_long ref;
+};
+
+// 71e34ecd-fd1e-4e3c-94fa-d329c7301325
+DEFINE_GUID( GTKObject, 0x71e34ecd, 0xfd1e, 0x4e3c, 0x94, 0xfa, 0xd3, 0x29, 0xc7, 0x30, 0x13, 0x25 );
+
+// Constructors
+TR_STATUS new_gtk_object( GTKObject **out );
+
+#endif
