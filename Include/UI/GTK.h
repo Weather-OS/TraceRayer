@@ -51,7 +51,7 @@ interface _GTKObject
 struct gtk_object
 {
     GTKObject GTKObject_iface;
-    atomic_long ref;
+    TRLong ref;
 };
 
 // 71e34ecd-fd1e-4e3c-94fa-d329c7301325

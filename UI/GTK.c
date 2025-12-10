@@ -53,10 +53,11 @@ TR_STATUS new_gtk_object( GTKObject **out )
 
     TRACE( "out %p\n", out );
 
+    // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
 
     impl->GTKObject_iface.lpVtbl = &gtk_object_interface;
-    impl->ref = 1;
+    atomic_init( &impl->ref, 1 );
 
     *out = &impl->GTKObject_iface;
 
