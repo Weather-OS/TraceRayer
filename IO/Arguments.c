@@ -30,7 +30,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#include <Arguments.h>
+#include <../Include/IO/Arguments.h>
 
 GlobalArguments GlobalArgumentsDefault =
 {

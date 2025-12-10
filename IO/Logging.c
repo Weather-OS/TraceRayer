@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <Logging.h>
+#include <../Include/IO/Logging.h>
 #include <Statics.h>
 
 static TR_STATUS

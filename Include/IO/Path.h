@@ -23,7 +23,7 @@
 #ifndef TRACERAYER_PATH_H
 #define TRACERAYER_PATH_H
 
-#include <Types.h>
+#include <../Types.h>
 
 typedef enum _TR_AccessType
 {

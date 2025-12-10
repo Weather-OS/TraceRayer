@@ -12,13 +12,14 @@ link_directories(${GTK4_LIBRARY_DIRS})
 
 add_executable(TraceRayer main.c
         IO/Arguments.c
-        Include/Arguments.h
+        Include/IO/Arguments.h
         Include/Types.h
         IO/Logging.c
-        Include/Logging.h
+        Include/IO/Logging.h
         IO/Path.c
-        Include/Path.h
-        Include/Statics.h)
+        Include/IO/Path.h
+        Include/Statics.h
+        UI/Window/GTKWindow.c)
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 target_link_libraries(TraceRayer ${GTK4_LIBRARIES})

@@ -23,8 +23,8 @@
 #ifndef TRACERAYER_ARGUMENTS_H
 #define TRACERAYER_ARGUMENTS_H
 
-#include <Types.h>
-#include <Path.h>
+#include <../Types.h>
+#include <../Path.h>
 
 typedef struct _TR_GlobalArguments
 {
