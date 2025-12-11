@@ -57,7 +57,9 @@ typedef enum _TR_STATUS
     T_ACCESSDENIED = 13,
     T_OUTOFMEMORY = 14,
     T_HANDLE = 38,
-    T_NOTIMPL = 213
+    T_POINTER = 125,
+    T_NOTIMPL = 213,
+    T_NOINIT = 214
 } TR_STATUS;
 
 #define FAILED( status ) \
@@ -71,10 +73,10 @@ typedef enum _TR_STATUS
 #ifdef INITGUID
 #define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
     const uuid_t IID_##name = { \
-        (unsigned char)((l) & 0xff), (unsigned char)(((l) >> 8) & 0xff), \
-        (unsigned char)(((l) >> 16) & 0xff), (unsigned char)(((l) >> 24) & 0xff), \
-        (unsigned char)((w1) & 0xff), (unsigned char)(((w1) >> 8) & 0xff), \
-        (unsigned char)((w2) & 0xff), (unsigned char)(((w2) >> 8) & 0xff), \
+        (unsigned char)(((l) >> 24) & 0xff), (unsigned char)(((l) >> 16) & 0xff), \
+        (unsigned char)(((l) >> 8) & 0xff),  (unsigned char)((l) & 0xff), \
+        (unsigned char)(((w1) >> 8) & 0xff), (unsigned char)((w1) & 0xff), \
+        (unsigned char)(((w2) >> 8) & 0xff), (unsigned char)((w2) & 0xff), \
         (unsigned char)(b1), (unsigned char)(b2), (unsigned char)(b3), (unsigned char)(b4), \
         (unsigned char)(b5), (unsigned char)(b6), (unsigned char)(b7), (unsigned char)(b8) }
 #else
