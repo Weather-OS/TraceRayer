@@ -40,8 +40,7 @@ static TR_STATUS gtk_object_CreateWindow( GTKObject *iface, GTKWindowObject **ou
 
     TRACE( "iface %p, out %p\n", iface, out );
 
-    if ( !out )
-        return T_POINTER;
+    if ( !out ) throw_NullPtrException();
 
     status = new_gtk_window_object( out );
 
@@ -63,6 +62,8 @@ TR_STATUS new_gtk_object( IN GTKObject **out )
     struct gtk_object *impl;
 
     TRACE( "out %p\n", out );
+
+    if ( !out ) throw_NullPtrException();
 
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;

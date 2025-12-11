@@ -32,24 +32,24 @@
 
 #define interface struct
 #define CONST_VTBL
+#define implements(obj) obj *obj##_impl;
 
 typedef struct _UnknownObject UnknownObject;
-typedef struct _UnknownObjectInterface UnknownObjectInterface;
 
 #define IMPLEMENTS_UNKNOWNOBJECT( type_name ) \
-    TR_STATUS (*QueryInterface)( IN type_name *iface, IN TRUUID uuid, OUT void **out ); \
+    TR_STATUS (*QueryInterface)( IN type_name *iface, IN const TRUUID uuid, OUT void **out ); \
     TRLong    (*AddRef)( IN type_name *iface ); \
     TRLong    (*Release)( IN type_name *iface );
 
 #define CONTAINING_RECORD( address, type, field ) \
     ( (type *)( (TRChar *)(address) - offsetof( type, field ) ) )
 
-struct _UnknownObjectInterface
+typedef struct _UnknownObjectInterface
 {
     BEGIN_INTERFACE
     IMPLEMENTS_UNKNOWNOBJECT( UnknownObject )
     END_INTERFACE
-};
+} UnknownObjectInterface;
 
 interface _UnknownObject
 {
@@ -60,10 +60,11 @@ interface _UnknownObject
 DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 );
 
 #define DEFINE_SHALLOW_UNKNOWNOBJECT( type_name, impl ) \
-    TR_STATUS impl##_QueryInterface( IN type_name *iface, IN TRUUID uuid, OUT void **out ) \
+    TR_STATUS impl##_QueryInterface( type_name *iface, const TRUUID uuid, void **out )              \
     {                                                                                               \
         struct impl *root = impl_from_##type_name( iface );                                         \
         TRACE( "iface %p, uuid %s, out %p\n", iface, debugstr_uuid( uuid ), out );                  \
+        if ( !out ) throw_NullPtrException();                                                       \
         if ( !uuid_compare( uuid, IID_UnknownObject ) || !uuid_compare( uuid, IID_##type_name ) )   \
         {                                                                                           \
             iface->lpVtbl->AddRef( iface );                                                         \
@@ -74,19 +75,19 @@ DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 
         return T_NOTIMPL;                                                                           \
     }                                                                                               \
     \
-    TRLong impl##_AddRef( IN type_name *iface )                                                     \
+    TRLong impl##_AddRef( type_name *iface )                                                        \
     {                                                                                               \
         struct impl *root = impl_from_##type_name( iface );                                         \
-        TRLong added = atomic_load( &root->ref ) + 1;                                               \
+        const TRLong added = atomic_load( &root->ref ) + 1;                                         \
         TRACE( "iface %p increasing ref count to %ld\n", iface, added );                            \
         atomic_fetch_add( &root->ref, 1 );                                                          \
         return added;                                                                               \
     }                                                                                               \
     \
-    TRLong impl##_Release( IN type_name *iface )                                                    \
+    TRLong impl##_Release( type_name *iface )                                                       \
     {                                                                                               \
         struct impl *root = impl_from_##type_name( iface );                                         \
-        TRLong removed = atomic_load( &root->ref ) - 1;                                             \
+        const TRLong removed = atomic_load( &root->ref ) - 1;                                       \
         TRACE( "iface %p decreasing ref count to %ld\n", iface, removed );                          \
         atomic_fetch_sub( &root->ref, 1 );                                                          \
         if ( !removed )                                                                             \
