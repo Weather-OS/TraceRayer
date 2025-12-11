@@ -27,6 +27,8 @@
 
 #include <stdio.h>
 
+#include <InitGUID.h>
+
 #include <IO/Arguments.h>
 #include <IO/Logging.h>
 
@@ -41,9 +43,18 @@ int main( const int argc, char **argv )
     if ( FAILED( status ) ) return status;
 
     GTKObject *obj;
+    UnknownObject *unknown;
     status = new_gtk_object( &obj );
+    if ( FAILED( status ) ) return status;
 
-    obj->lpVtbl->CreateWindow( obj, NULL );
+    status = obj->lpVtbl->CreateWindow( obj, nullptr );
+    if ( FAILED( status ) ) return status;
+
+    status = obj->lpVtbl->QueryInterface( obj, IID_UnknownObject, (void **)&unknown );
+    if ( FAILED( status ) ) return status;
+
+    unknown->lpVtbl->Release( unknown );
+
     obj->lpVtbl->Release( obj );
 
     return status;
