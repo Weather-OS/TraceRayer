@@ -44,6 +44,7 @@ static void WindowBuilder( GtkApplication *app, void *user_data )
     impl->GTKWidgetObject_impl->lpVtbl->get_Widget( impl->GTKWidgetObject_impl, &windowWidget );
 
     gtk_window_set_default_size( GTK_WINDOW( windowWidget ), impl->WindowRect.width, impl->WindowRect.height );
+    gtk_window_set_title ( GTK_WINDOW( windowWidget ), impl->windowTitle );
 
     impl->callback( user_data ); // <-- Callback proc
 }
@@ -114,6 +115,14 @@ static TR_STATUS gtk_window_object_set_WindowRect( GTKWindowObject *iface, GdkRe
     return T_SUCCESS;
 }
 
+static TR_STATUS gtk_window_object_setWindowTitle( GTKWindowObject *iface, TRString title )
+{
+    struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
+    TRACE( "iface %p, title %s\n", iface, title );
+    impl->windowTitle = title;
+    return T_SUCCESS;
+}
+
 static void gtk_window_object_Show( GTKWindowObject *iface )
 {
     TR_STATUS status;
@@ -136,6 +145,7 @@ static GTKWindowObjectInterface gtk_window_object_interface =
     /* GTKWindowObject Methods */
     gtk_window_object_get_WindowRect,
     gtk_window_object_set_WindowRect,
+    gtk_window_object_setWindowTitle,
     gtk_window_object_Show
 };
 

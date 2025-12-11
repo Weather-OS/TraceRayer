@@ -39,8 +39,9 @@ typedef struct _GTKWindowInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKWindowObject )
 
-    TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out );
-    TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle rect );
+    TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out ); // getter
+    TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle rect ); // setter
+    TR_STATUS (*setWindowTitle)( IN GTKWindowObject *This, IN TRString title );
     void      (*Show)( IN GTKWindowObject *This );
 
     END_INTERFACE
@@ -62,6 +63,7 @@ struct gtk_window_object
 
     // --- Private Members --- //
     WindowLoopCallback callback;
+    TRString windowTitle;
     TRLong ref;
 };
 
@@ -70,6 +72,5 @@ DEFINE_GUID( GTKWindowObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d
 
 // Constructors
 TR_STATUS new_gtk_window_object( IN GtkApplication *app, IN WindowLoopCallback callback, OUT GTKWindowObject **out );
-
 
 #endif

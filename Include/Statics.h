@@ -26,6 +26,7 @@
 #define TRACERAYER_VERSION "0.0.1"
 
 // Application Name
+#define APPNAME "TraceRayer"
 #define GTK_APPNAME "org.Weather.TraceRayer"
 
 #define LOGFILE_HEADER "// --- ($DATE) ($TIME) Trace Rayer ($VERSION), A Ray Tracing Demo Written in GTK and Vulkan --- //\n"

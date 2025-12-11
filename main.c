@@ -48,6 +48,8 @@ int main( const int argc, char **argv )
     GTKObject *obj;
     GTKWindowObject *window;
     UnknownObject *unknown;
+    GdkRectangle rect = { 0, 0, 500, 900 };
+
     status = new_gtk_object( GTK_APPNAME, &obj );
     if ( FAILED( status ) ) return status;
 
@@ -55,6 +57,12 @@ int main( const int argc, char **argv )
     if ( FAILED( status ) ) return status;
 
     status = obj->lpVtbl->QueryInterface( obj, IID_UnknownObject, (void **)&unknown );
+    if ( FAILED( status ) ) return status;
+
+    status = window->lpVtbl->set_WindowRect( window, rect );
+    if ( FAILED( status ) ) return status;
+
+    status = window->lpVtbl->setWindowTitle( window, APPNAME );
     if ( FAILED( status ) ) return status;
 
     window->lpVtbl->Show( window ); // <-- This must fail here.
