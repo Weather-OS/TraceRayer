@@ -403,7 +403,7 @@ TraceRayer_DEBUG(
     free( buffer );
 }
 
-TRChar *debugstr_uuid( IN uuid_t uuid )
+TRChar *debugstr_uuid( IN const uuid_t uuid )
 {
     static _Thread_local TRChar str[37];
     uuid_unparse( uuid, str );

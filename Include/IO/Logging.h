@@ -65,6 +65,14 @@ void TraceRayer_DEBUG( IN Log_Category category, IN pid_t threadId, IN TRCString
 #define TRACE(message, ...) \
     TraceRayer_DEBUG( LOG_CATEGORY_TRACE, gettid(), __FILENAME__, __FUNCTION__, message, ##__VA_ARGS__)
 
-TRChar* debugstr_uuid( IN uuid_t uuid );
+// Critical Exceptions
+// TODO: Implement unified throw routine
+#define throw_NullPtrException() \
+    {                                                           \
+        ERROR("A critical null pointer exception occured!\n");  \
+        exit(125);                                              \
+    }                                                           \
+
+TRChar* debugstr_uuid( IN const uuid_t uuid );
 
 #endif //TRACERAYER_LOGGING_H
