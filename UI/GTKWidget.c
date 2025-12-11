@@ -21,57 +21,50 @@
  */
 
 /**
- *  Module: GTK.c
- *  Description: Root GTK object to create sub-objects.
+ *  Module: GTKWidget.c
+ *  Description: GTKWidget can be contained from different GTK classes.
  */
 
-#include <UI/GTK.h>
+#include <UI/GTKWidget.h>
 
-static struct gtk_object *impl_from_GTKObject( GTKObject *iface )
+static struct gtk_widget_object *impl_from_GTKWidgetObject( GTKWidgetObject *iface )
 {
-    return CONTAINING_RECORD( iface, struct gtk_object, GTKObject_iface );
+    return CONTAINING_RECORD( iface, struct gtk_widget_object, GTKWidgetObject_iface );
 }
 
-DEFINE_SHALLOW_UNKNOWNOBJECT( GTKObject, gtk_object )
+DEFINE_SHALLOW_UNKNOWNOBJECT( GTKWidgetObject, gtk_widget_object );
 
-static TR_STATUS gtk_object_CreateWindow( GTKObject *iface, WindowLoopCallback callback, GTKWindowObject **out )
+static TR_STATUS gtk_widget_object_get_Widget( GTKWidgetObject *iface, GtkWidget **out )
 {
-    TR_STATUS status;
-
-    struct gtk_object *impl = impl_from_GTKObject( iface );
-
-    TRACE( "iface %p, out %p\n", iface, out );
-
-    if ( !out || !callback ) throw_NullPtrException();
-
-    status = new_gtk_window_object( impl->app, callback, out );
-
-    return status;
+    const struct gtk_widget_object *impl = impl_from_GTKWidgetObject( iface );
+    TRACE( "iface %p, widget %p\n", iface, out );
+    if ( !out ) throw_NullPtrException();
+    *out = impl->Widget;
+    return T_SUCCESS;
 }
 
-static TR_STATUS gtk_object_RunApplication( GTKObject *iface )
+static void gtk_widget_object_setVisibility( GTKWidgetObject *iface, TRBool visibility )
 {
-    const struct gtk_object *impl = impl_from_GTKObject( iface );
-
+    const struct gtk_widget_object *impl = impl_from_GTKWidgetObject( iface );
     TRACE( "iface %p\n", iface );
 
-    return g_application_run( G_APPLICATION( impl->app ), 0, nullptr );
+    gtk_widget_set_visible( impl->Widget, visibility );
 }
 
-static GTKObjectInterface gtk_object_interface =
+static GTKWidgetObjectInterface gtk_widget_object_interface =
 {
     /* UnknownObject Methods */
-    gtk_object_QueryInterface,
-    gtk_object_AddRef,
-    gtk_object_Release,
+    gtk_widget_object_QueryInterface,
+    gtk_widget_object_AddRef,
+    gtk_widget_object_Release,
     /* GTKObject Methods */
-    gtk_object_CreateWindow,
-    gtk_object_RunApplication
+    gtk_widget_object_get_Widget,
+    gtk_widget_object_setVisibility
 };
 
-TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out )
+TR_STATUS new_gtk_widget_object( IN GtkWidget *widget, OUT GTKWidgetObject **out )
 {
-    struct gtk_object *impl;
+    struct gtk_widget_object *impl;
 
     TRACE( "out %p\n", out );
 
@@ -80,12 +73,12 @@ TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out )
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
 
-    impl->GTKObject_iface.lpVtbl = &gtk_object_interface;
-    impl->app = gtk_application_new( appName, G_APPLICATION_DEFAULT_FLAGS );
+    impl->GTKWidgetObject_iface.lpVtbl = &gtk_widget_object_interface;
+    impl->Widget = widget;
     atomic_init( &impl->ref, 1 );
 
-    *out = &impl->GTKObject_iface;
-    TRACE( "created GTKObject %p\n", *out );
+    *out = &impl->GTKWidgetObject_iface;
+    TRACE( "created GTKWidgetObject %p\n", *out );
 
     return T_SUCCESS;
 }

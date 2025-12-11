@@ -25,8 +25,11 @@
 
 #define TRACERAYER_VERSION "0.0.1"
 
+// Application Name
+#define GTK_APPNAME "org.Weather.TraceRayer"
+
 #define LOGFILE_HEADER "// --- ($DATE) ($TIME) Trace Rayer ($VERSION), A Ray Tracing Demo Written in GTK and Vulkan --- //\n"
-#define LOG_FORMAT "[$THREAD] $MODULE::$FUNCTION ($LOG_CATEGORY) $MESSAGE"
+#define LOG_FORMAT "[$THREAD] ($LOG_CATEGORY) $MODULE::$FUNCTION $MESSAGE"
 
 // Terminal Colors
 #define RESET_COLOR "\033[0m" // DO NOT CHANGE THIS!

@@ -28,6 +28,9 @@
 #include <stdio.h>
 
 #include <InitGUID.h>
+#include <Statics.h>
+
+#include <Core/WindowLoop.h>
 
 #include <IO/Arguments.h>
 #include <IO/Logging.h>
@@ -43,14 +46,20 @@ int main( const int argc, char **argv )
     if ( FAILED( status ) ) return status;
 
     GTKObject *obj;
+    GTKWindowObject *window;
     UnknownObject *unknown;
-    status = new_gtk_object( &obj );
+    status = new_gtk_object( GTK_APPNAME, &obj );
     if ( FAILED( status ) ) return status;
 
-    status = obj->lpVtbl->CreateWindow( obj, nullptr );
+    status = obj->lpVtbl->CreateWindow( obj, WindowCallbackProc, &window );
     if ( FAILED( status ) ) return status;
 
     status = obj->lpVtbl->QueryInterface( obj, IID_UnknownObject, (void **)&unknown );
+    if ( FAILED( status ) ) return status;
+
+    window->lpVtbl->Show( window ); // <-- This must fail here.
+
+    status = obj->lpVtbl->RunApplication( obj );
     if ( FAILED( status ) ) return status;
 
     unknown->lpVtbl->Release( unknown );

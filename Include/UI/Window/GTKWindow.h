@@ -26,13 +26,12 @@
 #include <gdk/gdk.h>
 
 #include <Object.h>
-
-
 #include <UI/GTKWidget.h>
-
 #include <Types.h>
 
 typedef struct _GTKWindowObject GTKWindowObject;
+
+typedef void (*WindowLoopCallback)( IN GTKWindowObject *This );
 
 typedef struct _GTKWindowInterface
 {
@@ -42,6 +41,7 @@ typedef struct _GTKWindowInterface
 
     TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out );
     TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle rect );
+    void      (*Show)( IN GTKWindowObject *This );
 
     END_INTERFACE
 } GTKWindowObjectInterface;
@@ -61,6 +61,7 @@ struct gtk_window_object
     implements( GTKWidgetObject );
 
     // --- Private Members --- //
+    WindowLoopCallback callback;
     TRLong ref;
 };
 
@@ -68,6 +69,7 @@ struct gtk_window_object
 DEFINE_GUID( GTKWindowObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d, 0xe5, 0xc4, 0x7e, 0x08 );
 
 // Constructors
-TR_STATUS new_gtk_window_object( GTKWindowObject **out );
+TR_STATUS new_gtk_window_object( IN GtkApplication *app, IN WindowLoopCallback callback, OUT GTKWindowObject **out );
+
 
 #endif

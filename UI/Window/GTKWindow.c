@@ -32,6 +32,22 @@ static struct gtk_window_object *impl_from_GTKWindowObject( GTKWindowObject *ifa
     return CONTAINING_RECORD( iface, struct gtk_window_object, GTKWindowObject_iface );
 }
 
+static void WindowBuilder( GtkApplication *app, void *user_data )
+{
+    GtkWidget *windowWidget;
+    struct gtk_window_object *impl = impl_from_GTKWindowObject( (GTKWindowObject *)user_data );
+
+    TRACE( "app %p, user_data %p\n", app, user_data );
+
+    new_gtk_widget_object( gtk_application_window_new( app ), &impl->GTKWidgetObject_impl );
+
+    impl->GTKWidgetObject_impl->lpVtbl->get_Widget( impl->GTKWidgetObject_impl, &windowWidget );
+
+    gtk_window_set_default_size( GTK_WINDOW( windowWidget ), impl->WindowRect.width, impl->WindowRect.height );
+
+    impl->callback( user_data ); // <-- Callback proc
+}
+
 static TR_STATUS gtk_window_object_QueryInterface( GTKWindowObject *iface, const TRUUID uuid, void **out )
 {
     const struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
@@ -85,8 +101,7 @@ static TR_STATUS gtk_window_object_get_WindowRect( GTKWindowObject *iface, GdkRe
 {
     const struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
     TRACE( "iface %p, GdkRectangle %p\n", iface, out );
-    if ( !out )
-        return T_POINTER;
+    if ( !out ) throw_NullPtrException();
     *out = impl->WindowRect;
     return T_SUCCESS;
 }
@@ -99,6 +114,19 @@ static TR_STATUS gtk_window_object_set_WindowRect( GTKWindowObject *iface, GdkRe
     return T_SUCCESS;
 }
 
+static void gtk_window_object_Show( GTKWindowObject *iface )
+{
+    TR_STATUS status;
+    GTKWidgetObject *widget;
+
+    TRACE( "iface %p\n", iface );
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widget );
+    if ( FAILED( status ) ) return;
+
+    widget->lpVtbl->setVisibility( widget, true );
+}
+
 static GTKWindowObjectInterface gtk_window_object_interface =
 {
     /* UnknownObject Methods */
@@ -107,22 +135,30 @@ static GTKWindowObjectInterface gtk_window_object_interface =
     gtk_window_object_Release,
     /* GTKWindowObject Methods */
     gtk_window_object_get_WindowRect,
-    gtk_window_object_set_WindowRect
+    gtk_window_object_set_WindowRect,
+    gtk_window_object_Show
 };
 
-TR_STATUS new_gtk_window_object( IN GTKWindowObject **out )
+TR_STATUS new_gtk_window_object( IN GtkApplication *app, IN WindowLoopCallback callback, OUT GTKWindowObject **out )
 {
+    TR_STATUS status;
     struct gtk_window_object *impl;
 
     TRACE( "out %p\n", out );
+
+    if ( !out || !app ) throw_NullPtrException();
 
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
 
     impl->GTKWindowObject_iface.lpVtbl = &gtk_window_object_interface;
+    impl->callback = callback;
     atomic_init( &impl->ref, 1 );
 
     *out = &impl->GTKWindowObject_iface;
+
+    g_signal_connect( app, "activate", G_CALLBACK( WindowBuilder ), (void *)*out );
+
     TRACE( "created GTKWindowObject %p\n", *out );
 
     return T_SUCCESS;

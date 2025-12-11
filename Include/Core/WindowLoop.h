@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Weather
+* Copyright (c) 2025 Weather
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,48 +20,12 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_GTKWIDGET_H
-#define TRACERAYER_GTKWIDGET_H
+#ifndef TRACERAYER_WINDOWLOOP_H
+#define TRACERAYER_WINDOWLOOP_H
 
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
-
-#include <Object.h>
+#include <UI/Window/GTKWindow.h>
 #include <Types.h>
 
-typedef struct _GTKWidgetObject GTKWidgetObject;
-
-typedef struct _GTKWidgetInterface
-{
-    BEGIN_INTERFACE
-
-    IMPLEMENTS_UNKNOWNOBJECT( GTKWidgetObject )
-
-    TR_STATUS (*get_Widget)( IN GTKWidgetObject *This, OUT GtkWidget **out );
-    void      (*setVisibility)( IN GTKWidgetObject *This, TRBool visibility );
-    
-    END_INTERFACE
-} GTKWidgetObjectInterface;
-
-interface _GTKWidgetObject
-{
-    CONST_VTBL GTKWidgetObjectInterface *lpVtbl;
-};
-
-struct gtk_widget_object
-{
-    // --- Public Members --- //
-    GTKWidgetObject GTKWidgetObject_iface;
-    GtkWidget *Widget;
-
-    // --- Private Members --- //
-    TRLong ref;
-};
-
-// cfe1afb8-34c3-4ba0-9512-b02ef6ada3ef
-DEFINE_GUID( GTKWidgetObject, 0xcfe1afb8, 0x34c3, 0x4ba0, 0x95, 0x12, 0xb0, 0x2e, 0xf6, 0xad, 0xa3, 0xef );
-
-// Constructors
-TR_STATUS new_gtk_widget_object( IN GtkWidget *widget, OUT GTKWidgetObject **out );
+void WindowCallbackProc( IN GTKWindowObject *iface );
 
 #endif

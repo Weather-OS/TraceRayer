@@ -20,7 +20,6 @@
  * THE SOFTWARE.
  */
 
-
 #ifndef TRACERAYER_GTK_H
 #define TRACERAYER_GTK_H
 
@@ -38,7 +37,8 @@ typedef struct _GTKObjectInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKObject );
 
-    TR_STATUS (*CreateWindow)( IN GTKObject *This, OUT GTKWindowObject **out );
+    TR_STATUS (*CreateWindow)( IN GTKObject *This, WindowLoopCallback callback, OUT GTKWindowObject **out );
+    TR_STATUS (*RunApplication)( IN GTKObject *This );
 
     END_INTERFACE
 } GTKObjectInterface;
@@ -54,6 +54,7 @@ struct gtk_object
     GTKObject GTKObject_iface;
 
     // --- Private Members --- //
+    GtkApplication *app;
     TRLong ref;
 };
 
@@ -61,6 +62,6 @@ struct gtk_object
 DEFINE_GUID( GTKObject, 0x71e34ecd, 0xfd1e, 0x4e3c, 0x94, 0xfa, 0xd3, 0x29, 0xc7, 0x30, 0x13, 0x25 );
 
 // Constructors
-TR_STATUS new_gtk_object( IN GTKObject **out );
+TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out );
 
 #endif

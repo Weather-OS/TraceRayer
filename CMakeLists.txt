@@ -28,7 +28,10 @@ add_executable(TraceRayer main.c
         Include/UI/GTK.h
         UI/GTK.c
         Include/UI/GTKWidget.h
-        Include/InitGUID.h)
+        Include/InitGUID.h
+        UI/GTKWidget.c
+        Core/WindowLoop.c
+        Include/Core/WindowLoop.h)
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 target_link_libraries(TraceRayer ${GTK4_LIBRARIES})
