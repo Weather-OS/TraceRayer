@@ -20,47 +20,43 @@
  * THE SOFTWARE.
  */
 
-
-#ifndef TRACERAYER_GTK_H
-#define TRACERAYER_GTK_H
+#ifndef TRACERAYER_GTKWIDGET_H
+#define TRACERAYER_GTKWIDGET_H
 
 #include <gdk/gdk.h>
 
-#include <UI/Window/GTKWindow.h>
 #include <Object.h>
 #include <Types.h>
 
-typedef struct _GTKObject GTKObject;
+typedef struct _GTKWidgetObject GTKWidgetObject;
 
-typedef struct _GTKObjectInterface
+typedef struct _GTKWidgetInterface
 {
     BEGIN_INTERFACE
 
-    IMPLEMENTS_UNKNOWNOBJECT( GTKObject );
-
-    TR_STATUS (*CreateWindow)( IN GTKObject *This, OUT GTKWindowObject **out );
-
+    IMPLEMENTS_UNKNOWNOBJECT( GTKWidgetObject )
+    
     END_INTERFACE
-} GTKObjectInterface;
+} GTKWidgetObjectInterface;
 
-interface _GTKObject
+interface _GTKWidgetObject
 {
-    CONST_VTBL GTKObjectInterface *lpVtbl;
+    CONST_VTBL GTKWidgetObjectInterface *lpVtbl;
 };
 
-struct gtk_object
+struct gtk_widget_object
 {
     // --- Public Members --- //
-    GTKObject GTKObject_iface;
+    GTKWidgetObject GTKWidgetObject_iface;
 
     // --- Private Members --- //
     TRLong ref;
 };
 
-// 71e34ecd-fd1e-4e3c-94fa-d329c7301325
-DEFINE_GUID( GTKObject, 0x71e34ecd, 0xfd1e, 0x4e3c, 0x94, 0xfa, 0xd3, 0x29, 0xc7, 0x30, 0x13, 0x25 );
+// cfe1afb8-34c3-4ba0-9512-b02ef6ada3ef
+DEFINE_GUID( GTKWidgetObject, 0xcfe1afb8, 0x34c3, 0x4ba0, 0x95, 0x12, 0xb0, 0x2e, 0xf6, 0xad, 0xa3, 0xef );
 
 // Constructors
-TR_STATUS new_gtk_object( IN GTKObject **out );
+TR_STATUS new_gtk_widget_object( GTKWidgetObject **out );
 
 #endif

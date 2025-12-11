@@ -20,21 +20,32 @@
  * THE SOFTWARE.
  */
 
-#define INITGUID
+/**
+ *  Module: GTK.c
+ *  Description: Root GTK object to create sub-objects.
+ */
 
 #include <UI/GTK.h>
 
-static struct gtk_object *impl_from_GTKObject( IN GTKObject *iface )
+static struct gtk_object *impl_from_GTKObject( GTKObject *iface )
 {
     return CONTAINING_RECORD( iface, struct gtk_object, GTKObject_iface );
 }
 
 DEFINE_SHALLOW_UNKNOWNOBJECT( GTKObject, gtk_object )
 
-static TR_STATUS gtk_object_CreateWindow( GTKObject *iface, GTKWindowObject *out )
+static TR_STATUS gtk_object_CreateWindow( GTKObject *iface, GTKWindowObject **out )
 {
-    TRACE( "iface %p\n", iface );
-    return T_SUCCESS;
+    TR_STATUS status;
+
+    TRACE( "iface %p, out %p\n", iface, out );
+
+    if ( !out )
+        return T_POINTER;
+
+    status = new_gtk_window_object( out );
+
+    return status;
 }
 
 static GTKObjectInterface gtk_object_interface =
@@ -47,7 +58,7 @@ static GTKObjectInterface gtk_object_interface =
     gtk_object_CreateWindow
 };
 
-TR_STATUS new_gtk_object( GTKObject **out )
+TR_STATUS new_gtk_object( IN GTKObject **out )
 {
     struct gtk_object *impl;
 
@@ -60,6 +71,7 @@ TR_STATUS new_gtk_object( GTKObject **out )
     atomic_init( &impl->ref, 1 );
 
     *out = &impl->GTKObject_iface;
+    TRACE( "created GTKObject %p\n", *out );
 
     return T_SUCCESS;
 }

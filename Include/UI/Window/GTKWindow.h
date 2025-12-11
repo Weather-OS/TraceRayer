@@ -20,47 +20,54 @@
  * THE SOFTWARE.
  */
 
-
-#ifndef TRACERAYER_GTK_H
-#define TRACERAYER_GTK_H
+#ifndef TRACERAYER_GTKWINDOW_H
+#define TRACERAYER_GTKWINDOW_H
 
 #include <gdk/gdk.h>
 
-#include <UI/Window/GTKWindow.h>
 #include <Object.h>
+
+
+#include <UI/GTKWidget.h>
+
 #include <Types.h>
 
-typedef struct _GTKObject GTKObject;
+typedef struct _GTKWindowObject GTKWindowObject;
 
-typedef struct _GTKObjectInterface
+typedef struct _GTKWindowInterface
 {
     BEGIN_INTERFACE
 
-    IMPLEMENTS_UNKNOWNOBJECT( GTKObject );
+    IMPLEMENTS_UNKNOWNOBJECT( GTKWindowObject )
 
-    TR_STATUS (*CreateWindow)( IN GTKObject *This, OUT GTKWindowObject **out );
+    TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out );
+    TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle rect );
 
     END_INTERFACE
-} GTKObjectInterface;
+} GTKWindowObjectInterface;
 
-interface _GTKObject
+interface _GTKWindowObject
 {
-    CONST_VTBL GTKObjectInterface *lpVtbl;
+    CONST_VTBL GTKWindowObjectInterface *lpVtbl;
 };
 
-struct gtk_object
+struct gtk_window_object
 {
     // --- Public Members --- //
-    GTKObject GTKObject_iface;
+    GTKWindowObject GTKWindowObject_iface;
+    GdkRectangle WindowRect;
+
+    // --- Subclasses --- //
+    implements( GTKWidgetObject );
 
     // --- Private Members --- //
     TRLong ref;
 };
 
-// 71e34ecd-fd1e-4e3c-94fa-d329c7301325
-DEFINE_GUID( GTKObject, 0x71e34ecd, 0xfd1e, 0x4e3c, 0x94, 0xfa, 0xd3, 0x29, 0xc7, 0x30, 0x13, 0x25 );
+// 1b731a66-153d-4e54-898c-6d4de5c47e08
+DEFINE_GUID( GTKWindowObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d, 0xe5, 0xc4, 0x7e, 0x08 );
 
 // Constructors
-TR_STATUS new_gtk_object( IN GTKObject **out );
+TR_STATUS new_gtk_window_object( GTKWindowObject **out );
 
 #endif
