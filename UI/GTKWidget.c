@@ -51,7 +51,7 @@ static void gtk_widget_object_setVisibility( GTKWidgetObject *iface, TRBool visi
     gtk_widget_set_visible( impl->Widget, visibility );
 }
 
-static GTKWidgetInterface gtk_widget_object_interface =
+static GTKWidgetInterface gtk_widget_interface =
 {
     /* UnknownObject Methods */
     gtk_widget_object_QueryInterface,
@@ -73,7 +73,7 @@ TR_STATUS new_gtk_widget_object_override_widget( IN GtkWidget *widget, OUT GTKWi
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
 
-    impl->GTKWidgetObject_iface.lpVtbl = &gtk_widget_object_interface;
+    impl->GTKWidgetObject_iface.lpVtbl = &gtk_widget_interface;
     impl->Widget = widget;
     atomic_init( &impl->ref, 1 );
 

@@ -45,11 +45,11 @@ typedef struct _GTKWindowInterface
     void      (*Show)( IN GTKWindowObject *This );
 
     END_INTERFACE
-} GTKWindowObjectInterface;
+} GTKWindowInterface;
 
 interface _GTKWindowObject
 {
-    CONST_VTBL GTKWindowObjectInterface *lpVtbl;
+    CONST_VTBL GTKWindowInterface *lpVtbl;
 };
 
 struct gtk_window_object

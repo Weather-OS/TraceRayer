@@ -58,7 +58,7 @@ static TR_STATUS gtk_object_RunApplication( GTKObject *iface )
     return g_application_run( G_APPLICATION( impl->app ), 0, nullptr );
 }
 
-static GTKInterface gtk_object_interface =
+static GTKInterface gtk_interface =
 {
     /* UnknownObject Methods */
     gtk_object_QueryInterface,
@@ -80,7 +80,7 @@ TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out )
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
 
-    impl->GTKObject_iface.lpVtbl = &gtk_object_interface;
+    impl->GTKObject_iface.lpVtbl = &gtk_interface;
     impl->app = gtk_application_new( appName, G_APPLICATION_DEFAULT_FLAGS );
     atomic_init( &impl->ref, 1 );
 

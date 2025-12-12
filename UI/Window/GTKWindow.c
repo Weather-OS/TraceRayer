@@ -136,7 +136,7 @@ static void gtk_window_object_Show( GTKWindowObject *iface )
     widget->lpVtbl->setVisibility( widget, true );
 }
 
-static GTKWindowObjectInterface gtk_window_object_interface =
+static GTKWindowInterface gtk_window_interface =
 {
     /* UnknownObject Methods */
     gtk_window_object_QueryInterface,
@@ -161,7 +161,7 @@ TR_STATUS new_gtk_window_object( IN GtkApplication *app, IN WindowLoopCallback c
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
 
-    impl->GTKWindowObject_iface.lpVtbl = &gtk_window_object_interface;
+    impl->GTKWindowObject_iface.lpVtbl = &gtk_window_interface;
     impl->callback = callback;
     atomic_init( &impl->ref, 1 );
 
