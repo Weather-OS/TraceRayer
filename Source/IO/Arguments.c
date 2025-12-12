@@ -93,7 +93,7 @@ ParseCommandLineArguments(
                     {
                         if ( (arguments[iterator] + 2)[strlen( Available_Arguments[secondIterator].Name )] == '=' )
                         {
-                            val = strdup( arguments[iterator] + strlen(Available_Arguments[secondIterator].Name) + 3 );
+                            val = arguments[iterator] + strlen(Available_Arguments[secondIterator].Name) + 3;
                             valSize = strlen( val );
                         } else
                         {
@@ -115,7 +115,7 @@ ParseCommandLineArguments(
                                 return T_ERROR;
                             }
                             const auto target = (TRString *)Available_Arguments[secondIterator].Value;
-                            *target = strdup(val);
+                            *target = val;
                             break;
                         }
 
