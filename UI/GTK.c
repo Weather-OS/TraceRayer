@@ -58,7 +58,7 @@ static TR_STATUS gtk_object_RunApplication( GTKObject *iface )
     return g_application_run( G_APPLICATION( impl->app ), 0, nullptr );
 }
 
-static GTKObjectInterface gtk_object_interface =
+static GTKInterface gtk_object_interface =
 {
     /* UnknownObject Methods */
     gtk_object_QueryInterface,
@@ -73,7 +73,7 @@ TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out )
 {
     struct gtk_object *impl;
 
-    TRACE( "out %p\n", out );
+    TRACE( "appName %s, out %p\n", appName, out );
 
     if ( !out ) throw_NullPtrException();
 

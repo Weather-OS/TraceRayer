@@ -31,7 +31,7 @@
 
 typedef struct _GTKObject GTKObject;
 
-typedef struct _GTKObjectInterface
+typedef struct _GTKInterface
 {
     BEGIN_INTERFACE
 
@@ -41,11 +41,11 @@ typedef struct _GTKObjectInterface
     TR_STATUS (*RunApplication)( IN GTKObject *This );
 
     END_INTERFACE
-} GTKObjectInterface;
+} GTKInterface;
 
 interface _GTKObject
 {
-    CONST_VTBL GTKObjectInterface *lpVtbl;
+    CONST_VTBL GTKInterface *lpVtbl;
 };
 
 struct gtk_object
