@@ -23,6 +23,8 @@
 #ifndef TRACERAYER_OBJECT_H
 #define TRACERAYER_OBJECT_H
 
+#include <stdlib.h>
+
 #include <Types.h>
 #include <IO/Logging.h>
 #include <stdatomic.h>
@@ -33,6 +35,7 @@
 #define interface struct
 #define CONST_VTBL
 #define implements(obj) obj *obj##_impl;
+#define delegate(strct)
 
 typedef struct _UnknownObject UnknownObject;
 
@@ -95,4 +98,4 @@ DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 
         return removed;                                                                             \
     }
 
-#endif //TRACERAYER_OBJECT_H
+#endif
