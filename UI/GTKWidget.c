@@ -51,7 +51,7 @@ static void gtk_widget_object_setVisibility( GTKWidgetObject *iface, TRBool visi
     gtk_widget_set_visible( impl->Widget, visibility );
 }
 
-static GTKWidgetObjectInterface gtk_widget_object_interface =
+static GTKWidgetInterface gtk_widget_object_interface =
 {
     /* UnknownObject Methods */
     gtk_widget_object_QueryInterface,

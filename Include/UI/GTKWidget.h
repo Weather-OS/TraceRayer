@@ -41,11 +41,11 @@ typedef struct _GTKWidgetInterface
     void      (*setVisibility)( IN GTKWidgetObject *This, TRBool visibility );
     
     END_INTERFACE
-} GTKWidgetObjectInterface;
+} GTKWidgetInterface;
 
 interface _GTKWidgetObject
 {
-    CONST_VTBL GTKWidgetObjectInterface *lpVtbl;
+    CONST_VTBL GTKWidgetInterface *lpVtbl;
 };
 
 struct gtk_widget_object
