@@ -94,7 +94,13 @@ static TRLong gtk_window_object_Release( GTKWindowObject *iface )
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed );
     atomic_fetch_sub( &impl->ref, 1 );
     if ( !removed )
+    {
+        if ( impl->GTKWidgetObject_impl )
+            impl->GTKWidgetObject_impl->lpVtbl->Release( impl->GTKWidgetObject_impl );
+        if ( impl->windowTitle )
+            free( impl->windowTitle );
         free( impl );
+    }
     return removed;
 }
 
@@ -119,7 +125,7 @@ static TR_STATUS gtk_window_object_setWindowTitle( GTKWindowObject *iface, TRStr
 {
     struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
     TRACE( "iface %p, title %s\n", iface, title );
-    impl->windowTitle = title;
+    impl->windowTitle = strdup(title);
     return T_SUCCESS;
 }
 
@@ -134,6 +140,7 @@ static void gtk_window_object_Show( GTKWindowObject *iface )
     if ( FAILED( status ) ) return;
 
     widget->lpVtbl->setVisibility( widget, true );
+    widget->lpVtbl->Release( widget );
 }
 
 static GTKWindowInterface gtk_window_interface =
