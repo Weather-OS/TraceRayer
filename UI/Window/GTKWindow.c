@@ -39,12 +39,12 @@ static void WindowBuilder( GtkApplication *app, void *user_data )
 
     TRACE( "app %p, user_data %p\n", app, user_data );
 
-    new_gtk_widget_object( gtk_application_window_new( app ), &impl->GTKWidgetObject_impl );
+    new_gtk_widget_object_override_widget( gtk_application_window_new( app ), &impl->GTKWidgetObject_impl );
 
     impl->GTKWidgetObject_impl->lpVtbl->get_Widget( impl->GTKWidgetObject_impl, &windowWidget );
 
     gtk_window_set_default_size( GTK_WINDOW( windowWidget ), impl->WindowRect.width, impl->WindowRect.height );
-    gtk_window_set_title ( GTK_WINDOW( windowWidget ), impl->windowTitle );
+    gtk_window_set_title( GTK_WINDOW( windowWidget ), impl->windowTitle );
 
     impl->callback( user_data ); // <-- Callback proc
 }
@@ -91,7 +91,7 @@ static TRLong gtk_window_object_Release( GTKWindowObject *iface )
 {
     struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
     const TRLong removed = atomic_load( &impl->ref ) - 1;
-    TRACE( "iface %p decreasomg ref count to %ld\n", iface, removed );
+    TRACE( "iface %p decreasing ref count to %ld\n", iface, removed );
     atomic_fetch_sub( &impl->ref, 1 );
     if ( !removed )
         free( impl );
@@ -154,7 +154,7 @@ TR_STATUS new_gtk_window_object( IN GtkApplication *app, IN WindowLoopCallback c
     TR_STATUS status;
     struct gtk_window_object *impl;
 
-    TRACE( "out %p\n", out );
+    TRACE( "app %p, callback %p, out %p\n", app, callback, out );
 
     if ( !out || !app ) throw_NullPtrException();
 
