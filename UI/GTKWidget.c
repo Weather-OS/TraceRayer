@@ -62,11 +62,11 @@ static GTKWidgetObjectInterface gtk_widget_object_interface =
     gtk_widget_object_setVisibility
 };
 
-TR_STATUS new_gtk_widget_object( IN GtkWidget *widget, OUT GTKWidgetObject **out )
+TR_STATUS new_gtk_widget_object_override_widget( IN GtkWidget *widget, OUT GTKWidgetObject **out )
 {
     struct gtk_widget_object *impl;
 
-    TRACE( "out %p\n", out );
+    TRACE( "widget %p, out %p\n", widget, out );
 
     if ( !out ) throw_NullPtrException();
 

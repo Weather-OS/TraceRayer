@@ -62,6 +62,6 @@ struct gtk_widget_object
 DEFINE_GUID( GTKWidgetObject, 0xcfe1afb8, 0x34c3, 0x4ba0, 0x95, 0x12, 0xb0, 0x2e, 0xf6, 0xad, 0xa3, 0xef );
 
 // Constructors
-TR_STATUS new_gtk_widget_object( IN GtkWidget *widget, OUT GTKWidgetObject **out );
+TR_STATUS new_gtk_widget_object_override_widget( IN GtkWidget *widget, OUT GTKWidgetObject **out );
 
 #endif
