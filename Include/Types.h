@@ -37,6 +37,8 @@ typedef char TRChar;
 typedef char *TRString;
 typedef const char *TRCString;
 typedef unsigned char TRBool;
+typedef unsigned short TRUShort;
+typedef short TRShort;
 typedef int TRInt;
 typedef unsigned int TRUInt;
 typedef long TRLong;
@@ -59,8 +61,51 @@ typedef enum _TR_STATUS
     T_HANDLE = 38,
     T_POINTER = 125,
     T_NOTIMPL = 213,
-    T_NOINIT = 214
+    T_NOINIT = 214,
+    T_ILLEGAL_METHOD_CALL = 310,
+    T_ILLEGAL_DELEGATE_ASSIGNMENT = 311,
+    T_ILLEGAL_STATE_CHANGE = 332,
 } TR_STATUS;
+
+typedef enum _TR_VariantType
+{
+    VT_EMPTY,
+    VT_CHAR,
+    VT_STRING,
+    VT_BOOL,
+    VT_UI8,
+    VT_UI16,
+    VT_UI32,
+    VT_UI64,
+    VT_I8,
+    VT_I16,
+    VT_I32,
+    VT_I64,
+    VT_PUNKVAL,
+    VT_PPUNKVAL
+} VariantType;
+
+typedef struct _TR_PropVariant
+{
+    VariantType type;
+    union
+    {
+        TRChar charVal;
+        TRString stringVal;
+        TRBool boolVal;
+        TRUShort ushortVal;
+        TRShort shortVal;
+        TRUInt uintVal;
+        TRInt intVal;
+        TRLong longVal;
+        TRULong ulongVal;
+        void *punkVal;
+        void **ppunkVal;
+    };
+} PropVariant;
+
+#define PropVariantInit(p) \
+    memset((p), 0, sizeof(PropVariant))
 
 #define FAILED( status ) \
     (status != T_SUCCESS)
