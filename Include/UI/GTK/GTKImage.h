@@ -20,23 +20,49 @@
  * THE SOFTWARE.
  */
 
-/**
- *  Pre-Initializes all class GUIDs defined here
- */
+#ifndef TRACERAYER_GTKIMAGE_H
+#define TRACERAYER_GTKIMAGE_H
 
-#ifndef TRACERAYER_INITGUID_H
-#define TRACERAYER_INITGUID_H
+#include <gdk/gdk.h>
 
-#define INITGUID
-#include <Object.h>                     /** IID_UnknownObject **/
-#include <UI/GTK/GTK.h>                 /** IID_GTKObject **/
-#include <UI/GTK/GTKWidget.h>           /** IID_GTKWidgetObject **/
-#include <UI/GTK/GTKWindow.h>           /** IID_GTKWindowObject **/
-#include <UI/GTK/GTKWindowHandle.h>     /** IID_GTKWindowHandleObject **/
-#include <UI/GTK/GTKDrawingArea.h>      /** IID_GTKDrawingAreaObject **/
-#include <UI/GTK/GTKImage.h>            /** IID_GTKImageObject **/
-#include <Core/Async/AsyncOperation.h>  /** IID_AsyncOperationObject **/
-#include <Core/Async/AsyncInfo.h>       /** IID_AsyncInfoObject **/
-#include <Core/Async/AsyncState.h>      /** IID_AsyncStateObject **/
+#include <IO/Path.h>
+#include <Object.h>
+#include <Types.h>
+
+#include <UI/GTK/GTKWidget.h>
+
+typedef struct _GTKImageObject GTKImageObject;
+
+typedef struct _GTKImageInterface
+{
+    BEGIN_INTERFACE
+
+    IMPLEMENTS_UNKNOWNOBJECT( GTKImageObject )
+    
+    END_INTERFACE
+} GTKImageInterface;
+
+interface _GTKImageObject
+{
+    CONST_VTBL GTKImageInterface *lpVtbl;
+};
+
+struct gtk_image_object
+{
+    // --- Public Members --- //
+    GTKImageObject GTKImageObject_iface;
+
+    // --- Subclasses --- //
+    implements( GTKWidgetObject );
+
+    // --- Private Members --- //
+    TRLong ref;
+};
+
+// af332f42-a0ec-4ee2-b882-d975926c15f0
+DEFINE_GUID( GTKImageObject, 0xaf332f42, 0xa0ec, 0x4ee2, 0xb8, 0x82, 0xd9, 0x75, 0x92, 0x6c, 0x15, 0xf0 );
+
+// Constructors
+TR_STATUS new_gtk_image_object_override_path( IN TRPath *imagePath, OUT GTKImageObject **out );
 
 #endif

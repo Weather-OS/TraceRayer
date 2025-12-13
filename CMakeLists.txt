@@ -21,15 +21,17 @@ add_executable(TraceRayer main.c
         Source/IO/Arguments.c
         Source/IO/Logging.c
         Source/IO/Path.c
+        Source/IO/FetchResources.c
         Source/UI/GTK/GTKWindow.c
         Source/UI/GTK/GTK.c
         Source/UI/GTK/GTKWidget.c
+        Source/UI/GTK/GTKDrawingArea.c
+        Source/UI/GTK/GTKWindowHandle.c
+        Source/UI/GTK/GTKImage.c
         Source/Core/ActivationLoop.c
         Source/Core/Async/AsyncOperation.c
         Source/Core/Async/AsyncState.c
         Source/Core/Async/AsyncInfo.c
-        Source/UI/GTK/GTKDrawingArea.c
-        Source/UI/GTK/GTKWindowHandle.c
 )
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)

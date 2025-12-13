@@ -20,10 +20,11 @@
  * THE SOFTWARE.
  */
 
-#include <IO/Arguments.h>
 #include <Statics.h>
-
+#include <IO/Arguments.h>
+#include <IO/FetchResources.h>
 #include <UI/GTK/GTKWindowHandle.h>
+#include <UI/GTK/GTKImage.h>
 
 #include <Core/ActivationLoop.h>
 
@@ -42,15 +43,33 @@ static void CloseEvent( IN UnknownObject *invoker, IN void *user_data )
 void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
 {
     TRULong token;
+    TRPath *resourcesPath;
+    TRPath *launcherImage;
     TRULong *passedToken = malloc( sizeof(TRULong) );
     TR_STATUS status;
+
     GTKObject *gtk_object = (GTKObject *)invoker;
+    GTKImageObject *image_object;
     GTKWidgetObject *childWidget;
     GTKWindowObject *window;
     GTKWindowHandleObject *window_handle;
-    GdkRectangle rect = { 0, 0, 500, 900 };
+    GdkRectangle rect = { 0, 0, 600, 450 };
 
     TRACE("Reached Here! GPUName is %s\n", GlobalArgumentsDefault.GPUName);
+
+    status = FetchResources( &resourcesPath );
+    if ( FAILED( status ) )
+    {
+        ERROR( "FetchResources failed with %ld\n", status );
+        return;
+    } else
+        INFO( "Using resource path %s\n", resourcesPath->Location );
+
+    status = FetchSubpath( resourcesPath, "launch.jpg", false, T_READ, &launcherImage );
+    if ( FAILED( status ) ) return;
+
+    status = new_gtk_image_object_override_path( launcherImage, &image_object );
+    if ( FAILED( status ) ) return;
 
     status = gtk_object->lpVtbl->CreateWindow( gtk_object, &window );
     if ( FAILED( status ) ) return;
