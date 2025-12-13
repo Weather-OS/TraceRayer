@@ -31,7 +31,7 @@ typedef enum _TR_AccessType
     T_WRITE = 1,
     T_READWRITE = 2,
     T_EXECUTE = 3,
-} TR_AccessType;
+} AccessType;
 
 typedef struct _TR_Path
 {
@@ -41,10 +41,10 @@ typedef struct _TR_Path
     TRString Name;
     TRString Location;
     TRBool IsDirectory;
-    TR_AccessType AccessType;
+    AccessType AccessType;
     FILE *FileHandle;
 } TRPath;
 
-TR_STATUS FetchPath( IN TRString path, IN TRBool create, IN TR_AccessType accessType, OUT TRPath **pathObject );
+TR_STATUS FetchPath( IN TRString path, IN TRBool create, IN AccessType accessType, OUT TRPath **pathObject );
 
 #endif //TRACERAYER_PATH_H

@@ -43,7 +43,7 @@ TR_STATUS
 FetchPath(
     IN TRString path,
     IN TRBool create,
-    IN TR_AccessType accessType,
+    IN AccessType accessType,
     OUT TRPath **pathObject
 ) {
     TRPath *newPath;
@@ -146,8 +146,8 @@ FetchPath(
 
 #endif
 
-    newPath->Location = (TRString)malloc( (strlen( path ) + 1) * sizeof( TRChar ) );
-    strcpy( newPath->Location, path );
+    newPath->Location = (TRString)malloc( PATH_MAX * sizeof( TRChar ) );
+    realpath( path, newPath->Location );
     name = strrchr( path, '/' ) + 1;
     newPath->Name = (TRString)malloc( (strlen( name ) + 1) * sizeof( TRString ) );
     strcpy( newPath->Name, name );
