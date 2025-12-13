@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Weather
+* Copyright (c) 2025 Weather
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,48 @@
  * THE SOFTWARE.
  */
 
-/**
- *  Pre-Initializes all class GUIDs defined here
- */
+#ifndef TRACERAYER_GTKDRAWINGAREA_H
+#define TRACERAYER_GTKDRAWINGAREA_H
 
-#ifndef TRACERAYER_INITGUID_H
-#define TRACERAYER_INITGUID_H
+#include <gtk/gtk.h>
 
-#define INITGUID
-#include <Object.h>                     /** IID_UnknownObject **/
-#include <UI/GTK/GTK.h>                 /** IID_GTKObject **/
-#include <UI/GTK/GTKWidget.h>           /** IID_GTKWidgetObject **/
-#include <UI/GTK/GTKWindow.h>           /** IID_GTKWindowObject **/
-#include <UI/GTK/GTKDrawingArea.h>      /** IID_GTKDrawingAreaObject **/
-#include <Core/Async/AsyncOperation.h>  /** IID_AsyncOperationObject **/
-#include <Core/Async/AsyncInfo.h>       /** IID_AsyncInfoObject **/
-#include <Core/Async/AsyncState.h>      /** IID_AsyncStateObject **/
+#include <Object.h>
+#include <Types.h>
+
+#include <UI/GTK/GTKWidget.h>
+
+typedef struct _GTKDrawingAreaObject GTKDrawingAreaObject;
+
+typedef struct _GTKDrawingAreaInterface
+{
+    BEGIN_INTERFACE
+
+    IMPLEMENTS_UNKNOWNOBJECT( GTKDrawingAreaObject )
+
+    END_INTERFACE
+} GTKDrawingAreaInterface;
+
+interface _GTKDrawingAreaObject
+{
+    CONST_VTBL GTKDrawingAreaInterface *lpVtbl;
+};
+
+struct gtk_drawing_area_object
+{
+    // --- Public Members --- //
+    GTKDrawingAreaObject GTKDrawingAreaObject_iface;
+
+    // --- Subclasses --- //
+    implements( GTKWidgetObject )
+
+    // --- Private Members --- //
+    TRLong ref;
+};
+
+// fa685c6a-dc44-4e0e-a4fb-4d5457d859a1
+DEFINE_GUID( GTKDrawingAreaObject, 0xfa685c6a, 0xdc44, 0x4e0e, 0xa4, 0xfb, 0x4d, 0x54, 0x57, 0xd8, 0x59, 0xa1 );
+
+// Constructors
+TR_STATUS new_gtk_drawing_area_object( OUT GTKDrawingAreaObject **out );
 
 #endif

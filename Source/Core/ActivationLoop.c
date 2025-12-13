@@ -23,13 +23,18 @@
 #include <IO/Arguments.h>
 #include <Statics.h>
 
+#include <UI/GTK/GTKDrawingArea.h>
+
 #include <Core/ActivationLoop.h>
 
 static void CloseEvent( IN UnknownObject *invoker, IN void *user_data )
 {
+    TR_STATUS status;
     TRULong receivedToken = *(TRULong *)user_data;
-    free( user_data );
     GTKWindowObject *gtk_window_object = (GTKWindowObject *)invoker;
+
+    free( user_data );
+
     gtk_window_object->lpVtbl->eventremove_OnDelete( gtk_window_object, receivedToken );
     gtk_window_object->lpVtbl->Release( gtk_window_object ); // <-- Release window on close
 }
@@ -40,7 +45,9 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
     TRULong *passedToken = malloc( sizeof(TRULong) );
     TR_STATUS status;
     GTKObject *gtk_object = (GTKObject *)invoker;
+    GTKWidgetObject *childWidget;
     GTKWindowObject *window;
+    GTKDrawingAreaObject *drawing_area;
     GdkRectangle rect = { 0, 0, 500, 900 };
 
     TRACE("Reached Here! GPUName is %s\n", GlobalArgumentsDefault.GPUName);
@@ -55,6 +62,19 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
     if ( FAILED( status ) ) return;
 
     window->lpVtbl->Show( window );
+
+    status = new_gtk_drawing_area_object( &drawing_area );
+    if ( FAILED( status ) ) return;
+
+    status = drawing_area->lpVtbl->QueryInterface( drawing_area, IID_GTKWidgetObject, (void **)&childWidget );
+    if ( FAILED( status ) ) return;
+
+    drawing_area->lpVtbl->Release( drawing_area ); // TODO: Do not release this here. Do something with the area.
+
+    status = window->lpVtbl->set_ChildWidget( window, childWidget );
+    if ( FAILED( status ) ) return;
+
+    childWidget->lpVtbl->Release( childWidget );
 
     status = window->lpVtbl->eventadd_OnDelete( window, CloseEvent, passedToken, &token );
     if ( FAILED( status ) ) return;
