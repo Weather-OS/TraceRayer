@@ -20,22 +20,48 @@
  * THE SOFTWARE.
  */
 
-/**
- *  Pre-Initializes all class GUIDs defined here
- */
+#ifndef TRACERAYER_GTKWINDOWHANDLE_H
+#define TRACERAYER_GTKWINDOWHANDLE_H
 
-#ifndef TRACERAYER_INITGUID_H
-#define TRACERAYER_INITGUID_H
+#include <gdk/gdk.h>
 
-#define INITGUID
-#include <Object.h>                     /** IID_UnknownObject **/
-#include <UI/GTK/GTK.h>                 /** IID_GTKObject **/
-#include <UI/GTK/GTKWidget.h>           /** IID_GTKWidgetObject **/
-#include <UI/GTK/GTKWindow.h>           /** IID_GTKWindowObject **/
-#include <UI/GTK/GTKWindowHandle.h>     /** IID_GTKWindowHandleObject **/
-#include <UI/GTK/GTKDrawingArea.h>      /** IID_GTKDrawingAreaObject **/
-#include <Core/Async/AsyncOperation.h>  /** IID_AsyncOperationObject **/
-#include <Core/Async/AsyncInfo.h>       /** IID_AsyncInfoObject **/
-#include <Core/Async/AsyncState.h>      /** IID_AsyncStateObject **/
+#include <Object.h>
+#include <Types.h>
+
+#include <UI/GTK/GTKWidget.h>
+
+typedef struct _GTKWindowHandleObject GTKWindowHandleObject;
+
+typedef struct _GTKWindowHandleInterface
+{
+    BEGIN_INTERFACE
+
+    IMPLEMENTS_UNKNOWNOBJECT( GTKWindowHandleObject )
+
+    END_INTERFACE
+} GTKWindowHandleInterface;
+
+interface _GTKWindowHandleObject
+{
+    CONST_VTBL GTKWindowHandleInterface *lpVtbl;
+};
+
+struct gtk_window_handle_object
+{
+    // --- Public Members --- //
+    GTKWindowHandleObject GTKWindowHandleObject_iface;
+
+    // --- Subclasses --- //
+    implements( GTKWidgetObject );
+
+    // --- Private Members --- //
+    TRLong ref;
+};
+
+// 1b731a66-153d-4e54-898c-6d4de5c47e08
+DEFINE_GUID( GTKWindowHandleObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d, 0xe5, 0xc4, 0x7e, 0x08 );
+
+// Constructors
+TR_STATUS new_gtk_window_handle_object( OUT GTKWindowHandleObject **out );
 
 #endif

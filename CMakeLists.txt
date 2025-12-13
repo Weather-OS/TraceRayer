@@ -13,6 +13,10 @@ pkg_check_modules(UUID REQUIRED uuid)
 include_directories(${UUID_INCLUDE_DIRS})
 link_directories(${UUID_LIBRARY_DIRS})
 
+pkg_check_modules(ADWAITA REQUIRED libadwaita-1)
+include_directories(${ADWAITA_INCLUDE_DIRS})
+link_directories(${ADWAITA_LIBRARY_DIRS})
+
 add_executable(TraceRayer main.c
         Source/IO/Arguments.c
         Source/IO/Logging.c
@@ -25,8 +29,10 @@ add_executable(TraceRayer main.c
         Source/Core/Async/AsyncState.c
         Source/Core/Async/AsyncInfo.c
         Source/UI/GTK/GTKDrawingArea.c
+        Source/UI/GTK/GTKWindowHandle.c
 )
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 target_link_libraries(TraceRayer ${GTK4_LIBRARIES})
 target_link_libraries(TraceRayer ${UUID_LIBRARIES})
+target_link_libraries(TraceRayer ${ADWAITA_LIBRARIES})

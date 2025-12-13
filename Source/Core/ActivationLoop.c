@@ -23,7 +23,7 @@
 #include <IO/Arguments.h>
 #include <Statics.h>
 
-#include <UI/GTK/GTKDrawingArea.h>
+#include <UI/GTK/GTKWindowHandle.h>
 
 #include <Core/ActivationLoop.h>
 
@@ -47,7 +47,7 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
     GTKObject *gtk_object = (GTKObject *)invoker;
     GTKWidgetObject *childWidget;
     GTKWindowObject *window;
-    GTKDrawingAreaObject *drawing_area;
+    GTKWindowHandleObject *window_handle;
     GdkRectangle rect = { 0, 0, 500, 900 };
 
     TRACE("Reached Here! GPUName is %s\n", GlobalArgumentsDefault.GPUName);
@@ -63,13 +63,13 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
 
     window->lpVtbl->Show( window );
 
-    status = new_gtk_drawing_area_object( &drawing_area );
+    status = new_gtk_window_handle_object( &window_handle );
     if ( FAILED( status ) ) return;
 
-    status = drawing_area->lpVtbl->QueryInterface( drawing_area, IID_GTKWidgetObject, (void **)&childWidget );
+    status = window_handle->lpVtbl->QueryInterface( window_handle, IID_GTKWidgetObject, (void **)&childWidget );
     if ( FAILED( status ) ) return;
 
-    drawing_area->lpVtbl->Release( drawing_area ); // TODO: Do not release this here. Do something with the area.
+    window_handle->lpVtbl->Release( window_handle ); // TODO: Do not release this here. Do something with the area.
 
     status = window->lpVtbl->set_ChildWidget( window, childWidget );
     if ( FAILED( status ) ) return;
