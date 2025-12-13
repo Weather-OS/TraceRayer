@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 #include <string.h>
 
+#include "IO/Logging.h"
+
 #ifdef _WIN32
 #include <WinDef.h>
 #else
@@ -50,8 +52,7 @@ FetchPath(
     TRString name;
     TRInt acs = 0;
 
-    if ( !path || *path == '\0' )
-        return T_INVALIDARG;
+    if ( !path || *path == '\0' || !pathObject ) throw_NullPtrException();
 
     *pathObject = nullptr;
 
@@ -181,4 +182,28 @@ FetchPath(
     *pathObject = newPath;
 
     return T_SUCCESS;
+}
+
+TR_STATUS
+FetchSubpath(
+    IN TRPath *pathObject,
+    IN TRString name,
+    IN TRBool create,
+    IN AccessType accessType,
+    OUT TRPath **outPath
+) {
+    TR_STATUS status;
+    TRString newPath;
+    if ( !pathObject || !name || !outPath ) throw_NullPtrException();
+
+    if ( !pathObject->IsDirectory )
+        return T_ILLEGAL_METHOD_CALL;
+
+    newPath = (TRString)malloc( PATH_MAX * sizeof( TRChar ) );
+    snprintf( newPath, PATH_MAX, "%s/%s", pathObject->Location, name );
+
+    status = FetchPath( newPath, create, accessType, outPath );
+    free( newPath );
+
+    return status;
 }
