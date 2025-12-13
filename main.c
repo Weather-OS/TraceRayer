@@ -54,14 +54,13 @@ int main( const int argc, char **argv )
     if ( FAILED( status ) ) return status;
 
     TRULong activationToken;
-    GTKWindowObject *createdWindowObject;
     GTKObject *obj;
     AsyncOperationObject *operation;
 
     status = new_gtk_object( GTK_APPNAME, &obj );
     if ( FAILED( status ) ) return status;
 
-    status = obj->lpVtbl->eventadd_OnActivation( obj, ActivationLoop, &createdWindowObject, &activationToken );
+    status = obj->lpVtbl->eventadd_OnActivation( obj, ActivationLoop, nullptr, &activationToken );
     if ( FAILED( status ) ) return status;
 
     status = new_async_operation_object_override_callback( (UnknownObject *)obj, nullptr, async_test, &operation );
@@ -70,9 +69,10 @@ int main( const int argc, char **argv )
     status = obj->lpVtbl->RunApplication( obj );
     if ( FAILED( status ) ) return status;
 
-    obj->lpVtbl->Release( obj );
+    status = obj->lpVtbl->eventremove_OnActivation( obj, activationToken );
+    if ( FAILED( status ) ) return status;
 
-    createdWindowObject->lpVtbl->Release( createdWindowObject );
+    obj->lpVtbl->Release( obj );
 
     operation->lpVtbl->Release( operation );
 

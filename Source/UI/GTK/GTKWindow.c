@@ -32,6 +32,37 @@ static struct gtk_window_object *impl_from_GTKWindowObject( GTKWindowObject *ifa
     return CONTAINING_RECORD( iface, struct gtk_window_object, GTKWindowObject_iface );
 }
 
+static gboolean DeleteCallback( GtkWidget *widget, void *user_data )
+{
+    GSList *snapshot = nullptr;
+    GSList *handlerList;
+    SignalHandler *handler;
+    const auto window = (GTKWindowObject *)user_data;
+
+    struct gtk_window_object *impl = impl_from_GTKWindowObject( window );
+
+    TRACE( "widget %p, user_data %p\n", widget, user_data );
+
+    g_mutex_lock( &impl->OnDelete_mutex );
+    if ( impl->OnDelete_events )
+        snapshot = g_slist_copy( impl->OnDelete_events );
+    g_mutex_unlock( &impl->OnDelete_mutex );
+
+    for ( handlerList = snapshot; handlerList; handlerList = g_slist_next( handlerList ) )
+    {
+        handler = (SignalHandler *)handlerList->data;
+        // guard against being null
+        if ( handler && handler->callback )
+        {
+            handler->callback( (UnknownObject *)window, handler->user_data );
+        }
+    }
+
+    g_slist_free( snapshot );
+
+    return FALSE;
+}
+
 static TR_STATUS gtk_window_object_QueryInterface( GTKWindowObject *iface, const TRUUID uuid, void **out )
 {
     const struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
@@ -151,6 +182,72 @@ static void gtk_window_object_Show( GTKWindowObject *iface )
     widget->lpVtbl->Release( widget );
 }
 
+static TR_STATUS gtk_window_object_eventadd_OnDelete( GTKWindowObject *iface, SignalCallback callback, void *context, TRULong *token )
+{
+    SignalHandler *handler;
+
+    struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
+
+    TRACE( "iface %p, callback %p, context %p, token %p\n", iface, callback, context, token );
+
+    g_mutex_lock( &impl->OnDelete_mutex );
+    handler = g_new0( SignalHandler, 1 );
+    if ( !handler )
+    {
+        g_mutex_unlock( &impl->OnDelete_mutex );
+        return T_OUTOFMEMORY;
+    }
+    handler->callback = callback;
+    handler->id = impl->OnDelete_next++;
+    handler->user_data = context;
+    impl->OnDelete_events = g_slist_prepend( impl->OnDelete_events, handler );
+    if ( !impl->OnDelete_events )
+    {
+        g_mutex_unlock( &impl->OnDelete_mutex );
+        g_free( handler );
+        return T_OUTOFMEMORY;
+    }
+    g_mutex_unlock( &impl->OnDelete_mutex );
+
+    *token = handler->id;
+
+    return T_SUCCESS;
+}
+
+static TR_STATUS gtk_window_object_eventremove_OnDelete( GTKWindowObject *iface, TRULong token )
+{
+    GSList *handlerList;
+    SignalHandler *found = nullptr;
+    SignalHandler *current;
+
+    struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
+
+    TRACE( "iface %p, token %ld\n", iface, token );
+
+    g_mutex_lock( &impl->OnDelete_mutex );
+    for ( handlerList = impl->OnDelete_events; handlerList; handlerList = g_slist_next( handlerList ) )
+    {
+        current = (SignalHandler *)handlerList->data;
+        if ( current->id == token )
+        {
+            found = current;
+            break;
+        }
+    }
+    if ( !found )
+    {
+        g_mutex_unlock( &impl->OnDelete_mutex );
+        return T_NOINIT;
+    }
+
+    impl->OnDelete_events = g_slist_remove( impl->OnDelete_events, found );
+    g_mutex_unlock( &impl->OnDelete_mutex );
+
+    g_free( found );
+
+    return T_SUCCESS;
+}
+
 static GTKWindowInterface gtk_window_interface =
 {
     /* UnknownObject Methods */
@@ -161,12 +258,15 @@ static GTKWindowInterface gtk_window_interface =
     gtk_window_object_get_WindowRect,
     gtk_window_object_set_WindowRect,
     gtk_window_object_setWindowTitle,
-    gtk_window_object_Show
+    gtk_window_object_Show,
+    gtk_window_object_eventadd_OnDelete,
+    gtk_window_object_eventremove_OnDelete
 };
 
 TR_STATUS new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out )
 {
     TR_STATUS status;
+    GtkWidget *window;
     struct gtk_window_object *impl;
 
     TRACE( "app %p, out %p\n", app, out );
@@ -179,9 +279,12 @@ TR_STATUS new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **o
     impl->GTKWindowObject_iface.lpVtbl = &gtk_window_interface;
     atomic_init( &impl->ref, 1 );
 
-    new_gtk_widget_object_override_widget( gtk_application_window_new( app ), &impl->GTKWidgetObject_impl );
+    window = gtk_application_window_new( app );
+    new_gtk_widget_object_override_widget( window, &impl->GTKWidgetObject_impl );
 
     *out = &impl->GTKWindowObject_iface;
+
+    g_signal_connect( window, "close-request", G_CALLBACK( DeleteCallback ), *out );
 
     TRACE( "created GTKWindowObject %p\n", *out );
 

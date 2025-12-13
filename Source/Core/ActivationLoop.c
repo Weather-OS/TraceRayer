@@ -25,8 +25,19 @@
 
 #include <Core/ActivationLoop.h>
 
+static void CloseEvent( IN UnknownObject *invoker, IN void *user_data )
+{
+    TRULong receivedToken = *(TRULong *)user_data;
+    free( user_data );
+    GTKWindowObject *gtk_window_object = (GTKWindowObject *)invoker;
+    gtk_window_object->lpVtbl->eventremove_OnDelete( gtk_window_object, receivedToken );
+    gtk_window_object->lpVtbl->Release( gtk_window_object ); // <-- Release window on close
+}
+
 void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
 {
+    TRULong token;
+    TRULong *passedToken = malloc( sizeof(TRULong) );
     TR_STATUS status;
     GTKObject *gtk_object = (GTKObject *)invoker;
     GTKWindowObject *window;
@@ -45,5 +56,8 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
 
     window->lpVtbl->Show( window );
 
-    *(void **)user_data = window;
+    status = window->lpVtbl->eventadd_OnDelete( window, CloseEvent, passedToken, &token );
+    if ( FAILED( status ) ) return;
+
+    *passedToken = token;
 }
