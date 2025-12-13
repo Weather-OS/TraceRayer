@@ -20,48 +20,58 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_GTKWIDGET_H
-#define TRACERAYER_GTKWIDGET_H
+#ifndef TRACERAYER_GTKWINDOW_H
+#define TRACERAYER_GTKWINDOW_H
 
 #include <gdk/gdk.h>
-#include <gtk/gtk.h>
 
 #include <Object.h>
 #include <Types.h>
 
-typedef struct _GTKWidgetObject GTKWidgetObject;
+#include <UI/GTK/GTKWidget.h>
 
-typedef struct _GTKWidgetInterface
+
+typedef struct _GTKWindowObject GTKWindowObject;
+
+typedef void (*WindowLoopCallback)( IN GTKWindowObject *This );
+
+typedef struct _GTKWindowInterface
 {
     BEGIN_INTERFACE
 
-    IMPLEMENTS_UNKNOWNOBJECT( GTKWidgetObject )
+    IMPLEMENTS_UNKNOWNOBJECT( GTKWindowObject )
 
-    TR_STATUS (*get_Widget)( IN GTKWidgetObject *This, OUT GtkWidget **out );
-    void      (*setVisibility)( IN GTKWidgetObject *This, TRBool visibility );
-    
+    TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out ); // getter
+    TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, IN GdkRectangle rect ); // setter
+    TR_STATUS (*setWindowTitle)( IN GTKWindowObject *This, IN TRString title );
+    void      (*Show)( IN GTKWindowObject *This );
+
     END_INTERFACE
-} GTKWidgetInterface;
+} GTKWindowInterface;
 
-interface _GTKWidgetObject
+interface _GTKWindowObject
 {
-    CONST_VTBL GTKWidgetInterface *lpVtbl;
+    CONST_VTBL GTKWindowInterface *lpVtbl;
 };
 
-struct gtk_widget_object
+struct gtk_window_object
 {
     // --- Public Members --- //
-    GTKWidgetObject GTKWidgetObject_iface;
-    GtkWidget *Widget;
+    GTKWindowObject GTKWindowObject_iface;
+    GdkRectangle WindowRect;
+
+    // --- Subclasses --- //
+    implements( GTKWidgetObject );
 
     // --- Private Members --- //
+    WindowLoopCallback callback;
     TRLong ref;
 };
 
-// cfe1afb8-34c3-4ba0-9512-b02ef6ada3ef
-DEFINE_GUID( GTKWidgetObject, 0xcfe1afb8, 0x34c3, 0x4ba0, 0x95, 0x12, 0xb0, 0x2e, 0xf6, 0xad, 0xa3, 0xef );
+// 1b731a66-153d-4e54-898c-6d4de5c47e08
+DEFINE_GUID( GTKWindowObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d, 0xe5, 0xc4, 0x7e, 0x08 );
 
 // Constructors
-TR_STATUS new_gtk_widget_object_override_widget( IN GtkWidget *widget, OUT GTKWidgetObject **out );
+TR_STATUS new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out );
 
 #endif

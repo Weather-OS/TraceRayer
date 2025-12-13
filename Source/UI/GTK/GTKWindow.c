@@ -25,28 +25,11 @@
  *  Description: Creating a GTK Window Object
  */
 
-#include <UI/GTKWindow.h>
+#include <UI/GTK/GTKWindow.h>
 
 static struct gtk_window_object *impl_from_GTKWindowObject( GTKWindowObject *iface )
 {
     return CONTAINING_RECORD( iface, struct gtk_window_object, GTKWindowObject_iface );
-}
-
-static void WindowBuilder( GtkApplication *app, void *user_data )
-{
-    GtkWidget *windowWidget;
-    struct gtk_window_object *impl = impl_from_GTKWindowObject( (GTKWindowObject *)user_data );
-
-    TRACE( "app %p, user_data %p\n", app, user_data );
-
-    new_gtk_widget_object_override_widget( gtk_application_window_new( app ), &impl->GTKWidgetObject_impl );
-
-    impl->GTKWidgetObject_impl->lpVtbl->get_Widget( impl->GTKWidgetObject_impl, &windowWidget );
-
-    gtk_window_set_default_size( GTK_WINDOW( windowWidget ), impl->WindowRect.width, impl->WindowRect.height );
-    gtk_window_set_title( GTK_WINDOW( windowWidget ), impl->windowTitle );
-
-    impl->callback( user_data ); // <-- Callback proc
 }
 
 static TR_STATUS gtk_window_object_QueryInterface( GTKWindowObject *iface, const TRUUID uuid, void **out )
@@ -97,8 +80,6 @@ static TRLong gtk_window_object_Release( GTKWindowObject *iface )
     {
         if ( impl->GTKWidgetObject_impl )
             impl->GTKWidgetObject_impl->lpVtbl->Release( impl->GTKWidgetObject_impl );
-        if ( impl->windowTitle )
-            free( impl->windowTitle );
         free( impl );
     }
     return removed;
@@ -115,17 +96,44 @@ static TR_STATUS gtk_window_object_get_WindowRect( GTKWindowObject *iface, GdkRe
 
 static TR_STATUS gtk_window_object_set_WindowRect( GTKWindowObject *iface, GdkRectangle rect )
 {
+    TR_STATUS status;
+    GtkWidget *window;
+    GTKWidgetObject *widget;
+
     struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
+
     TRACE( "iface %p, GdkRectangle %p\n", iface, &rect );
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widget );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &window );
+    if ( FAILED( status ) ) return status;
+
+    gtk_window_set_default_size( GTK_WINDOW( window ), rect.width, rect.height );
+
     impl->WindowRect = rect;
+
+    widget->lpVtbl->Release( widget );
     return T_SUCCESS;
 }
 
 static TR_STATUS gtk_window_object_setWindowTitle( GTKWindowObject *iface, TRString title )
 {
-    struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
+    TR_STATUS status;
+    GtkWidget *window;
+    GTKWidgetObject *widget;
+
     TRACE( "iface %p, title %s\n", iface, title );
-    impl->windowTitle = strdup(title);
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widget );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &window );
+    if ( FAILED( status ) ) return status;
+    gtk_window_set_title( GTK_WINDOW( window ), title );
+
+    widget->lpVtbl->Release( widget );
     return T_SUCCESS;
 }
 
@@ -156,12 +164,12 @@ static GTKWindowInterface gtk_window_interface =
     gtk_window_object_Show
 };
 
-TR_STATUS new_gtk_window_object( IN GtkApplication *app, IN WindowLoopCallback callback, OUT GTKWindowObject **out )
+TR_STATUS new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out )
 {
     TR_STATUS status;
     struct gtk_window_object *impl;
 
-    TRACE( "app %p, callback %p, out %p\n", app, callback, out );
+    TRACE( "app %p, out %p\n", app, out );
 
     if ( !out || !app ) throw_NullPtrException();
 
@@ -169,12 +177,11 @@ TR_STATUS new_gtk_window_object( IN GtkApplication *app, IN WindowLoopCallback c
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
 
     impl->GTKWindowObject_iface.lpVtbl = &gtk_window_interface;
-    impl->callback = callback;
     atomic_init( &impl->ref, 1 );
 
-    *out = &impl->GTKWindowObject_iface;
+    new_gtk_widget_object_override_widget( gtk_application_window_new( app ), &impl->GTKWidgetObject_impl );
 
-    g_signal_connect( app, "activate", G_CALLBACK( WindowBuilder ), (void *)*out );
+    *out = &impl->GTKWindowObject_iface;
 
     TRACE( "created GTKWindowObject %p\n", *out );
 

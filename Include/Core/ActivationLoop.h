@@ -20,48 +20,12 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_GTK_H
-#define TRACERAYER_GTK_H
+#ifndef TRACERAYER_WINDOWLOOP_H
+#define TRACERAYER_WINDOWLOOP_H
 
-#include <gdk/gdk.h>
-
-#include <UI/GTKWindow.h>
-#include <Object.h>
+#include <UI/GTK/GTK.h>
 #include <Types.h>
 
-typedef struct _GTKObject GTKObject;
-
-typedef struct _GTKInterface
-{
-    BEGIN_INTERFACE
-
-    IMPLEMENTS_UNKNOWNOBJECT( GTKObject );
-
-    TR_STATUS (*CreateWindow)( IN GTKObject *This, WindowLoopCallback callback, OUT GTKWindowObject **out );
-    TR_STATUS (*RunApplication)( IN GTKObject *This );
-
-    END_INTERFACE
-} GTKInterface;
-
-interface _GTKObject
-{
-    CONST_VTBL GTKInterface *lpVtbl;
-};
-
-struct gtk_object
-{
-    // --- Public Members --- //
-    GTKObject GTKObject_iface;
-
-    // --- Private Members --- //
-    GtkApplication *app;
-    TRLong ref;
-};
-
-// 71e34ecd-fd1e-4e3c-94fa-d329c7301325
-DEFINE_GUID( GTKObject, 0x71e34ecd, 0xfd1e, 0x4e3c, 0x94, 0xfa, 0xd3, 0x29, 0xc7, 0x30, 0x13, 0x25 );
-
-// Constructors
-TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out );
+void ActivationLoop( IN UnknownObject *invoker, IN void *user_data );
 
 #endif

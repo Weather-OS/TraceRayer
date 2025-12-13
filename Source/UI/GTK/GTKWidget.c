@@ -25,7 +25,7 @@
  *  Description: GTKWidget can be contained from different GTK classes.
  */
 
-#include <UI/GTKWidget.h>
+#include <UI/GTK/GTKWidget.h>
 
 static struct gtk_widget_object *impl_from_GTKWidgetObject( GTKWidgetObject *iface )
 {

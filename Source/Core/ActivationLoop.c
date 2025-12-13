@@ -20,12 +20,30 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_WINDOWLOOP_H
-#define TRACERAYER_WINDOWLOOP_H
+#include <IO/Arguments.h>
+#include <Statics.h>
 
-#include <UI/GTKWindow.h>
-#include <Types.h>
+#include <Core/ActivationLoop.h>
 
-void WindowCallbackProc( IN GTKWindowObject *iface );
+void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
+{
+    TR_STATUS status;
+    GTKObject *gtk_object = (GTKObject *)invoker;
+    GTKWindowObject *window;
+    GdkRectangle rect = { 0, 0, 500, 900 };
 
-#endif
+    TRACE("Reached Here! GPUName is %s\n", GlobalArgumentsDefault.GPUName);
+
+    status = gtk_object->lpVtbl->CreateWindow( gtk_object, &window );
+    if ( FAILED( status ) ) return;
+
+    status = window->lpVtbl->set_WindowRect( window, rect );
+    if ( FAILED( status ) ) return;
+
+    status = window->lpVtbl->setWindowTitle( window, APPNAME );
+    if ( FAILED( status ) ) return;
+
+    window->lpVtbl->Show( window );
+
+    window->lpVtbl->Release( window );
+}

@@ -20,57 +20,64 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_GTKWINDOW_H
-#define TRACERAYER_GTKWINDOW_H
+#ifndef TRACERAYER_GTK_H
+#define TRACERAYER_GTK_H
 
 #include <gdk/gdk.h>
 
 #include <Object.h>
-#include <UI/GTKWidget.h>
 #include <Types.h>
 
-typedef struct _GTKWindowObject GTKWindowObject;
+#include <UI/GTK/GTKWindow.h>
 
-typedef void (*WindowLoopCallback)( IN GTKWindowObject *This );
+typedef struct _GTKObject GTKObject;
 
-typedef struct _GTKWindowInterface
+typedef void (*GTKSignalCallback)( UnknownObject *invoker, void *user_data );
+
+typedef struct _GTKSignalHandler
+{
+    TRULong id;
+    GTKSignalCallback callback;
+    void *user_data;
+} GTKSignalHandler;
+
+typedef struct _GTKInterface
 {
     BEGIN_INTERFACE
 
-    IMPLEMENTS_UNKNOWNOBJECT( GTKWindowObject )
+    IMPLEMENTS_UNKNOWNOBJECT( GTKObject );
 
-    TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out ); // getter
-    TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, IN GdkRectangle rect ); // setter
-    TR_STATUS (*setWindowTitle)( IN GTKWindowObject *This, IN TRString title );
-    void      (*Show)( IN GTKWindowObject *This );
+    TR_STATUS (*CreateWindow)( IN GTKObject *This, OUT GTKWindowObject **out );
+    TR_STATUS (*eventadd_OnActivation)( IN GTKObject *This, IN GTKSignalCallback callback, IN void *context, OUT TRULong *token ); //event adder
+    TR_STATUS (*eventremove_OnActivation)( IN GTKObject *This, IN TRULong token ); //event remover
+    TR_STATUS (*RunApplication)( IN GTKObject *This );
 
     END_INTERFACE
-} GTKWindowInterface;
+} GTKInterface;
 
-interface _GTKWindowObject
+interface _GTKObject
 {
-    CONST_VTBL GTKWindowInterface *lpVtbl;
+    CONST_VTBL GTKInterface *lpVtbl;
 };
 
-struct gtk_window_object
+struct gtk_object
 {
     // --- Public Members --- //
-    GTKWindowObject GTKWindowObject_iface;
-    GdkRectangle WindowRect;
-
-    // --- Subclasses --- //
-    implements( GTKWidgetObject );
+    GTKObject GTKObject_iface;
+    GSList *OnActivation_events;
 
     // --- Private Members --- //
-    WindowLoopCallback callback;
-    TRString windowTitle;
+    GtkApplication *app;
+    TRULong next_activation_id;
+    GMutex OnActivation_mutex;
+    TRBool isInActivationThread;
     TRLong ref;
 };
 
-// 1b731a66-153d-4e54-898c-6d4de5c47e08
-DEFINE_GUID( GTKWindowObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d, 0xe5, 0xc4, 0x7e, 0x08 );
+// 71e34ecd-fd1e-4e3c-94fa-d329c7301325
+DEFINE_GUID( GTKObject, 0x71e34ecd, 0xfd1e, 0x4e3c, 0x94, 0xfa, 0xd3, 0x29, 0xc7, 0x30, 0x13, 0x25 );
 
 // Constructors
-TR_STATUS new_gtk_window_object( IN GtkApplication *app, IN WindowLoopCallback callback, OUT GTKWindowObject **out );
+TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out );
 
 #endif

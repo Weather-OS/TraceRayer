@@ -30,12 +30,12 @@
 #include <InitGUID.h>
 #include <Statics.h>
 
-#include <Core/WindowLoop.h>
+#include <Core/ActivationLoop.h>
 
 #include <IO/Arguments.h>
 #include <IO/Logging.h>
 
-#include <UI/GTK.h>
+#include <UI/GTK/GTK.h>
 
 TR_STATUS async_test( UnknownObject *invoker, void *param, PropVariant *out )
 {
@@ -53,38 +53,21 @@ int main( const int argc, char **argv )
     status = InitializeLogging();
     if ( FAILED( status ) ) return status;
 
+    TRULong activationToken;
     GTKObject *obj;
-    GTKWindowObject *window;
-    UnknownObject *unknown;
     AsyncOperationObject *operation;
-    GdkRectangle rect = { 0, 0, 500, 900 };
 
     status = new_gtk_object( GTK_APPNAME, &obj );
     if ( FAILED( status ) ) return status;
 
-    status = obj->lpVtbl->CreateWindow( obj, WindowCallbackProc, &window );
+    status = obj->lpVtbl->eventadd_OnActivation( obj, ActivationLoop, nullptr, &activationToken );
     if ( FAILED( status ) ) return status;
-
-    status = obj->lpVtbl->QueryInterface( obj, IID_UnknownObject, (void **)&unknown );
-    if ( FAILED( status ) ) return status;
-
-    status = window->lpVtbl->set_WindowRect( window, rect );
-    if ( FAILED( status ) ) return status;
-
-    status = window->lpVtbl->setWindowTitle( window, APPNAME );
-    if ( FAILED( status ) ) return status;
-
-    window->lpVtbl->Show( window ); // <-- This must fail here.
 
     status = new_async_operation_object_override_callback( (UnknownObject *)obj, nullptr, async_test, &operation );
     if ( FAILED( status ) ) return status;
 
     status = obj->lpVtbl->RunApplication( obj );
     if ( FAILED( status ) ) return status;
-
-    window->lpVtbl->Release( window );
-
-    unknown->lpVtbl->Release( unknown );
 
     obj->lpVtbl->Release( obj );
 
