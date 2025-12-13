@@ -43,6 +43,8 @@ typedef struct _GTKWindowInterface
 
     TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out ); // getter
     TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, IN GdkRectangle rect ); // setter
+    TR_STATUS (*get_ChildWidget)( IN GTKWindowObject *This, OUT GTKWidgetObject **out ); // getter
+    TR_STATUS (*set_ChildWidget)( IN GTKWindowObject *This, IN GTKWidgetObject *widget ); // setter
     TR_STATUS (*setWindowTitle)( IN GTKWindowObject *This, IN TRString title );
     void      (*Show)( IN GTKWindowObject *This );
 
@@ -61,6 +63,7 @@ struct gtk_window_object
     // --- Public Members --- //
     GTKWindowObject GTKWindowObject_iface;
     volatile GdkRectangle WindowRect; // <-- It can be modified outside of the object context
+    GTKWidgetObject *ChildWidget;
 
     // --- Subclasses --- //
     implements( GTKWidgetObject );

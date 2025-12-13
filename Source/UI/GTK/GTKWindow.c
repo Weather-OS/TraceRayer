@@ -95,22 +95,22 @@ static TR_STATUS gtk_window_object_QueryInterface( GTKWindowObject *iface, const
 static TRLong gtk_window_object_AddRef( GTKWindowObject *iface )
 {
     struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
-    const TRLong added = atomic_load( &impl->ref ) + 1;
+    const TRLong added = atomic_fetch_add( &impl->ref, 1 ) + 1;
     TRACE( "iface %p increasing ref count to %ld\n", iface, added );
-    atomic_fetch_add( &impl->ref, 1 );
     return added;
 }
 
 static TRLong gtk_window_object_Release( GTKWindowObject *iface )
 {
     struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
-    const TRLong removed = atomic_load( &impl->ref ) - 1;
-    TRACE( "iface %p decreasing ref count to %ld\n", iface, removed );
-    atomic_fetch_sub( &impl->ref, 1 );
-    if ( !removed )
+    const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
+    TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
+    if ( !(removed - 1) )
     {
         if ( impl->GTKWidgetObject_impl )
             impl->GTKWidgetObject_impl->lpVtbl->Release( impl->GTKWidgetObject_impl );
+        if ( impl->ChildWidget )
+            impl->ChildWidget->lpVtbl->Release( impl->ChildWidget );
         free( impl );
     }
     return removed;
@@ -119,7 +119,7 @@ static TRLong gtk_window_object_Release( GTKWindowObject *iface )
 static TR_STATUS gtk_window_object_get_WindowRect( GTKWindowObject *iface, GdkRectangle *out )
 {
     const struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
-    TRACE( "iface %p, GdkRectangle %p\n", iface, out );
+    TRACE( "iface %p, out %p\n", iface, out );
     if ( !out ) throw_NullPtrException();
     *out = impl->WindowRect;
     return T_SUCCESS;
@@ -133,7 +133,7 @@ static TR_STATUS gtk_window_object_set_WindowRect( GTKWindowObject *iface, GdkRe
 
     struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
 
-    TRACE( "iface %p, GdkRectangle %p\n", iface, &rect );
+    TRACE( "iface %p, rect %p\n", iface, &rect );
 
     status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widget );
     if ( FAILED( status ) ) return status;
@@ -146,6 +146,56 @@ static TR_STATUS gtk_window_object_set_WindowRect( GTKWindowObject *iface, GdkRe
     impl->WindowRect = rect;
 
     widget->lpVtbl->Release( widget );
+    return T_SUCCESS;
+}
+
+static TR_STATUS gtk_window_object_get_ChildWidget( GTKWindowObject *iface, GTKWidgetObject **out )
+{
+    const struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
+    TRACE( "iface %p, out %p\n", iface, out );
+    if ( !out ) throw_NullPtrException();
+    if ( impl->ChildWidget )
+    {
+        impl->ChildWidget->lpVtbl->AddRef( impl->ChildWidget );
+        *out = impl->ChildWidget;
+        return T_SUCCESS;
+    }
+    return T_NOINIT;
+}
+
+static TR_STATUS gtk_window_object_set_ChildWidget( GTKWindowObject *iface, GTKWidgetObject *widget )
+{
+    TR_STATUS status;
+    GtkWidget *window;
+    GtkWidget *childWidget;
+    GTKWidgetObject *widgetObject;
+
+    struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
+
+    if ( !widget ) throw_NullPtrException();
+
+    TRACE( "iface %p, widget %p\n", iface, widget );
+
+    if (impl->ChildWidget)
+        // prevent dangling pointers
+        impl->ChildWidget->lpVtbl->Release(impl->ChildWidget);
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widgetObject );
+    if ( FAILED( status ) ) return status;
+
+    status = widgetObject->lpVtbl->get_Widget( widgetObject, &window );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &childWidget );
+    if ( FAILED( status ) ) return status;
+
+    gtk_window_set_child( GTK_WINDOW( window ), childWidget );
+
+    widget->lpVtbl->AddRef(widget);
+    impl->ChildWidget = widget;
+
+    widgetObject->lpVtbl->Release( widgetObject );
+
     return T_SUCCESS;
 }
 
@@ -257,6 +307,8 @@ static GTKWindowInterface gtk_window_interface =
     /* GTKWindowObject Methods */
     gtk_window_object_get_WindowRect,
     gtk_window_object_set_WindowRect,
+    gtk_window_object_get_ChildWidget,
+    gtk_window_object_set_ChildWidget,
     gtk_window_object_setWindowTitle,
     gtk_window_object_Show,
     gtk_window_object_eventadd_OnDelete,

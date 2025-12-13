@@ -76,19 +76,17 @@ static TR_STATUS async_operation_object_QueryInterface( AsyncOperationObject *if
 static TRLong async_operation_object_AddRef( AsyncOperationObject *iface )
 {
     struct async_operation_object *impl = impl_from_AsyncOperationObject( iface );
-    const TRLong added = atomic_load( &impl->ref ) + 1;
+    const TRLong added = atomic_fetch_add( &impl->ref, 1 ) + 1;
     TRACE( "iface %p increasing ref count to %ld\n", iface, added );
-    atomic_fetch_add( &impl->ref, 1 );
     return added;
 }
 
 static TRLong async_operation_object_Release( AsyncOperationObject *iface )
 {
     struct async_operation_object *impl = impl_from_AsyncOperationObject( iface );
-    const TRLong removed = atomic_load( &impl->ref ) - 1;
-    TRACE( "iface %p decreasing ref count to %ld\n", iface, removed );
-    atomic_fetch_sub( &impl->ref, 1 );
-    if ( !removed )
+    const TRLong removed = atomic_fetch_sub( &impl->ref, 1 );
+    TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
+    if ( !(removed - 1) )
     {
         if ( impl->AsyncInfoObject_impl )
             impl->AsyncInfoObject_impl->lpVtbl->Release( impl->AsyncInfoObject_impl );

@@ -81,19 +81,17 @@ DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 
     TRLong impl##_AddRef( type_name *iface )                                                        \
     {                                                                                               \
         struct impl *root = impl_from_##type_name( iface );                                         \
-        const TRLong added = atomic_load( &root->ref ) + 1;                                         \
+        const TRLong added = atomic_fetch_add( &root->ref, 1 ) + 1;                                 \
         TRACE( "iface %p increasing ref count to %ld\n", iface, added );                            \
-        atomic_fetch_add( &root->ref, 1 );                                                          \
         return added;                                                                               \
     }                                                                                               \
     \
     TRLong impl##_Release( type_name *iface )                                                       \
     {                                                                                               \
         struct impl *root = impl_from_##type_name( iface );                                         \
-        const TRLong removed = atomic_load( &root->ref ) - 1;                                       \
-        TRACE( "iface %p decreasing ref count to %ld\n", iface, removed );                          \
-        atomic_fetch_sub( &root->ref, 1 );                                                          \
-        if ( !removed )                                                                             \
+        const TRLong removed = atomic_fetch_sub( &root->ref, 1 );                                   \
+        TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );                      \
+        if ( !(removed - 1) )                                                                       \
             free( root );                                                                           \
         return removed;                                                                             \
     }
