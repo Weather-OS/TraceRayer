@@ -27,6 +27,8 @@
 
 #include <UI/GTK/GTKWindow.h>
 
+#include <libadwaita-1/adwaita.h>
+
 static struct gtk_window_object *impl_from_GTKWindowObject( GTKWindowObject *iface )
 {
     return CONTAINING_RECORD( iface, struct gtk_window_object, GTKWindowObject_iface );
@@ -189,7 +191,7 @@ static TR_STATUS gtk_window_object_set_ChildWidget( GTKWindowObject *iface, GTKW
     status = widget->lpVtbl->get_Widget( widget, &childWidget );
     if ( FAILED( status ) ) return status;
 
-    gtk_window_set_child( GTK_WINDOW( window ), childWidget );
+    adw_window_set_content( ADW_WINDOW( window ), childWidget );
 
     widget->lpVtbl->AddRef(widget);
     impl->ChildWidget = widget;
@@ -331,7 +333,8 @@ TR_STATUS new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **o
     impl->GTKWindowObject_iface.lpVtbl = &gtk_window_interface;
     atomic_init( &impl->ref, 1 );
 
-    window = gtk_application_window_new( app );
+    window = adw_window_new();
+    gtk_window_set_application( GTK_WINDOW(window), app );
     new_gtk_widget_object_override_widget( window, &impl->GTKWidgetObject_impl );
 
     *out = &impl->GTKWindowObject_iface;
