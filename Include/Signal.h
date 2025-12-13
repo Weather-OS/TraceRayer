@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Weather
+* Copyright (c) 2025 Weather
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,27 @@
  * THE SOFTWARE.
  */
 
-#include <IO/Arguments.h>
-#include <Statics.h>
+#ifndef TRACERAYER_SIGNAL_H
+#define TRACERAYER_SIGNAL_H
 
-#include <Core/ActivationLoop.h>
+#include <Object.h>
 
-void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
+typedef void (*SignalCallback)( UnknownObject *invoker, void *user_data );
+
+typedef struct _SignalHandler
 {
-    TR_STATUS status;
-    GTKObject *gtk_object = (GTKObject *)invoker;
-    GTKWindowObject *window;
-    GdkRectangle rect = { 0, 0, 500, 900 };
+    TRULong id;
+    SignalCallback callback;
+    void *user_data;
+} SignalHandler;
 
-    TRACE("Reached Here! GPUName is %s\n", GlobalArgumentsDefault.GPUName);
+#define IMPLEMENTS_EVENT( type_name, name ) \
+    TR_STATUS (*eventadd_##name)( IN type_name *This, IN SignalCallback callback, IN void *context, OUT TRULong *token ); \
+    TR_STATUS (*eventremove_##name)( IN type_name *This, IN TRULong token );
 
-    status = gtk_object->lpVtbl->CreateWindow( gtk_object, &window );
-    if ( FAILED( status ) ) return;
+#define implements_glib_eventlist( name ) \
+    GSList *name##_events;  \
+    TRULong name##_next;    \
+    GMutex name##_mutex;    \
 
-    status = window->lpVtbl->set_WindowRect( window, rect );
-    if ( FAILED( status ) ) return;
-
-    status = window->lpVtbl->setWindowTitle( window, APPNAME );
-    if ( FAILED( status ) ) return;
-
-    window->lpVtbl->Show( window );
-
-    *(void **)user_data = window;
-}
+#endif

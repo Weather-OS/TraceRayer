@@ -25,7 +25,6 @@ add_executable(TraceRayer main.c
         Source/Core/Async/AsyncState.c
         Source/Core/Async/AsyncInfo.c
         Source/UI/GTK/GTKDrawingArea.c
-        Include/UI/GTK/GTKDrawingArea.h
 )
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)

@@ -26,31 +26,23 @@
 #include <gdk/gdk.h>
 
 #include <Object.h>
+#include <Signal.h>
 #include <Types.h>
 
 #include <UI/GTK/GTKWindow.h>
 
 typedef struct _GTKObject GTKObject;
 
-typedef void (*GTKSignalCallback)( UnknownObject *invoker, void *user_data );
-
-typedef struct _GTKSignalHandler
-{
-    TRULong id;
-    GTKSignalCallback callback;
-    void *user_data;
-} GTKSignalHandler;
-
 typedef struct _GTKInterface
 {
     BEGIN_INTERFACE
 
-    IMPLEMENTS_UNKNOWNOBJECT( GTKObject );
+    IMPLEMENTS_UNKNOWNOBJECT( GTKObject )
 
     TR_STATUS (*CreateWindow)( IN GTKObject *This, OUT GTKWindowObject **out );
-    TR_STATUS (*eventadd_OnActivation)( IN GTKObject *This, IN GTKSignalCallback callback, IN void *context, OUT TRULong *token ); //event adder
-    TR_STATUS (*eventremove_OnActivation)( IN GTKObject *This, IN TRULong token ); //event remover
     TR_STATUS (*RunApplication)( IN GTKObject *This );
+
+    IMPLEMENTS_EVENT( GTKObject, OnActivation )
 
     END_INTERFACE
 } GTKInterface;
@@ -64,13 +56,11 @@ struct gtk_object
 {
     // --- Public Members --- //
     GTKObject GTKObject_iface;
-    GSList *OnActivation_events;
 
     // --- Private Members --- //
     GtkApplication *app;
-    TRULong next_activation_id;
-    GMutex OnActivation_mutex;
     TRBool isInActivationThread;
+    implements_glib_eventlist( OnActivation )
     TRLong ref;
 };
 

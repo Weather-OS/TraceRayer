@@ -36,7 +36,7 @@ static void ActivationCallback( GtkApplication *app, void *user_data )
 {
     GSList *snapshot = nullptr;
     GSList *handlerList;
-    GTKSignalHandler *handler;
+    SignalHandler *handler;
 
     struct gtk_object *impl = impl_from_GTKObject( (GTKObject *)user_data );
 
@@ -49,13 +49,12 @@ static void ActivationCallback( GtkApplication *app, void *user_data )
 
     for ( handlerList = snapshot; handlerList; handlerList = g_slist_next( handlerList ) )
     {
-        handler = (GTKSignalHandler *)handlerList->data;
+        handler = (SignalHandler *)handlerList->data;
         // guard against being null
         if ( handler && handler->callback )
         {
             // The object's app is now in an activated context
             impl->isInActivationThread = true;
-            impl->app = app;
             handler->callback( (UnknownObject *)user_data, handler->user_data );
             // The object's app exited the context
             impl->isInActivationThread = false;
@@ -88,23 +87,32 @@ static TR_STATUS gtk_object_CreateWindow( GTKObject *iface, GTKWindowObject **ou
     return status;
 }
 
-static TR_STATUS gtk_object_eventadd_OnActivation( GTKObject *iface, GTKSignalCallback callback, void *context, TRULong *token )
+static TR_STATUS gtk_object_RunApplication( GTKObject *iface )
 {
-    GTKSignalHandler *handler;
+    const struct gtk_object *impl = impl_from_GTKObject( iface );
+
+    TRACE( "iface %p\n", iface );
+
+    return g_application_run( G_APPLICATION( impl->app ), 0, nullptr );
+}
+
+static TR_STATUS gtk_object_eventadd_OnActivation( GTKObject *iface, SignalCallback callback, void *context, TRULong *token )
+{
+    SignalHandler *handler;
 
     struct gtk_object *impl = impl_from_GTKObject( iface );
 
     TRACE( "iface %p, callback %p, context %p, token %p\n", iface, callback, context, token );
 
     g_mutex_lock( &impl->OnActivation_mutex );
-    handler = g_new0( GTKSignalHandler, 1 );
+    handler = g_new0( SignalHandler, 1 );
     if ( !handler )
     {
         g_mutex_unlock( &impl->OnActivation_mutex );
         return T_OUTOFMEMORY;
     }
     handler->callback = callback;
-    handler->id = impl->next_activation_id++;
+    handler->id = impl->OnActivation_next++;
     handler->user_data = context;
     impl->OnActivation_events = g_slist_prepend( impl->OnActivation_events, handler );
     if ( !impl->OnActivation_events )
@@ -123,8 +131,8 @@ static TR_STATUS gtk_object_eventadd_OnActivation( GTKObject *iface, GTKSignalCa
 static TR_STATUS gtk_object_eventremove_OnActivation( GTKObject *iface, TRULong token )
 {
     GSList *handlerList;
-    GTKSignalHandler *found = nullptr;
-    GTKSignalHandler *current;
+    SignalHandler *found = nullptr;
+    SignalHandler *current;
 
     struct gtk_object *impl = impl_from_GTKObject( iface );
 
@@ -133,7 +141,7 @@ static TR_STATUS gtk_object_eventremove_OnActivation( GTKObject *iface, TRULong 
     g_mutex_lock( &impl->OnActivation_mutex );
     for ( handlerList = impl->OnActivation_events; handlerList; handlerList = g_slist_next( handlerList ) )
     {
-        current = (GTKSignalHandler *)handlerList->data;
+        current = (SignalHandler *)handlerList->data;
         if ( current->id == token )
         {
             found = current;
@@ -154,15 +162,6 @@ static TR_STATUS gtk_object_eventremove_OnActivation( GTKObject *iface, TRULong 
     return T_SUCCESS;
 }
 
-static TR_STATUS gtk_object_RunApplication( GTKObject *iface )
-{
-    const struct gtk_object *impl = impl_from_GTKObject( iface );
-
-    TRACE( "iface %p\n", iface );
-
-    return g_application_run( G_APPLICATION( impl->app ), 0, nullptr );
-}
-
 static GTKInterface gtk_interface =
 {
     /* UnknownObject Methods */
@@ -171,9 +170,9 @@ static GTKInterface gtk_interface =
     gtk_object_Release,
     /* GTKObject Methods */
     gtk_object_CreateWindow,
+    gtk_object_RunApplication,
     gtk_object_eventadd_OnActivation,
-    gtk_object_eventremove_OnActivation,
-    gtk_object_RunApplication
+    gtk_object_eventremove_OnActivation
 };
 
 TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out )
@@ -191,7 +190,7 @@ TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out )
     impl->app = gtk_application_new( appName, G_APPLICATION_DEFAULT_FLAGS );
     atomic_init( &impl->ref, 1 );
     g_mutex_init( &impl->OnActivation_mutex );
-    impl->next_activation_id = 0;
+    impl->OnActivation_next = 0;
 
     *out = &impl->GTKObject_iface;
 

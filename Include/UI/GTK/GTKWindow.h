@@ -26,10 +26,10 @@
 #include <gdk/gdk.h>
 
 #include <Object.h>
+#include <Signal.h>
 #include <Types.h>
 
 #include <UI/GTK/GTKWidget.h>
-
 
 typedef struct _GTKWindowObject GTKWindowObject;
 
@@ -46,6 +46,8 @@ typedef struct _GTKWindowInterface
     TR_STATUS (*setWindowTitle)( IN GTKWindowObject *This, IN TRString title );
     void      (*Show)( IN GTKWindowObject *This );
 
+    IMPLEMENTS_EVENT( GTKWindowObject, OnDelete )
+
     END_INTERFACE
 } GTKWindowInterface;
 
@@ -58,13 +60,14 @@ struct gtk_window_object
 {
     // --- Public Members --- //
     GTKWindowObject GTKWindowObject_iface;
-    GdkRectangle WindowRect;
+    volatile GdkRectangle WindowRect; // <-- It can be modified outside of the object context
 
     // --- Subclasses --- //
     implements( GTKWidgetObject );
 
     // --- Private Members --- //
     WindowLoopCallback callback;
+    implements_glib_eventlist( OnDelete )
     TRLong ref;
 };
 
