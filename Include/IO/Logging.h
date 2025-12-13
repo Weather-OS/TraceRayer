@@ -24,11 +24,10 @@
 #define TRACERAYER_LOGGING_H
 
 #include <unistd.h>
+#include <string.h>
 #include <sys/syscall.h>
 
 #include <Types.h>
-
-#include <sys/syscall.h>
 
 #ifdef SYS_gettid
 #define gettid() syscall(SYS_gettid)

@@ -25,7 +25,7 @@
 
 #include <gdk/gdk.h>
 
-#include <UI/Window/GTKWindow.h>
+#include <UI/GTKWindow.h>
 #include <Object.h>
 #include <Types.h>
 

@@ -31,7 +31,7 @@
 #include <Object.h>                     /** IID_UnknownObject **/
 #include <UI/GTK.h>                     /** IID_GTKObject **/
 #include <UI/GTKWidget.h>               /** IID_GTKWidgetObject **/
-#include <UI/Window/GTKWindow.h>        /** IID_GTKWindowObject **/
+#include <UI/GTKWindow.h>               /** IID_GTKWindowObject **/
 #include <Core/Async/AsyncOperation.h>  /** IID_AsyncOperationObject **/
 #include <Core/Async/AsyncInfo.h>       /** IID_AsyncInfoObject **/
 #include <Core/Async/AsyncState.h>      /** IID_AsyncStateObject **/

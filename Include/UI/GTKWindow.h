@@ -40,7 +40,7 @@ typedef struct _GTKWindowInterface
     IMPLEMENTS_UNKNOWNOBJECT( GTKWindowObject )
 
     TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out ); // getter
-    TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle rect ); // setter
+    TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, IN GdkRectangle rect ); // setter
     TR_STATUS (*setWindowTitle)( IN GTKWindowObject *This, IN TRString title );
     void      (*Show)( IN GTKWindowObject *This );
 

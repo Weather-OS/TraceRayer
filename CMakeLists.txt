@@ -17,7 +17,7 @@ add_executable(TraceRayer main.c
         Source/IO/Arguments.c
         Source/IO/Logging.c
         Source/IO/Path.c
-        Source/UI/Window/GTKWindow.c
+        Source/UI/GTKWindow.c
         Source/UI/GTK.c
         Source/UI/GTKWidget.c
         Source/Core/WindowLoop.c

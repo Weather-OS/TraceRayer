@@ -25,7 +25,7 @@
  *  Description: Creating a GTK Window Object
  */
 
-#include <UI/Window/GTKWindow.h>
+#include <UI/GTKWindow.h>
 
 static struct gtk_window_object *impl_from_GTKWindowObject( GTKWindowObject *iface )
 {

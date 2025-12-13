@@ -40,7 +40,7 @@ static TR_STATUS gtk_object_CreateWindow( GTKObject *iface, WindowLoopCallback c
 
     struct gtk_object *impl = impl_from_GTKObject( iface );
 
-    TRACE( "iface %p, out %p\n", iface, out );
+    TRACE( "iface %p, callback %p, out %p\n", iface, callback, out );
 
     if ( !out || !callback ) throw_NullPtrException();
 

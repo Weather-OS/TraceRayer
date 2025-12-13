@@ -37,6 +37,14 @@
 
 #include <UI/GTK.h>
 
+TR_STATUS async_test( UnknownObject *invoker, void *param, PropVariant *out )
+{
+    const auto obj = (GTKObject *)invoker;
+    TR_STATUS status;
+    TRACE("Reached here!\n");
+    return T_SUCCESS;
+}
+
 int main( const int argc, char **argv )
 {
     TR_STATUS status;
@@ -48,6 +56,7 @@ int main( const int argc, char **argv )
     GTKObject *obj;
     GTKWindowObject *window;
     UnknownObject *unknown;
+    AsyncOperationObject *operation;
     GdkRectangle rect = { 0, 0, 500, 900 };
 
     status = new_gtk_object( GTK_APPNAME, &obj );
@@ -67,12 +76,19 @@ int main( const int argc, char **argv )
 
     window->lpVtbl->Show( window ); // <-- This must fail here.
 
+    status = new_async_operation_object_override_callback( (UnknownObject *)obj, nullptr, async_test, &operation );
+    if ( FAILED( status ) ) return status;
+
     status = obj->lpVtbl->RunApplication( obj );
     if ( FAILED( status ) ) return status;
+
+    window->lpVtbl->Release( window );
 
     unknown->lpVtbl->Release( unknown );
 
     obj->lpVtbl->Release( obj );
+
+    operation->lpVtbl->Release( operation );
 
     return status;
 }

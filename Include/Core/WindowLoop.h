@@ -23,7 +23,7 @@
 #ifndef TRACERAYER_WINDOWLOOP_H
 #define TRACERAYER_WINDOWLOOP_H
 
-#include <UI/Window/GTKWindow.h>
+#include <UI/GTKWindow.h>
 #include <Types.h>
 
 void WindowCallbackProc( IN GTKWindowObject *iface );

@@ -300,6 +300,7 @@ static void async_state_object_callback( void *iface, void *user_data )
         pthread_mutex_unlock( &impl->lock );
 
     // release ref acquired in Start()
+    TRACE("got here!\n");
     impl->outer->lpVtbl->Release( impl->outer );
 }
 
