@@ -58,8 +58,8 @@ struct gtk_window_handle_object
     TRLong ref;
 };
 
-// 1b731a66-153d-4e54-898c-6d4de5c47e08
-DEFINE_GUID( GTKWindowHandleObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d, 0xe5, 0xc4, 0x7e, 0x08 );
+// 674b7bc3-ac8b-411e-b93a-d59319554acd
+DEFINE_GUID( GTKWindowHandleObject, 0x674b7bc3, 0xac8b, 0x411e, 0xb9, 0x3a, 0xd5, 0x93, 0x19, 0x55, 0x4a, 0xcd );
 
 // Constructors
 TR_STATUS new_gtk_window_handle_object( OUT GTKWindowHandleObject **out );
