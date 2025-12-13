@@ -36,3 +36,13 @@ target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 target_link_libraries(TraceRayer ${GTK4_LIBRARIES})
 target_link_libraries(TraceRayer ${UUID_LIBRARIES})
 target_link_libraries(TraceRayer ${ADWAITA_LIBRARIES})
+
+target_compile_definitions(TraceRayer PRIVATE
+        RESOURCE_DIR="${CMAKE_INSTALL_PREFIX}/share/TraceRayer/Resources"
+)
+
+install( TARGETS TraceRayer
+         RUNTIME DESTINATION bin )
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources
+        DESTINATION share/TraceRayer)
