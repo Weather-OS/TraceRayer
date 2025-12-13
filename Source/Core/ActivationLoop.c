@@ -24,7 +24,7 @@
 #include <IO/Arguments.h>
 #include <IO/FetchResources.h>
 #include <UI/GTK/GTKWindowHandle.h>
-#include <UI/GTK/GTKImage.h>
+#include <UI/GTK/GTKPicture.h>
 
 #include <Core/ActivationLoop.h>
 
@@ -49,8 +49,9 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
     TR_STATUS status;
 
     GTKObject *gtk_object = (GTKObject *)invoker;
-    GTKImageObject *image_object;
+    GTKPictureObject *picture_object;
     GTKWidgetObject *childWidget;
+    GTKWidgetObject *pictureChildWidget;
     GTKWindowObject *window;
     GTKWindowHandleObject *window_handle;
     GdkRectangle rect = { 0, 0, 600, 450 };
@@ -65,10 +66,10 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
     } else
         INFO( "Using resource path %s\n", resourcesPath->Location );
 
-    status = FetchSubpath( resourcesPath, "launch.jpg", false, T_READ, &launcherImage );
+    status = FetchSubpath( resourcesPath, "launch.png", false, T_READ, &launcherImage );
     if ( FAILED( status ) ) return;
 
-    status = new_gtk_image_object_override_path( launcherImage, &image_object );
+    status = new_gtk_picture_object_override_path( launcherImage, &picture_object );
     if ( FAILED( status ) ) return;
 
     status = gtk_object->lpVtbl->CreateWindow( gtk_object, &window );
@@ -84,6 +85,16 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
 
     status = new_gtk_window_handle_object( &window_handle );
     if ( FAILED( status ) ) return;
+
+    status = picture_object->lpVtbl->QueryInterface( picture_object, IID_GTKWidgetObject, (void **)&pictureChildWidget );
+    if ( FAILED( status ) ) return;
+
+    picture_object->lpVtbl->Release( picture_object );
+
+    status = window_handle->lpVtbl->set_ChildWidget( window_handle, pictureChildWidget );
+    if ( FAILED( status ) ) return;
+
+    pictureChildWidget->lpVtbl->Release( pictureChildWidget );
 
     status = window_handle->lpVtbl->QueryInterface( window_handle, IID_GTKWidgetObject, (void **)&childWidget );
     if ( FAILED( status ) ) return;

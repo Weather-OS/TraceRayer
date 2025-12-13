@@ -21,24 +21,24 @@
  */
 
 /**
- *  Module: GTKImage.c
+ *  Module: GTKPicture.c
  *  Description: A GTK Widget object that represents an image.
  */
 
-#include <UI/GTK/GTKImage.h>
+#include <UI/GTK/GTKPicture.h>
 
-static struct gtk_image_object *impl_from_GTKImageObject( GTKImageObject *iface )
+static struct gtk_picture_object *impl_from_GTKPictureObject( GTKPictureObject *iface )
 {
-    return CONTAINING_RECORD( iface, struct gtk_image_object, GTKImageObject_iface );
+    return CONTAINING_RECORD( iface, struct gtk_picture_object, GTKPictureObject_iface );
 }
 
-static TR_STATUS gtk_image_object_QueryInterface( GTKImageObject *iface, const TRUUID uuid, void **out )
+static TR_STATUS gtk_picture_object_QueryInterface( GTKPictureObject *iface, const TRUUID uuid, void **out )
 {
-    const struct gtk_image_object *impl = impl_from_GTKImageObject( iface );
+    const struct gtk_picture_object *impl = impl_from_GTKPictureObject( iface );
 
     TRACE( "iface %p, uuid %s, out %p\n", iface, debugstr_uuid( uuid ), out );
 
-    if ( !uuid_compare( uuid, IID_UnknownObject ) || !uuid_compare( uuid, IID_GTKImageObject ) )
+    if ( !uuid_compare( uuid, IID_UnknownObject ) || !uuid_compare( uuid, IID_GTKPictureObject ) )
     {
         iface->lpVtbl->AddRef( iface );
         *out = iface;
@@ -49,7 +49,7 @@ static TR_STATUS gtk_image_object_QueryInterface( GTKImageObject *iface, const T
     {
         if ( !impl->GTKWidgetObject_impl )
         {
-            ERROR( "Subclass GTKWidgetObject for GTKImageObject %p is not initialized yet!\n", iface );
+            ERROR( "Subclass GTKWidgetObject for GTKPictureObject %p is not initialized yet!\n", iface );
             return T_NOINIT;
         }
         impl->GTKWidgetObject_impl->lpVtbl->AddRef( impl->GTKWidgetObject_impl );
@@ -61,17 +61,17 @@ static TR_STATUS gtk_image_object_QueryInterface( GTKImageObject *iface, const T
     return T_NOTIMPL;
 }
 
-static TRLong gtk_image_object_AddRef( GTKImageObject *iface )
+static TRLong gtk_picture_object_AddRef( GTKPictureObject *iface )
 {
-    struct gtk_image_object *impl = impl_from_GTKImageObject( iface );
+    struct gtk_picture_object *impl = impl_from_GTKPictureObject( iface );
     const TRLong added = atomic_fetch_add( &impl->ref, 1 ) + 1;
     TRACE( "iface %p increasing ref count to %ld\n", iface, added );
     return added;
 }
 
-static TRLong gtk_image_object_Release( GTKImageObject *iface )
+static TRLong gtk_picture_object_Release( GTKPictureObject *iface )
 {
-    struct gtk_image_object *impl = impl_from_GTKImageObject( iface );
+    struct gtk_picture_object *impl = impl_from_GTKPictureObject( iface );
     const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
@@ -83,19 +83,20 @@ static TRLong gtk_image_object_Release( GTKImageObject *iface )
     return removed;
 }
 
-static GTKImageInterface gtk_image_interface =
+static GTKPictureInterface gtk_picture_interface =
 {
     /* UnknownObject Methods */
-    gtk_image_object_QueryInterface,
-    gtk_image_object_AddRef,
-    gtk_image_object_Release
+    gtk_picture_object_QueryInterface,
+    gtk_picture_object_AddRef,
+    gtk_picture_object_Release
 };
 
-TR_STATUS new_gtk_image_object_override_path( IN TRPath *imagePath, OUT GTKImageObject **out )
+TR_STATUS new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT GTKPictureObject **out )
 {
     TR_STATUS status;
-    GtkWidget *image;
-    struct gtk_image_object *impl;
+    GtkWidget *picture;
+    TRInt width, height;
+    struct gtk_picture_object *impl;
 
     TRACE( "out %p\n", out );
 
@@ -103,16 +104,17 @@ TR_STATUS new_gtk_image_object_override_path( IN TRPath *imagePath, OUT GTKImage
 
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
-    impl->GTKImageObject_iface.lpVtbl = &gtk_image_interface;
+    impl->GTKPictureObject_iface.lpVtbl = &gtk_picture_interface;
     impl->ref = 1;
 
-    image = gtk_image_new_from_file( imagePath->Location );
-    status = new_gtk_widget_object_override_widget( image, &impl->GTKWidgetObject_impl );
+    picture = gtk_picture_new_for_filename( imagePath->Location );
+
+    status = new_gtk_widget_object_override_widget( picture, &impl->GTKWidgetObject_impl );
     if ( FAILED( status ) ) return status;
 
-    *out = &impl->GTKImageObject_iface;
+    *out = &impl->GTKPictureObject_iface;
 
-    TRACE( "created GTKImageObject %p\n", *out );
+    TRACE( "created GTKPictureObject %p\n", *out );
 
     return T_SUCCESS;
 }

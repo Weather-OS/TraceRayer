@@ -38,6 +38,9 @@ typedef struct _GTKWindowHandleInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKWindowHandleObject )
 
+    TR_STATUS (*get_ChildWidget)( IN GTKWindowHandleObject *This, OUT GTKWidgetObject **out ); // getter
+    TR_STATUS (*set_ChildWidget)( IN GTKWindowHandleObject *This, IN GTKWidgetObject *widget ); // setter
+
     END_INTERFACE
 } GTKWindowHandleInterface;
 
@@ -50,6 +53,7 @@ struct gtk_window_handle_object
 {
     // --- Public Members --- //
     GTKWindowHandleObject GTKWindowHandleObject_iface;
+    GTKWidgetObject *ChildWidget;
 
     // --- Subclasses --- //
     implements( GTKWidgetObject );

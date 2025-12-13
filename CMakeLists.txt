@@ -27,7 +27,7 @@ add_executable(TraceRayer main.c
         Source/UI/GTK/GTKWidget.c
         Source/UI/GTK/GTKDrawingArea.c
         Source/UI/GTK/GTKWindowHandle.c
-        Source/UI/GTK/GTKImage.c
+        Source/UI/GTK/GTKPicture.c
         Source/Core/ActivationLoop.c
         Source/Core/Async/AsyncOperation.c
         Source/Core/Async/AsyncState.c

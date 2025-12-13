@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_GTKIMAGE_H
-#define TRACERAYER_GTKIMAGE_H
+#ifndef TRACERAYER_GTKPicture_H
+#define TRACERAYER_GTKPicture_H
 
 #include <gdk/gdk.h>
 
@@ -31,26 +31,26 @@
 
 #include <UI/GTK/GTKWidget.h>
 
-typedef struct _GTKImageObject GTKImageObject;
+typedef struct _GTKPictureObject GTKPictureObject;
 
-typedef struct _GTKImageInterface
+typedef struct _GTKPictureInterface
 {
     BEGIN_INTERFACE
 
-    IMPLEMENTS_UNKNOWNOBJECT( GTKImageObject )
+    IMPLEMENTS_UNKNOWNOBJECT( GTKPictureObject )
     
     END_INTERFACE
-} GTKImageInterface;
+} GTKPictureInterface;
 
-interface _GTKImageObject
+interface _GTKPictureObject
 {
-    CONST_VTBL GTKImageInterface *lpVtbl;
+    CONST_VTBL GTKPictureInterface *lpVtbl;
 };
 
-struct gtk_image_object
+struct gtk_picture_object
 {
     // --- Public Members --- //
-    GTKImageObject GTKImageObject_iface;
+    GTKPictureObject GTKPictureObject_iface;
 
     // --- Subclasses --- //
     implements( GTKWidgetObject );
@@ -60,9 +60,9 @@ struct gtk_image_object
 };
 
 // af332f42-a0ec-4ee2-b882-d975926c15f0
-DEFINE_GUID( GTKImageObject, 0xaf332f42, 0xa0ec, 0x4ee2, 0xb8, 0x82, 0xd9, 0x75, 0x92, 0x6c, 0x15, 0xf0 );
+DEFINE_GUID( GTKPictureObject, 0xaf332f42, 0xa0ec, 0x4ee2, 0xb8, 0x82, 0xd9, 0x75, 0x92, 0x6c, 0x15, 0xf0 );
 
 // Constructors
-TR_STATUS new_gtk_image_object_override_path( IN TRPath *imagePath, OUT GTKImageObject **out );
+TR_STATUS new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT GTKPictureObject **out );
 
 #endif

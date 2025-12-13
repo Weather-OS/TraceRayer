@@ -83,12 +83,65 @@ static TRLong gtk_window_handle_object_Release( GTKWindowHandleObject *iface )
     return removed;
 }
 
+static TR_STATUS gtk_window_handle_object_get_ChildWidget( GTKWindowHandleObject *iface, OUT GTKWidgetObject **out )
+{
+    const struct gtk_window_handle_object *impl = impl_from_GTKWindowHandleObject( iface );
+    TRACE( "iface %p, out %p\n", iface, out );
+    if ( !out ) throw_NullPtrException();
+    if ( impl->ChildWidget )
+    {
+        impl->ChildWidget->lpVtbl->AddRef( impl->ChildWidget );
+        *out = impl->ChildWidget;
+        return T_SUCCESS;
+    }
+    return T_NOINIT;
+}
+
+static TR_STATUS gtk_window_handle_object_set_ChildWidget( GTKWindowHandleObject *iface, GTKWidgetObject *widget )
+{
+    TR_STATUS status;
+    GtkWidget *windowHandle;
+    GtkWidget *childWidget;
+    GTKWidgetObject *widgetObject;
+
+    struct gtk_window_handle_object *impl = impl_from_GTKWindowHandleObject( iface );
+
+    if ( !widget ) throw_NullPtrException();
+
+    TRACE( "iface %p, widget %p\n", iface, widget );
+
+    if (impl->ChildWidget)
+        // prevent dangling pointers
+        impl->ChildWidget->lpVtbl->Release(impl->ChildWidget);
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widgetObject );
+    if ( FAILED( status ) ) return status;
+
+    status = widgetObject->lpVtbl->get_Widget( widgetObject, &windowHandle );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &childWidget );
+    if ( FAILED( status ) ) return status;
+
+    gtk_window_handle_set_child( GTK_WINDOW_HANDLE( windowHandle ), childWidget );
+
+    widget->lpVtbl->AddRef(widget);
+    impl->ChildWidget = widget;
+
+    widgetObject->lpVtbl->Release( widgetObject );
+
+    return T_SUCCESS;
+}
+
 static GTKWindowHandleInterface gtk_drawing_area_interface =
 {
     /* UnknownObject Methods */
     gtk_window_handle_object_QueryInterface,
     gtk_window_handle_object_AddRef,
-    gtk_window_handle_object_Release
+    gtk_window_handle_object_Release,
+    /* GTKWindowHandleObject Methods */
+    gtk_window_handle_object_get_ChildWidget,
+    gtk_window_handle_object_set_ChildWidget
 };
 
 TR_STATUS new_gtk_window_handle_object( OUT GTKWindowHandleObject **out )
