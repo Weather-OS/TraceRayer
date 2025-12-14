@@ -125,7 +125,8 @@ static TR_STATUS gtk_window_handle_object_set_ChildWidget( GTKWindowHandleObject
 
     gtk_window_handle_set_child( GTK_WINDOW_HANDLE( windowHandle ), childWidget );
 
-    widget->lpVtbl->AddRef(widget);
+    //widget->lpVtbl->AddRef(widget);
+    // Directly take ownership.
     impl->ChildWidget = widget;
 
     widgetObject->lpVtbl->Release( widgetObject );

@@ -193,7 +193,8 @@ static TR_STATUS gtk_window_object_set_ChildWidget( GTKWindowObject *iface, GTKW
 
     adw_window_set_content( ADW_WINDOW( window ), childWidget );
 
-    widget->lpVtbl->AddRef(widget);
+    //widget->lpVtbl->AddRef(widget);
+    // Directly take ownership.
     impl->ChildWidget = widget;
 
     widgetObject->lpVtbl->Release( widgetObject );

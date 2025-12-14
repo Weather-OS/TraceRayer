@@ -67,7 +67,11 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
         INFO( "Using resource path %s\n", resourcesPath->Location );
 
     status = FetchSubpath( resourcesPath, "launch.png", false, T_READ, &launcherImage );
-    if ( FAILED( status ) ) return;
+    if ( FAILED( status ) )
+    {
+        ERROR( "Failed to locate resource %s from path %s.\n", "launch.png", resourcesPath->Location );
+        return;
+    }
 
     status = new_gtk_picture_object_override_path( launcherImage, &picture_object );
     if ( FAILED( status ) ) return;
@@ -94,8 +98,6 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
     status = window_handle->lpVtbl->set_ChildWidget( window_handle, pictureChildWidget );
     if ( FAILED( status ) ) return;
 
-    pictureChildWidget->lpVtbl->Release( pictureChildWidget );
-
     status = window_handle->lpVtbl->QueryInterface( window_handle, IID_GTKWidgetObject, (void **)&childWidget );
     if ( FAILED( status ) ) return;
 
@@ -103,8 +105,6 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
 
     status = window->lpVtbl->set_ChildWidget( window, childWidget );
     if ( FAILED( status ) ) return;
-
-    childWidget->lpVtbl->Release( childWidget );
 
     status = window->lpVtbl->eventadd_OnDelete( window, CloseEvent, passedToken, &token );
     if ( FAILED( status ) ) return;
