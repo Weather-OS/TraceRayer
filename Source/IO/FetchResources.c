@@ -38,7 +38,7 @@ FetchResource(
 
     // First pass: Binary root
     path = "./Resources";
-    resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
+    resourcePathSize = strlen( path ) + strlen( resourceName ) + 3;
     resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
     snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
     status = FetchPath( resourcePath, false, T_READ, outResourcePath );
@@ -47,7 +47,7 @@ FetchResource(
 
     // Second pass: Source dir
     path = "../Resources";
-    resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
+    resourcePathSize = strlen( path ) + strlen( resourceName ) + 3;
     resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
     snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
     status = FetchPath( resourcePath, false, T_READ, outResourcePath );
@@ -56,14 +56,14 @@ FetchResource(
 
     // Third pass: Install dir
     path = RESOURCE_DIR;
-    resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
+    resourcePathSize = strlen( path ) + strlen( resourceName ) + 3;
     resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
     snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
     status = FetchPath( resourcePath, false, T_READ, outResourcePath );
-    free( resourcePath );
 
     if ( FAILED( status ) )
-        ERROR( "Failed to fetch resources! Make sure %s exists!\n", path );
+        ERROR( "Failed to fetch resources! Make sure %s exists!\n", resourcePath );
+    free( resourcePath );
 
     return status;
 }
