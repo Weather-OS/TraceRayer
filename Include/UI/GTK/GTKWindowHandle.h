@@ -38,8 +38,28 @@ typedef struct _GTKWindowHandleInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKWindowHandleObject )
 
-    TR_STATUS (*get_ChildWidget)( IN GTKWindowHandleObject *This, OUT GTKWidgetObject **out ); // getter
-    TR_STATUS (*set_ChildWidget)( IN GTKWindowHandleObject *This, IN GTKWidgetObject *widget ); // setter
+    /**
+     * @Method: GTKWidgetObject* GTKWindowHandleObject::ChildWidget()
+     * @Description: Retrieves the child GTKWidgetObject associated with this
+     *               GTKWindowHandleObject.
+     * @Returns: The child GTKWidgetObject, or nullptr if no child is set.
+     * @Status: Returns T_NOINIT if no child widget is initialized; otherwise
+     *          returns T_SUCCESS.
+     */
+    TR_STATUS (*get_ChildWidget)(
+        IN  GTKWindowHandleObject *This,
+        OUT GTKWidgetObject       **out);
+
+    /**
+     * @Method: void GTKWindowHandleObject::ChildWidget( GTKWidgetObject *widget )
+     * @Description: Assigns a child GTKWidgetObject to this GTKWindowHandleObject.
+     *               Ownership of the widget is transferred to the window handle,
+     *               which becomes responsible for its lifetime.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*set_ChildWidget)(
+        IN GTKWindowHandleObject *This,
+        IN GTKWidgetObject       *widget);
 
     END_INTERFACE
 } GTKWindowHandleInterface;
@@ -49,13 +69,20 @@ interface _GTKWindowHandleObject
     CONST_VTBL GTKWindowHandleInterface *lpVtbl;
 };
 
+/**
+ * @Object: GTKWindowHandleObject
+ * @Description: A GTK Window Handle Object mainly used for drag
+ *               and click events on a GTKWindowObject surface.
+ * @Implements:
+ *      GTKWidgetObject
+ */
 struct gtk_window_handle_object
 {
     // --- Public Members --- //
     GTKWindowHandleObject GTKWindowHandleObject_iface;
     GTKWidgetObject *ChildWidget;
 
-    // --- Subclasses --- //
+    // --- Base Interfaces --- //
     implements( GTKWidgetObject );
 
     // --- Private Members --- //

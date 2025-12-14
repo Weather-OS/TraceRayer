@@ -47,6 +47,13 @@ interface _GTKPictureObject
     CONST_VTBL GTKPictureInterface *lpVtbl;
 };
 
+/**
+ * @Object: GTKPictureObject
+ * @Description: A GTK Picture Object that represents a picture that
+ *               can be painted on surfaces.
+ * @Implements:
+ *      GTKWidgetObject
+ */
 struct gtk_picture_object
 {
     // --- Public Members --- //

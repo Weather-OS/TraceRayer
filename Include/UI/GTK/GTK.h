@@ -39,9 +39,31 @@ typedef struct _GTKInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKObject )
 
-    TR_STATUS (*CreateWindow)( IN GTKObject *This, OUT GTKWindowObject **out );
-    TR_STATUS (*RunApplication)( IN GTKObject *This );
+    /**
+     * @Method: GTKWindowObject* GTKObject::CreateWindow()
+     * @Description: Creates a Window with the Application assigned from the GTKObject.
+     *               This method not must be called outside an "Activated Context".
+     * @Returns: The newly created GTKWindowObject.
+     * @Status: Returns T_ILLEGAL_METHOD_CALL if called outside an "Activated Context",
+     *          and T_SUCCESS if called within one.
+     */
+    TR_STATUS (*CreateWindow)(
+        IN GTKObject        *This,
+        OUT GTKWindowObject **out);
 
+    /**
+     * @Method: void GTKObject::RunApplication()
+     * @Description: Triggers "OnActivation" events and puts the GTKObject in an "Activated Context"
+     * @Status: Always returns T_SUCCESS. You must do error handling by yourself within the context.
+     */
+    TR_STATUS (*RunApplication)(
+        IN GTKObject *This);
+
+    /**
+     * @Event: GTKObject::OnActivation
+     * @Description: Fired on GTKObject::RunApplication()
+     *               Callbacks provided run within an "Activated Context"
+     */
     IMPLEMENTS_EVENT( GTKObject, OnActivation )
 
     END_INTERFACE
@@ -52,6 +74,10 @@ interface _GTKObject
     CONST_VTBL GTKInterface *lpVtbl;
 };
 
+/**
+ * @Object: GTKObject
+ * @Description: Root GTK object, used to build a GTK application, layer by layer.
+ */
 struct gtk_object
 {
     // --- Public Members --- //

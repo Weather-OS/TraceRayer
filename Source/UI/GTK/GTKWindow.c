@@ -202,7 +202,7 @@ static TR_STATUS gtk_window_object_set_ChildWidget( GTKWindowObject *iface, GTKW
     return T_SUCCESS;
 }
 
-static TR_STATUS gtk_window_object_setWindowTitle( GTKWindowObject *iface, TRString title )
+static TR_STATUS gtk_window_object_SetWindowTitle( GTKWindowObject *iface, TRString title )
 {
     TR_STATUS status;
     GtkWidget *window;
@@ -312,7 +312,7 @@ static GTKWindowInterface gtk_window_interface =
     gtk_window_object_set_WindowRect,
     gtk_window_object_get_ChildWidget,
     gtk_window_object_set_ChildWidget,
-    gtk_window_object_setWindowTitle,
+    gtk_window_object_SetWindowTitle,
     gtk_window_object_Show,
     gtk_window_object_eventadd_OnDelete,
     gtk_window_object_eventremove_OnDelete

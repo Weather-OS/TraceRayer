@@ -46,6 +46,13 @@ interface _GTKDrawingAreaObject
     CONST_VTBL GTKDrawingAreaInterface *lpVtbl;
 };
 
+/**
+ * @Object: GTKDrawingAreaObject
+ * @Description: A GTK Drawing area objects that can be used to
+ *               represent frame buffers, such as a Vulkan swapchain.
+ * @Implements:
+ *      GTKWidgetObject
+ */
 struct gtk_drawing_area_object
 {
     // --- Public Members --- //

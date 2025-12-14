@@ -70,7 +70,7 @@ struct async_operation_object
     // --- Public Members --- //
     AsyncOperationObject AsyncOperationObject_iface;
 
-    // --- Subclasses --- //
+    // --- Base Interfaces --- //
     implements( AsyncInfoObject );
 
     // --- Private Members --- //

@@ -36,8 +36,22 @@ typedef struct _GTKWidgetInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKWidgetObject )
 
-    TR_STATUS (*get_Widget)( IN GTKWidgetObject *This, OUT GtkWidget **out );
-    void      (*setVisibility)( IN GTKWidgetObject *This, TRBool visibility );
+    /**
+     * @Method: GtkWidget* GTKWidgetObject::Widget()
+     * @Description: Gets the widget assigned during the constructor.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*get_Widget)(
+        IN GTKWidgetObject *This,
+        OUT GtkWidget      **out);
+
+    /**
+     * @Method: void GTKWidgetObject::setVisibility( TRBool visibility )
+     * @Description: Determines the visibility of the current widget.
+     */
+    void      (*setVisibility)(
+        IN GTKWidgetObject *This,
+        TRBool              visibility);
     
     END_INTERFACE
 } GTKWidgetInterface;
@@ -47,6 +61,12 @@ interface _GTKWidgetObject
     CONST_VTBL GTKWidgetInterface *lpVtbl;
 };
 
+/**
+ * @Object: GTKWidgetObject
+ * @Description: Inherited from many different GTK Objects.
+ *               This object represents a Widget for different GTK Objects,
+ *               to use internally
+ */
 struct gtk_widget_object
 {
     // --- Public Members --- //

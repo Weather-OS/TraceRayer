@@ -54,7 +54,7 @@ struct async_info_object
     // --- Public Members --- //
     AsyncInfoObject AsyncInfoObject_iface;
 
-    // --- Subclasses --- //
+    // --- Base Interfaces --- //
     implements( AsyncStateObject );
 
     // --- Private Members --- //

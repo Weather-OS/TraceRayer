@@ -41,13 +41,73 @@ typedef struct _GTKWindowInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKWindowObject )
 
-    TR_STATUS (*get_WindowRect)( IN GTKWindowObject *This, OUT GdkRectangle *out ); // getter
-    TR_STATUS (*set_WindowRect)( IN GTKWindowObject *This, IN GdkRectangle rect ); // setter
-    TR_STATUS (*get_ChildWidget)( IN GTKWindowObject *This, OUT GTKWidgetObject **out ); // getter
-    TR_STATUS (*set_ChildWidget)( IN GTKWindowObject *This, IN GTKWidgetObject *widget ); // setter
-    TR_STATUS (*setWindowTitle)( IN GTKWindowObject *This, IN TRString title );
-    void      (*Show)( IN GTKWindowObject *This );
+    /**
+     * @Method: GdkRectangle GTKWindowObject::WindowRect()
+     * @Description: Retrieves the current window rectangle.
+     *               The x and y positions are 0 on Wayland.
+     * @Returns: The window rectangle.
+     * @Status: Returns T_NOINIT if no child widget is initialized; otherwise
+     *          returns T_SUCCESS.
+     */
+    TR_STATUS (*get_WindowRect)(
+        IN GTKWindowObject *This,
+        OUT GdkRectangle   *out);
 
+    /**
+     * @Method: void GTKWindowObject::WindowRect( GdkRectangle rect )
+     * @Description: Set the current rectangle and the initial window rectangle.
+     *               The x and y positions are ignored on Wayland.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*set_WindowRect)(
+        IN GTKWindowObject *This,
+        IN GdkRectangle     rect);
+
+    /**
+     * @Method: GTKWidgetObject* GTKWindowObject::ChildWidget()
+     * @Description: Retrieves the child GTKWidgetObject associated with this
+     *               GTKWindowObject.
+     * @Returns: The child GTKWidgetObject, or nullptr if no child is set.
+     * @Status: Returns T_NOINIT if no child widget is initialized; otherwise
+     *          returns T_SUCCESS.
+     */
+    TR_STATUS (*get_ChildWidget)(
+        IN  GTKWindowObject *This,
+        OUT GTKWidgetObject **out);
+
+    /**
+     * @Method: void GTKWindowObject::ChildWidget( GTKWidgetObject *widget )
+     * @Description: Assigns a child GTKWidgetObject to this GTKWindowObject.
+     *               Ownership of the widget is transferred to the window handle,
+     *               which becomes responsible for its lifetime.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*set_ChildWidget)(
+        IN GTKWindowObject *This,
+        IN GTKWidgetObject *widget);
+
+    /**
+     * @Method: void GTKWindowObject::setWindowTitle( TRString title )
+     * @Description: Set the current title of the window.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*SetWindowTitle)(
+        IN GTKWindowObject *This,
+        IN TRString         title);
+
+    /**
+     * @Method: void GTKWindowObject::Show()
+     * @Description: Shows the current window.
+     */
+    void      (*Show)(
+        IN GTKWindowObject *This);
+
+    /**
+     * @Event: GTKWindowObject::OnDelete
+     * @Description: Fired when the window receives a delete request
+     *               (for example, from the window manager close button).
+     *               Handlers may perform cleanup before the window is destroyed.
+     */
     IMPLEMENTS_EVENT( GTKWindowObject, OnDelete )
 
     END_INTERFACE
@@ -58,6 +118,13 @@ interface _GTKWindowObject
     CONST_VTBL GTKWindowInterface *lpVtbl;
 };
 
+/**
+ * @Object: GTKWindowObject
+ * @Description: A GTK Window Object.
+ *               Used to create a GTK 4 libadwaita window.
+ * @Implements:
+ *      GTKWidgetObject
+ */
 struct gtk_window_object
 {
     // --- Public Members --- //
@@ -65,7 +132,7 @@ struct gtk_window_object
     volatile GdkRectangle WindowRect; // <-- It can be modified outside of the object context
     GTKWidgetObject *ChildWidget;
 
-    // --- Subclasses --- //
+    // --- Base Interfaces --- //
     implements( GTKWidgetObject );
 
     // --- Private Members --- //
@@ -78,6 +145,10 @@ struct gtk_window_object
 DEFINE_GUID( GTKWindowObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d, 0xe5, 0xc4, 0x7e, 0x08 );
 
 // Constructors
+/**
+ * @Note: This constructor must not be called outside an "Activation Context".
+ *        Refer to GTKObject on how to register "Activation Context" events.
+ */
 TR_STATUS new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out );
 
 #endif

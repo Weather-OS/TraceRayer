@@ -82,7 +82,7 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
     status = window->lpVtbl->set_WindowRect( window, rect );
     if ( FAILED( status ) ) return;
 
-    status = window->lpVtbl->setWindowTitle( window, APPNAME );
+    status = window->lpVtbl->SetWindowTitle( window, APPNAME );
     if ( FAILED( status ) ) return;
 
     window->lpVtbl->Show( window );
