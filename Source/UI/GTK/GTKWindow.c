@@ -221,7 +221,26 @@ static TR_STATUS gtk_window_object_SetWindowTitle( GTKWindowObject *iface, TRStr
     return T_SUCCESS;
 }
 
-static void gtk_window_object_Show( GTKWindowObject *iface )
+static TR_STATUS gtk_window_object_SetResizable( GTKWindowObject *iface, TRBool resizable )
+{
+    TR_STATUS status;
+    GtkWidget *window;
+    GTKWidgetObject *widget;
+
+    TRACE( "iface %p, resizable %d\n", iface, resizable );
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widget );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &window );
+    if ( FAILED( status ) ) return status;
+    gtk_window_set_resizable( GTK_WINDOW( window ), resizable );
+
+    widget->lpVtbl->Release( widget );
+    return status;
+}
+
+static TR_STATUS gtk_window_object_Show( GTKWindowObject *iface )
 {
     TR_STATUS status;
     GTKWidgetObject *widget;
@@ -229,10 +248,11 @@ static void gtk_window_object_Show( GTKWindowObject *iface )
     TRACE( "iface %p\n", iface );
 
     status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widget );
-    if ( FAILED( status ) ) return;
+    if ( FAILED( status ) ) return status;
 
     widget->lpVtbl->setVisibility( widget, true );
     widget->lpVtbl->Release( widget );
+    return status;
 }
 
 static TR_STATUS gtk_window_object_eventadd_OnDelete( GTKWindowObject *iface, SignalCallback callback, void *context, TRULong *token )
@@ -313,6 +333,7 @@ static GTKWindowInterface gtk_window_interface =
     gtk_window_object_get_ChildWidget,
     gtk_window_object_set_ChildWidget,
     gtk_window_object_SetWindowTitle,
+    gtk_window_object_SetResizable,
     gtk_window_object_Show,
     gtk_window_object_eventadd_OnDelete,
     gtk_window_object_eventremove_OnDelete

@@ -85,6 +85,9 @@ void ActivationLoop( IN UnknownObject *invoker, IN void *user_data )
     status = window->lpVtbl->SetWindowTitle( window, APPNAME );
     if ( FAILED( status ) ) return;
 
+    status = window->lpVtbl->SetResizable( window, false );
+    if ( FAILED( status ) ) return;
+
     window->lpVtbl->Show( window );
 
     status = new_gtk_window_handle_object( &window_handle );

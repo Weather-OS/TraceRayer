@@ -87,19 +87,29 @@ typedef struct _GTKWindowInterface
         IN GTKWidgetObject *widget);
 
     /**
-     * @Method: void GTKWindowObject::setWindowTitle( TRString title )
+     * @Method: void GTKWindowObject::SetWindowTitle( TRString title )
      * @Description: Set the current title of the window.
-     * @Status: Always returns T_SUCCESS.
+     * @Status: Returns T_SUCCESS unless QueryInterface from GTKWidgetObject fails.
      */
     TR_STATUS (*SetWindowTitle)(
         IN GTKWindowObject *This,
         IN TRString         title);
 
     /**
+     * @Method: void GTKWindowObject::SetResizable( TRBool resizable )
+     * @Description: Determines if the window should be resizable or not.
+     * @Status: Returns T_SUCCESS unless QueryInterface from GTKWidgetObject fails.
+     */
+    TR_STATUS (*SetResizable)(
+        IN GTKWindowObject *This,
+        IN TRBool          resizable);
+
+    /**
      * @Method: void GTKWindowObject::Show()
      * @Description: Shows the current window.
+     * @Status: Returns T_SUCCESS unless QueryInterface from GTKWidgetObject fails.
      */
-    void      (*Show)(
+    TR_STATUS (*Show)(
         IN GTKWindowObject *This);
 
     /**
