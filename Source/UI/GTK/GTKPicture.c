@@ -83,12 +83,42 @@ static TRLong gtk_picture_object_Release( GTKPictureObject *iface )
     return removed;
 }
 
+// FIXME: PictureRect is only assigned after notify::paintable
+static TR_STATUS gtk_picture_object_GetPictureRect( GTKPictureObject *iface, GdkRectangle *out )
+{
+    TR_STATUS status;
+    GtkWidget *pictureWidget;
+    GdkPaintable *paintable;
+    GTKWidgetObject *widget;
+
+    TRACE( "iface %p, out %p\n", iface, out );
+
+    if ( !out ) throw_NullPtrException();
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void **)&widget );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &pictureWidget );
+    if ( FAILED( status ) ) return status;
+
+    paintable = gtk_picture_get_paintable( GTK_PICTURE( pictureWidget ) );
+    out->width = gdk_paintable_get_intrinsic_width( paintable );
+    out->height = gdk_paintable_get_intrinsic_height( paintable );
+    g_object_unref( paintable );
+
+    widget->lpVtbl->Release( widget );
+
+    return T_SUCCESS;
+}
+
 static GTKPictureInterface gtk_picture_interface =
 {
     /* UnknownObject Methods */
     gtk_picture_object_QueryInterface,
     gtk_picture_object_AddRef,
-    gtk_picture_object_Release
+    gtk_picture_object_Release,
+    /* GTKPictureObject Methods */
+    gtk_picture_object_GetPictureRect
 };
 
 TR_STATUS new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT GTKPictureObject **out )

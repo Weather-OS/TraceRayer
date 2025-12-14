@@ -32,6 +32,7 @@ add_executable(TraceRayer main.c
         Source/Core/Async/AsyncOperation.c
         Source/Core/Async/AsyncState.c
         Source/Core/Async/AsyncInfo.c
+        Source/Core/Splash/SplashWindow.c
 )
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)

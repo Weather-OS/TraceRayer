@@ -20,18 +20,14 @@
  * THE SOFTWARE.
  */
 
-#include <Core/Splash/SplashWindow.h>
+#ifndef TRACERAYER_SPLASHWINDOW_H
+#define TRACERAYER_SPLASHWINDOW_H
 
-#include <Core/ActivationLoop.h>
+#include <Types.h>
+#include <Object.h>
 
-void
-ActivationLoop(
-    IN UnknownObject *invoker,
-    IN void *user_data
-) {
-    TR_STATUS status;
+#include <UI/GTK/GTK.h>
 
-    status = SplashWindow( (GTKObject *)invoker );
-    if ( FAILED( status ) )
-        ERROR( "SplashWindow failed with %ld\n", status );
-}
+TR_STATUS SplashWindow( IN GTKObject *inGtk );
+
+#endif

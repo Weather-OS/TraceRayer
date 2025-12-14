@@ -110,6 +110,13 @@ typedef struct _TR_PropVariant
 #define FAILED( status ) \
     (status != T_SUCCESS)
 
+/**
+ * CHECK_TR requires a _CLEANUP label for cleanup operations,
+ * and a TR_STATUS for status assignment
+ */
+#define CHECK_TR( cb ) \
+        if ( FAILED(( status = cb )) ) goto _CLEANUP;
+
 #define __FILENAME__ \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
     strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : \

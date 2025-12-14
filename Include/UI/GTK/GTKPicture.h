@@ -38,6 +38,15 @@ typedef struct _GTKPictureInterface
     BEGIN_INTERFACE
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKPictureObject )
+
+    /**
+     * @Method: GdkRectangle GTKPictureObject::GetPictureRect()
+     * @Description: Gets the picture rectangle, including its size.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*GetPictureRect)(
+        IN GTKPictureObject *This,
+        OUT GdkRectangle    *out);
     
     END_INTERFACE
 } GTKPictureInterface;
