@@ -34,7 +34,8 @@
 #include <UI/GTK/GTKWindow.h>           /** IID_GTKWindowObject **/
 #include <UI/GTK/GTKWindowHandle.h>     /** IID_GTKWindowHandleObject **/
 #include <UI/GTK/GTKDrawingArea.h>      /** IID_GTKDrawingAreaObject **/
-#include <UI/GTK/GTKPicture.h>            /** IID_GTKImageObject **/
+#include <UI/GTK/GTKPicture.h>          /** IID_GTKSpinnerObject **/
+#include <UI/GTK/GTKSpinner.h>          /** IID_GTKSpinnerObject **/
 #include <Core/Async/AsyncOperation.h>  /** IID_AsyncOperationObject **/
 #include <Core/Async/AsyncInfo.h>       /** IID_AsyncInfoObject **/
 #include <Core/Async/AsyncState.h>      /** IID_AsyncStateObject **/

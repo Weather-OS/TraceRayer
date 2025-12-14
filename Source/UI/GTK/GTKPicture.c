@@ -22,7 +22,7 @@
 
 /**
  *  Module: GTKPicture.c
- *  Description: A GTK Widget object that represents an image.
+ *  Description: A GTK Widget object that represents a picture.
  */
 
 #include <UI/GTK/GTKPicture.h>
