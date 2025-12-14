@@ -83,12 +83,48 @@ static TRLong gtk_spinner_object_Release( GTKSpinnerObject *iface )
     return removed;
 }
 
+static TR_STATUS gtk_spinner_object_get_Spinning( GTKSpinnerObject *iface, TRBool *out )
+{
+    const struct gtk_spinner_object *impl = impl_from_GTKSpinnerObject( iface );
+    TRACE( "iface %p, out %p\n", iface, out );
+    if ( !out ) throw_NullPtrException();
+    *out = impl->Spinning;
+    return T_SUCCESS;
+}
+
+static TR_STATUS gtk_spinner_object_set_Spinning( GTKSpinnerObject *iface, TRBool spinning )
+{
+    TR_STATUS status;
+    GtkWidget *spinnerWidget;
+    GTKWidgetObject *widget;
+
+    TRACE( "iface %p, spinning %d\n", iface, spinning );
+
+    struct gtk_spinner_object *impl = impl_from_GTKSpinnerObject( iface );
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void **)&widget );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &spinnerWidget );
+    if ( FAILED( status ) ) return status;
+
+    gtk_spinner_set_spinning( GTK_SPINNER( spinnerWidget ), spinning );
+    impl->Spinning = spinning;
+
+    widget->lpVtbl->Release( widget );
+
+    return T_SUCCESS;
+}
+
 static GTKSpinnerInterface gtk_drawing_area_interface =
 {
     /* UnknownObject Methods */
     gtk_spinner_object_QueryInterface,
     gtk_spinner_object_AddRef,
-    gtk_spinner_object_Release
+    gtk_spinner_object_Release,
+    /* GTKSpinnerObject Methods */
+    gtk_spinner_object_get_Spinning,
+    gtk_spinner_object_set_Spinning
 };
 
 TR_STATUS new_gtk_spinner_object( OUT GTKSpinnerObject **out )
