@@ -20,29 +20,47 @@
  * THE SOFTWARE.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <IO/FetchResources.h>
 #include <IO/Logging.h>
 
 TR_STATUS
-FetchResources(
-    OUT TRPath **outResourcesPath
+FetchResource(
+    IN TRString resourceName,
+    OUT TRPath **outResourcePath
 ) {
     TR_STATUS status;
     TRString path;
+    TRString resourcePath;
+    TRSize resourcePathSize;
 
     // First pass: Binary root
     path = "./Resources";
-    status = FetchPath( path, false, T_READ, outResourcesPath );
+    resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
+    resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
+    snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
+    status = FetchPath( path, false, T_READ, outResourcePath );
+    free( resourcePath );
     if ( !FAILED( status ) ) return T_SUCCESS;
 
     // Second pass: Source dir
     path = "../Resources";
-    status = FetchPath( path, false, T_READ, outResourcesPath );
+    resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
+    resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
+    snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
+    status = FetchPath( path, false, T_READ, outResourcePath );
+    free( resourcePath );
     if ( !FAILED( status ) ) return T_SUCCESS;
 
     // Third pass: Install dir
     path = RESOURCE_DIR;
-    status = FetchPath( path, false, T_READ, outResourcesPath );
+    resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
+    resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
+    snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
+    status = FetchPath( path, false, T_READ, outResourcePath );
+    free( resourcePath );
 
     if ( FAILED( status ) )
         ERROR( "Failed to fetch resources! Make sure %s exists!\n", path );

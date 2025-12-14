@@ -25,6 +25,6 @@
 
 #include <IO/Path.h>
 
-TR_STATUS FetchResources( OUT TRPath **outResourcesPath );
+TR_STATUS FetchResource( IN TRString resourceName, OUT TRPath **outResourcePath );
 
 #endif
