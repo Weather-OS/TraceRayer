@@ -28,12 +28,13 @@ add_executable(TraceRayer main.c
         Source/UI/GTK/GTKDrawingArea.c
         Source/UI/GTK/GTKWindowHandle.c
         Source/UI/GTK/GTKPicture.c
+        Source/UI/GTK/GTKSpinner.c
+        Source/UI/GTK/GTKOverlay.c
         Source/Core/ActivationLoop.c
         Source/Core/Async/AsyncOperation.c
         Source/Core/Async/AsyncState.c
         Source/Core/Async/AsyncInfo.c
         Source/Core/Splash/SplashWindow.c
-        Source/UI/GTK/GTKSpinner.c
 )
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)

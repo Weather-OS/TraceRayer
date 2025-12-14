@@ -20,25 +20,55 @@
  * THE SOFTWARE.
  */
 
+#ifndef TRACERAYER_GTKOVERLAY_H
+#define TRACERAYER_GTKOVERLAY_H
+
+#include <gtk/gtk.h>
+
+#include <Object.h>
+#include <Types.h>
+
+#include <UI/GTK/GTKWidget.h>
+
+typedef struct _GTKOverlayObject GTKOverlayObject;
+
+typedef struct _GTKOverlayInterface
+{
+    BEGIN_INTERFACE
+
+    IMPLEMENTS_UNKNOWNOBJECT( GTKOverlayObject )
+
+    END_INTERFACE
+} GTKOverlayInterface;
+
+interface _GTKOverlayObject
+{
+    CONST_VTBL GTKOverlayInterface *lpVtbl;
+};
+
 /**
- *  Pre-Initializes all class GUIDs defined here
+ * @Object: GTKOverlayObject
+ * @Description: A GTK Overlay object used to depict multiple widgets
+ *               overlayed on top of eachother.
+ * @Implements:
+ *      GTKWidgetObject
  */
+struct gtk_overlay_object
+{
+    // --- Public Members --- //
+    GTKOverlayObject GTKOverlayObject_iface;
 
-#ifndef TRACERAYER_INITGUID_H
-#define TRACERAYER_INITGUID_H
+    // --- Subclasses --- //
+    implements( GTKWidgetObject )
 
-#define INITGUID
-#include <Object.h>                     /** IID_UnknownObject **/
-#include <UI/GTK/GTK.h>                 /** IID_GTKObject **/
-#include <UI/GTK/GTKWidget.h>           /** IID_GTKWidgetObject **/
-#include <UI/GTK/GTKWindow.h>           /** IID_GTKWindowObject **/
-#include <UI/GTK/GTKWindowHandle.h>     /** IID_GTKWindowHandleObject **/
-#include <UI/GTK/GTKDrawingArea.h>      /** IID_GTKDrawingAreaObject **/
-#include <UI/GTK/GTKPicture.h>          /** IID_GTKSpinnerObject **/
-#include <UI/GTK/GTKSpinner.h>          /** IID_GTKSpinnerObject **/
-#include <UI/GTK/GTKOverlay.h>          /** IID_GTKOverlayObject **/
-#include <Core/Async/AsyncOperation.h>  /** IID_AsyncOperationObject **/
-#include <Core/Async/AsyncInfo.h>       /** IID_AsyncInfoObject **/
-#include <Core/Async/AsyncState.h>      /** IID_AsyncStateObject **/
+    // --- Private Members --- //
+    TRLong ref;
+};
+
+// fa685c6a-dc44-4e0e-a4fb-4d5457d859a1
+DEFINE_GUID( GTKOverlayObject, 0xfa685c6a, 0xdc44, 0x4e0e, 0xa4, 0xfb, 0x4d, 0x54, 0x57, 0xd8, 0x59, 0xa1 );
+
+// Constructors
+TR_STATUS new_gtk_overlay_object( OUT GTKOverlayObject **out );
 
 #endif
