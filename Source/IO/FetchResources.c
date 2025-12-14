@@ -41,7 +41,7 @@ FetchResource(
     resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
     resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
     snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
-    status = FetchPath( path, false, T_READ, outResourcePath );
+    status = FetchPath( resourcePath, false, T_READ, outResourcePath );
     free( resourcePath );
     if ( !FAILED( status ) ) return T_SUCCESS;
 
@@ -50,7 +50,7 @@ FetchResource(
     resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
     resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
     snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
-    status = FetchPath( path, false, T_READ, outResourcePath );
+    status = FetchPath( resourcePath, false, T_READ, outResourcePath );
     free( resourcePath );
     if ( !FAILED( status ) ) return T_SUCCESS;
 
@@ -59,7 +59,7 @@ FetchResource(
     resourcePathSize = strlen( path ) + strlen( resourceName ) + 1;
     resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
     snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
-    status = FetchPath( path, false, T_READ, outResourcePath );
+    status = FetchPath( resourcePath, false, T_READ, outResourcePath );
     free( resourcePath );
 
     if ( FAILED( status ) )
