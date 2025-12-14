@@ -78,6 +78,8 @@ static TRLong gtk_window_handle_object_Release( GTKWindowHandleObject *iface )
     {
         if ( impl->GTKWidgetObject_impl )
             impl->GTKWidgetObject_impl->lpVtbl->Release( impl->GTKWidgetObject_impl );
+        if ( impl->ChildWidget )
+            impl->ChildWidget->lpVtbl->Release( impl->ChildWidget );
         free( impl );
     }
     return removed;
@@ -110,7 +112,7 @@ static TR_STATUS gtk_window_handle_object_set_ChildWidget( GTKWindowHandleObject
 
     TRACE( "iface %p, widget %p\n", iface, widget );
 
-    if (impl->ChildWidget)
+    if ( impl->ChildWidget )
         // prevent dangling pointers
         impl->ChildWidget->lpVtbl->Release(impl->ChildWidget);
 
