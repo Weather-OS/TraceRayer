@@ -79,10 +79,11 @@ SplashWindow(
     // Splash Window Handle
     CHECK_TR( splashPicture->lpVtbl->QueryInterface( splashPicture, IID_GTKWidgetObject, (void **)&currentWidget ) );
     CHECK_TR( splashWindowHandle->lpVtbl->set_ChildWidget( splashWindowHandle, currentWidget ) );
+    currentWidget->lpVtbl->Release( currentWidget ); // <-- Hand ownership to splashWindowHandle
 
-    // safe override because we no longer own currentWidget
     CHECK_TR( splashWindowHandle->lpVtbl->QueryInterface( splashWindowHandle, IID_GTKWidgetObject, (void **)&currentWidget ) );
     CHECK_TR( splashWindow->lpVtbl->set_ChildWidget( splashWindow, currentWidget ) );
+    currentWidget->lpVtbl->Release( currentWidget ); // <-- Hand ownership to splashWindow
 
     CHECK_TR( splashWindow->lpVtbl->Show( splashWindow ) );
 

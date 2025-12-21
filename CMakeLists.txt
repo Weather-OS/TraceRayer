@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
-project(TraceRayer C)
+project(TraceRayer)
 
 set(CMAKE_C_STANDARD 23)
+set(CMAKE_CXX_STANDARD 23)
 
 find_package(PkgConfig REQUIRED)
 
@@ -16,6 +17,8 @@ link_directories(${UUID_LIBRARY_DIRS})
 pkg_check_modules(ADWAITA REQUIRED libadwaita-1)
 include_directories(${ADWAITA_INCLUDE_DIRS})
 link_directories(${ADWAITA_LIBRARY_DIRS})
+
+enable_language(CXX)
 
 add_executable(TraceRayer main.c
         Source/IO/Arguments.c
@@ -35,6 +38,7 @@ add_executable(TraceRayer main.c
         Source/Core/Async/AsyncState.c
         Source/Core/Async/AsyncInfo.c
         Source/Core/Splash/SplashWindow.c
+        test.cpp
 )
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)

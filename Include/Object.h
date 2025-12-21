@@ -29,6 +29,10 @@
 #include <IO/Logging.h>
 #include <stdatomic.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define BEGIN_INTERFACE
 #define END_INTERFACE
 
@@ -95,5 +99,42 @@ DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 
             free( root );                                                                           \
         return removed;                                                                             \
     }
+
+
+#ifdef __cplusplus
+
+namespace TR
+{
+    class UnknownObject
+    {
+    public:
+        _UnknownObject *unknwn = nullptr;
+
+        ~UnknownObject()
+        {
+            if (unknwn) unknwn->lpVtbl->Release( unknwn );
+        }
+
+        void QueryInterface( IN const TRUUID uuid, OUT void **out )
+        {
+            TR_STATUS ts;
+            ts = unknwn->lpVtbl->QueryInterface( unknwn, uuid, out );
+            if ( FAILED( ts ) ) throw TRException( ts );
+        }
+
+        TRLong AddRef()
+        {
+            return unknwn->lpVtbl->AddRef( unknwn );
+        }
+
+        TRLong Release()
+        {
+            return unknwn->lpVtbl->Release( unknwn );
+        }
+    };
+}
+
+} // extern "C"
+#endif
 
 #endif

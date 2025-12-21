@@ -175,7 +175,7 @@ static GTKInterface gtk_interface =
     gtk_object_eventremove_OnActivation
 };
 
-TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out )
+TR_STATUS new_gtk_object( IN TRCString appName, OUT GTKObject **out )
 {
     struct gtk_object *impl;
 

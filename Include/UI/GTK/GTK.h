@@ -31,6 +31,10 @@
 
 #include <UI/GTK/GTKWindow.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _GTKObject GTKObject;
 
 typedef struct _GTKInterface
@@ -94,6 +98,26 @@ struct gtk_object
 DEFINE_GUID( GTKObject, 0x71e34ecd, 0xfd1e, 0x4e3c, 0x94, 0xfa, 0xd3, 0x29, 0xc7, 0x30, 0x13, 0x25 );
 
 // Constructors
-TR_STATUS new_gtk_object( IN TRString appName, OUT GTKObject **out );
+TR_STATUS new_gtk_object( IN TRCString appName, OUT GTKObject **out );
+
+#ifdef __cplusplus
+
+namespace TR
+{
+    class GTKObject : UnknownObject
+    {
+        _GTKObject *&obj = *reinterpret_cast<_GTKObject**>( &unknwn );
+
+    public:
+        explicit GTKObject( std::string appName )
+        {
+            TR_STATUS ts = new_gtk_object( appName.c_str(), &obj );
+            if ( FAILED( ts ) ) throw TRException( ts );
+        }
+    };
+}
+
+} // extern "C"
+#endif
 
 #endif

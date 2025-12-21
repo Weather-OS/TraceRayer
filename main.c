@@ -37,6 +37,8 @@
 
 #include <UI/GTK/GTK.h>
 
+extern void mai2();
+
 TR_STATUS async_test( UnknownObject *invoker, void *param, PropVariant *out )
 {
     const auto obj = (GTKObject *)invoker;
@@ -52,6 +54,9 @@ int main( const int argc, char **argv )
     if ( FAILED( status ) ) return status;
     status = InitializeLogging();
     if ( FAILED( status ) ) return status;
+
+    mai2();
+    return 0;
 
     TRULong activationToken;
     GTKObject *obj;

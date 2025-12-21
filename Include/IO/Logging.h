@@ -29,6 +29,10 @@
 
 #include <Types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef SYS_gettid
 #define gettid() syscall(SYS_gettid)
 #else
@@ -74,4 +78,22 @@ void TraceRayer_DEBUG( IN Log_Category category, IN pid_t threadId, IN TRCString
 
 TRChar* debugstr_uuid( IN const uuid_t uuid );
 
-#endif //TRACERAYER_LOGGING_H
+#ifdef __cplusplus
+
+} // extern "C"
+
+#include <stdexcept>
+#include <string>
+
+struct TRException : std::runtime_error
+{
+    TR_STATUS status;
+    explicit TRException( TR_STATUS s ): std::runtime_error( "Unhandled Exception: " + std::to_string(s) ), status(s)
+    {
+        ERROR("Unhandled exception %d within C++ code.\n", status);
+    }
+};
+
+#endif
+
+#endif
