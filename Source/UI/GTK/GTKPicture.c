@@ -83,7 +83,6 @@ static TRLong gtk_picture_object_Release( GTKPictureObject *iface )
     return removed;
 }
 
-// FIXME: PictureRect is only assigned after notify::paintable
 static TR_STATUS gtk_picture_object_GetPictureRect( GTKPictureObject *iface, GdkRectangle *out )
 {
     TR_STATUS status;
@@ -104,7 +103,6 @@ static TR_STATUS gtk_picture_object_GetPictureRect( GTKPictureObject *iface, Gdk
     paintable = gtk_picture_get_paintable( GTK_PICTURE( pictureWidget ) );
     out->width = gdk_paintable_get_intrinsic_width( paintable );
     out->height = gdk_paintable_get_intrinsic_height( paintable );
-    g_object_unref( paintable );
 
     widget->lpVtbl->Release( widget );
 
@@ -125,6 +123,7 @@ TR_STATUS TR_API new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT
 {
     TR_STATUS status;
     GtkWidget *picture;
+    GdkTexture *texture;
     struct gtk_picture_object *impl;
 
     TRACE( "out %p\n", out );
@@ -136,7 +135,10 @@ TR_STATUS TR_API new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT
     impl->GTKPictureObject_iface.lpVtbl = &gtk_picture_interface;
     impl->ref = 1;
 
-    picture = gtk_picture_new_for_filename( imagePath->Location );
+    texture = gdk_texture_new_from_file( g_file_new_for_path( imagePath->Location ), nullptr );
+
+    picture = gtk_picture_new_for_paintable( GDK_PAINTABLE( texture ) );
+    g_object_unref( texture );
 
     status = new_gtk_widget_object_override_widget( picture, &impl->GTKWidgetObject_impl );
     if ( FAILED( status ) ) return status;

@@ -20,12 +20,12 @@
  * THE SOFTWARE.
  */
 
-#include <Statics.h>
-
 #include <Core/Splash/SplashWindow.hpp>
+
 #include <UI/GTK/GTKPicture.h>
 #include <UI/GTK/GTKWindowHandle.h>
 #include <IO/FetchResources.h>
+#include <Statics.h>
 
 void
 SplashWindow(
@@ -44,7 +44,7 @@ SplashWindow(
     window.ChildWidget( windowHandle );
     window.SetResizable( true );
     window.SetWindowTitle( APPNAME );
-    window.WindowRect( { .width = 600, .height = 450 } );
+    window.WindowRect( picture.GetPictureRect() );
     window.Show();
 
     windowHandle.ChildWidget( picture );

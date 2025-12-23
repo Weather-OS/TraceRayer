@@ -45,7 +45,7 @@ typedef struct _SignalHandler
 #include <mutex>
 
 template <typename From>
-using SignalCallbackSafe = void (*)( From* invoker, void* user_data );
+using SignalCallbackSafe = void (*)( From *invoker, void *user_data );
 
 template <typename From>
 struct SignalCallbackSafeObj
@@ -76,7 +76,7 @@ SignalCallbackHandler(
             std::scoped_lock lock( name##_callback_store_mutex_ );                                                  \
             name##_callback_store_.emplace(                                                                         \
                     out,                                                                                            \
-                    std::unique_ptr<void, void(*)(void*)>( callbackObj, [](void* p)                                 \
+                    std::unique_ptr<void, void(*)(void*)>( callbackObj, [](void *p)                                 \
                         {                                                                                           \
                             delete static_cast<SignalCallbackSafeObj<from>*>( p );                                  \
                         } )                                                                                         \

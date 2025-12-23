@@ -106,6 +106,13 @@ namespace TR
         {
             return QueryInterface<GTKWidgetObject>();
         }
+
+        GdkRectangle GetPictureRect() const
+        {
+            GdkRectangle rect;
+            check_tr_( get()->lpVtbl->GetPictureRect( get(), &rect ) );
+            return rect;
+        }
     };
 }
 
