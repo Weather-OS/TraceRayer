@@ -90,30 +90,33 @@ TR_STATUS TR_API new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT
 
 namespace TR
 {
-    class GTKPictureObject : public UnknownObject<_GTKPictureObject>
+    namespace UI
     {
-    public:
-        using UnknownObject::UnknownObject;
-        static constexpr const TRUUID &classId = IID_GTKPictureObject;
-
-        explicit GTKPictureObject( TRPath *&imagePath )
+        class GTKPictureObject : public UnknownObject<_GTKPictureObject>
         {
-            check_tr_( new_gtk_picture_object_override_path( imagePath, put() ) );
-        }
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_GTKPictureObject;
 
-        // Implements a GTKWidgetObject
-        operator GTKWidgetObject() const
-        {
-            return QueryInterface<GTKWidgetObject>();
-        }
+            explicit GTKPictureObject( TRPath *&imagePath )
+            {
+                check_tr_( new_gtk_picture_object_override_path( imagePath, put() ) );
+            }
 
-        GdkRectangle GetPictureRect() const
-        {
-            GdkRectangle rect;
-            check_tr_( get()->lpVtbl->GetPictureRect( get(), &rect ) );
-            return rect;
-        }
-    };
+            // Implements a GTKWidgetObject
+            operator GTKWidgetObject() const
+            {
+                return QueryInterface<GTKWidgetObject>();
+            }
+
+            GdkRectangle GetPictureRect() const
+            {
+                GdkRectangle rect;
+                check_tr_( get()->lpVtbl->GetPictureRect( get(), &rect ) );
+                return rect;
+            }
+        };
+    }
 }
 
 #endif

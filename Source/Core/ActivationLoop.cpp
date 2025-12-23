@@ -24,9 +24,11 @@
 
 #include <Core/ActivationLoop.hpp>
 
+using namespace TR;
+
 void
 ActivationLoop(
-    IN TR::GTKObject *invoker,
+    IN UI::GTKObject *invoker,
     IN void *user_data
 ) {
     SplashWindow( *invoker );

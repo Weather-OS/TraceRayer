@@ -28,6 +28,6 @@
 
 #include <UI/GTK/GTK.h>
 
-void SplashWindow( const TR::GTKObject &inGtk );
+void SplashWindow( const TR::UI::GTKObject &inGtk );
 
 #endif

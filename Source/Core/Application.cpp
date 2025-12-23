@@ -25,12 +25,14 @@
 #include <Statics.h>
 #include <Core/ActivationLoop.hpp>
 
+using namespace TR;
+
 TR_STATUS InitApplication()
 {
     TRULong token;
     try
     {
-        TR::GTKObject app( GTK_APPNAME );
+        UI::GTKObject app( GTK_APPNAME );
         token = app.OnActivation( ActivationLoop, &token );
         app.RunApplication();
     } catch ( const TRException& e )

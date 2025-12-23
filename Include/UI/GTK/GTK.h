@@ -105,32 +105,35 @@ TR_STATUS TR_API new_gtk_object( IN TRCString appName, OUT GTKObject **out );
 
 namespace TR
 {
-    class GTKObject : public UnknownObject<_GTKObject>
+    namespace UI
     {
-    public:
-        using UnknownObject::UnknownObject;
-        static constexpr const TRUUID &classId = IID_GTKObject;
-
-        explicit GTKObject( const std::string& appName )
+        class GTKObject : public UnknownObject<_GTKObject>
         {
-            check_tr_( new_gtk_object( appName.c_str(), put() ) );
-        }
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_GTKObject;
 
-        [[nodiscard]]
-        GTKWindowObject CreateWindow() const
-        {
-            _GTKWindowObject *wobj;
-            check_tr_( get()->lpVtbl->CreateWindow( get(), &wobj ) );
-            return GTKWindowObject( wobj );
-        }
+            explicit GTKObject( const std::string& appName )
+            {
+                check_tr_( new_gtk_object( appName.c_str(), put() ) );
+            }
 
-        void RunApplication() const
-        {
-            check_tr_( get()->lpVtbl->RunApplication( get() ) );
-        }
+            [[nodiscard]]
+            GTKWindowObject CreateWindow() const
+            {
+                _GTKWindowObject *wobj;
+                check_tr_( get()->lpVtbl->CreateWindow( get(), &wobj ) );
+                return GTKWindowObject( wobj );
+            }
 
-        implements_event( OnActivation, TR::GTKObject )
-    };
+            void RunApplication() const
+            {
+                check_tr_( get()->lpVtbl->RunApplication( get() ) );
+            }
+
+            implements_event( OnActivation, GTKObject )
+        };
+    }
 }
 #endif
 

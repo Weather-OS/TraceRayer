@@ -27,24 +27,27 @@
 #include <IO/FetchResources.h>
 #include <Statics.h>
 
+using namespace TR;
+
 void
 SplashWindow(
-    const TR::GTKObject &inGtk
+    const UI::GTKObject &inGtk
 ) {
     TRPath *splashPicturePath;
 
-    TR::GTKWindowObject window = inGtk.CreateWindow();
-    TR::GTKPictureObject picture;
-    TR::GTKWindowHandleObject windowHandle{};
+    UI::GTKWindowObject window = inGtk.CreateWindow();
+    UI::GTKPictureObject picture;
+    UI::GTKWindowHandleObject windowHandle{};
 
     FetchResource( "launch.png", &splashPicturePath );
 
-    picture = TR::GTKPictureObject( splashPicturePath );
+    picture = UI::GTKPictureObject( splashPicturePath );
 
     window.ChildWidget( windowHandle );
     window.SetResizable( true );
     window.SetWindowTitle( APPNAME );
     window.WindowRect( picture.GetPictureRect() );
+
     window.Show();
 
     windowHandle.ChildWidget( picture );

@@ -104,37 +104,40 @@ TR_STATUS TR_API new_gtk_window_handle_object( OUT GTKWindowHandleObject **out )
 
 namespace TR
 {
-    class GTKWindowHandleObject : public UnknownObject<_GTKWindowHandleObject>
+    namespace UI
     {
-    public:
-        using UnknownObject::UnknownObject;
-        static constexpr const TRUUID &classId = IID_GTKWindowHandleObject;
-
-        explicit GTKWindowHandleObject()
+        class GTKWindowHandleObject : public UnknownObject<_GTKWindowHandleObject>
         {
-            check_tr_( new_gtk_window_handle_object( put() ) );
-        }
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_GTKWindowHandleObject;
 
-        // Implements a GTKWidgetObject
-        operator GTKWidgetObject() const
-        {
-            return QueryInterface<GTKWidgetObject>();
-        }
+            explicit GTKWindowHandleObject()
+            {
+                check_tr_( new_gtk_window_handle_object( put() ) );
+            }
 
-        [[nodiscard]]
-        GTKWidgetObject ChildWidget() const
-        {
-            _GTKWidgetObject *ChildWidget;
-            check_tr_( get()->lpVtbl->get_ChildWidget( get(), &ChildWidget ) );
-            return GTKWidgetObject( ChildWidget );
-        }
+            // Implements a GTKWidgetObject
+            operator GTKWidgetObject() const
+            {
+                return QueryInterface<GTKWidgetObject>();
+            }
 
-        void ChildWidget( const GTKWidgetObject& widget ) const
-        {
-            _GTKWidgetObject *ChildWidget = widget.get();
-            check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
-        }
-    };
+            [[nodiscard]]
+            GTKWidgetObject ChildWidget() const
+            {
+                _GTKWidgetObject *ChildWidget;
+                check_tr_( get()->lpVtbl->get_ChildWidget( get(), &ChildWidget ) );
+                return GTKWidgetObject( ChildWidget );
+            }
+
+            void ChildWidget( const GTKWidgetObject& widget ) const
+            {
+                _GTKWidgetObject *ChildWidget = widget.get();
+                check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
+            }
+        };
+    }
 }
 #endif
 

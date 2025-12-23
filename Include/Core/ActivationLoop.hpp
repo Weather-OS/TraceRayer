@@ -26,6 +26,6 @@
 #include <UI/GTK/GTK.h>
 #include <Types.h>
 
-void ActivationLoop( TR::GTKObject *invoker, void *user_data );
+void ActivationLoop( TR::UI::GTKObject *invoker, void *user_data );
 
 #endif

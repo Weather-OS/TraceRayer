@@ -170,66 +170,69 @@ TR_STATUS TR_API new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObj
 
 namespace TR
 {
-    class GTKWindowObject : public UnknownObject<_GTKWindowObject>
+    namespace UI
     {
-    public:
-        using UnknownObject::UnknownObject;
-        static constexpr const TRUUID &classId = IID_GTKWindowObject;
-
-        explicit GTKWindowObject( GtkApplication *app )
+        class GTKWindowObject : public UnknownObject<_GTKWindowObject>
         {
-            check_tr_( new_gtk_window_object( app, put() ) );
-        }
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_GTKWindowObject;
 
-        // Implements a GTKWidgetObject
-        operator GTKWidgetObject() const
-        {
-            return QueryInterface<GTKWidgetObject>();
-        }
+            explicit GTKWindowObject( GtkApplication *app )
+            {
+                check_tr_( new_gtk_window_object( app, put() ) );
+            }
 
-        [[nodiscard]]
-        GdkRectangle WindowRect() const noexcept
-        {
-            GdkRectangle out;
-            get()->lpVtbl->get_WindowRect( get(), &out );
-            return out;
-        }
+            // Implements a GTKWidgetObject
+            operator GTKWidgetObject() const
+            {
+                return QueryInterface<GTKWidgetObject>();
+            }
 
-        void WindowRect( GdkRectangle rect ) const noexcept
-        {
-            get()->lpVtbl->set_WindowRect( get(), rect );
-        }
+            [[nodiscard]]
+            GdkRectangle WindowRect() const noexcept
+            {
+                GdkRectangle out;
+                get()->lpVtbl->get_WindowRect( get(), &out );
+                return out;
+            }
 
-        [[nodiscard]]
-        GTKWidgetObject ChildWidget() const
-        {
-            _GTKWidgetObject *ChildWidget;
-            check_tr_( get()->lpVtbl->get_ChildWidget( get(), &ChildWidget ) );
-            return GTKWidgetObject( ChildWidget );
-        }
+            void WindowRect( GdkRectangle rect ) const noexcept
+            {
+                get()->lpVtbl->set_WindowRect( get(), rect );
+            }
 
-        void ChildWidget( const GTKWidgetObject& widget ) const
-        {
-            check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
-        }
+            [[nodiscard]]
+            GTKWidgetObject ChildWidget() const
+            {
+                _GTKWidgetObject *ChildWidget;
+                check_tr_( get()->lpVtbl->get_ChildWidget( get(), &ChildWidget ) );
+                return GTKWidgetObject( ChildWidget );
+            }
 
-        void SetWindowTitle( const std::string& title ) const
-        {
-            check_tr_( get()->lpVtbl->SetWindowTitle( get(), title.c_str() ) );
-        }
+            void ChildWidget( const GTKWidgetObject& widget ) const
+            {
+                check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
+            }
 
-        void SetResizable( TRBool resizable ) const
-        {
-            check_tr_( get()->lpVtbl->SetResizable( get(), resizable ) );
-        }
+            void SetWindowTitle( const std::string& title ) const
+            {
+                check_tr_( get()->lpVtbl->SetWindowTitle( get(), title.c_str() ) );
+            }
 
-        void Show() const
-        {
-            check_tr_( get()->lpVtbl->Show( get() ) );
-        }
+            void SetResizable( TRBool resizable ) const
+            {
+                check_tr_( get()->lpVtbl->SetResizable( get(), resizable ) );
+            }
 
-        implements_event( OnDelete, TR::GTKWindowObject )
-    };
+            void Show() const
+            {
+                check_tr_( get()->lpVtbl->Show( get() ) );
+            }
+
+            implements_event( OnDelete, GTKWindowObject )
+        };
+    }
 }
 #endif
 

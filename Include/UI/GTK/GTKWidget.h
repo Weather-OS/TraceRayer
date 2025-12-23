@@ -92,30 +92,33 @@ TR_STATUS TR_API new_gtk_widget_object_override_widget( IN GtkWidget *widget, OU
 
 namespace TR
 {
-    class GTKWidgetObject : public UnknownObject<_GTKWidgetObject>
+    namespace UI
     {
-    public:
-        using UnknownObject::UnknownObject;
-        static constexpr const TRUUID &classId = IID_GTKWidgetObject;
-
-        explicit GTKWidgetObject( GtkWidget *widget )
+        class GTKWidgetObject : public UnknownObject<_GTKWidgetObject>
         {
-            check_tr_( new_gtk_widget_object_override_widget( widget, put() ) );
-        }
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_GTKWidgetObject;
 
-        [[nodiscard]]
-        GtkWidget *Widget() const noexcept
-        {
-            GtkWidget *out;
-            get()->lpVtbl->get_Widget( get(), &out );
-            return out;
-        }
+            explicit GTKWidgetObject( GtkWidget *widget )
+            {
+                check_tr_( new_gtk_widget_object_override_widget( widget, put() ) );
+            }
 
-        void SetVisibility( TRBool visibility ) const noexcept
-        {
-            get()->lpVtbl->setVisibility( get() , visibility );
-        }
-    };
+            [[nodiscard]]
+            GtkWidget *Widget() const noexcept
+            {
+                GtkWidget *out;
+                get()->lpVtbl->get_Widget( get(), &out );
+                return out;
+            }
+
+            void SetVisibility( TRBool visibility ) const noexcept
+            {
+                get()->lpVtbl->setVisibility( get() , visibility );
+            }
+        };
+    }
 }
 
 #endif
