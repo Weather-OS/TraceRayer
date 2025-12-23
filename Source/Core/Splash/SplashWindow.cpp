@@ -23,6 +23,9 @@
 #include <Core/Splash/SplashWindow.hpp>
 
 #include <UI/GTK/GTKPicture.h>
+#include <UI/GTK/GTKSpinner.h>
+#include <UI/GTK/GTKBox.h>
+#include <UI/GTK/GTKOverlay.h>
 #include <UI/GTK/GTKWindowHandle.h>
 #include <IO/FetchResources.h>
 #include <Statics.h>
@@ -38,17 +41,28 @@ SplashWindow(
     UI::GTKWindowObject window = inGtk.CreateWindow();
     UI::GTKPictureObject picture;
     UI::GTKWindowHandleObject windowHandle{};
+    UI::GTKSpinnerObject spinner{};
+    UI::GTKBoxObject box( GTK_ORIENTATION_HORIZONTAL, 5 );
+    UI::GTKOverlayObject overlay{};
 
     FetchResource( "launch.png", &splashPicturePath );
 
     picture = UI::GTKPictureObject( splashPicturePath );
+
+    spinner.Spinning( true );
+    spinner.QueryInterface<UI::GTKWidgetObject>().Alignment( { .Horizontal = GTK_ALIGN_START, .Vertical = GTK_ALIGN_END } );
+
+    overlay.ChildWidget( picture );
+    overlay.AddWidget( spinner );
+
+    box.AppendWidget( overlay );
 
     window.ChildWidget( windowHandle );
     window.SetResizable( true );
     window.SetWindowTitle( APPNAME );
     window.WindowRect( picture.GetPictureRect() );
 
-    window.Show();
+    windowHandle.ChildWidget( box );
 
-    windowHandle.ChildWidget( picture );
+    window.Show();
 }

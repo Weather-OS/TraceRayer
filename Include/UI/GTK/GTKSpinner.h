@@ -30,6 +30,10 @@
 
 #include <UI/GTK/GTKWidget.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _GTKSpinnerObject GTKSpinnerObject;
 
 typedef struct _GTKSpinnerInterface
@@ -88,5 +92,46 @@ DEFINE_GUID( GTKSpinnerObject, 0x68e7c87b, 0x7e17, 0x4b34, 0x8e, 0xf5, 0x67, 0x6
 
 // Constructors
 TR_STATUS TR_API new_gtk_spinner_object( OUT GTKSpinnerObject **out );
+
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    namespace UI
+    {
+        class GTKSpinnerObject : public UnknownObject<_GTKSpinnerObject>
+        {
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_GTKSpinnerObject;
+
+            explicit GTKSpinnerObject()
+            {
+                check_tr_( new_gtk_spinner_object( put() ) );
+            }
+
+            // Implements a GTKWidgetObject
+            operator GTKWidgetObject() const
+            {
+                return QueryInterface<GTKWidgetObject>();
+            }
+
+            TRBool Spinning() const noexcept
+            {
+                TRBool spinning;
+                get()->lpVtbl->get_Spinning( get(), &spinning );
+                return spinning;
+            }
+
+            void Spinning( TRBool spinning ) const noexcept
+            {
+                get()->lpVtbl->set_Spinning( get(), spinning );
+            }
+        };
+    }
+}
+
+#endif
 
 #endif

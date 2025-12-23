@@ -24,6 +24,7 @@ enable_language(CXX)
 add_library( comui SHARED
         Source/UI/GTK/GTKWindow.c
         Source/UI/GTK/GTK.c
+        Source/UI/GTK/GTKBox.c
         Source/UI/GTK/GTKWidget.c
         Source/UI/GTK/GTKDrawingArea.c
         Source/UI/GTK/GTKWindowHandle.c
