@@ -30,6 +30,7 @@
 #define INITGUID
 #include <Object.h>                     /** IID_UnknownObject **/
 #include <UI/GTK/GTK.h>                 /** IID_GTKObject **/
+#include <UI/GTK/GTKBox.h>              /** IID_GTKBoxObject **/
 #include <UI/GTK/GTKWidget.h>           /** IID_GTKWidgetObject **/
 #include <UI/GTK/GTKWindow.h>           /** IID_GTKWindowObject **/
 #include <UI/GTK/GTKWindowHandle.h>     /** IID_GTKWindowHandleObject **/
