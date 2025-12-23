@@ -355,7 +355,7 @@ ParseMessage(
     return T_SUCCESS;
 }
 
-void
+void TR_API
 TraceRayer_DEBUG(
     IN Log_Category category,
     IN pid_t threadId,
@@ -403,14 +403,14 @@ TraceRayer_DEBUG(
     free( buffer );
 }
 
-TRChar *debugstr_uuid( IN const uuid_t uuid )
+TRString TR_API debugstr_uuid( IN const uuid_t uuid )
 {
     static _Thread_local TRChar str[37];
     uuid_unparse( uuid, str );
     return str;
 }
 
-TR_STATUS
+TR_STATUS TR_API
 InitializeLogging()
 {
     TRString parsedMessage;

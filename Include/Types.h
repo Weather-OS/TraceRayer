@@ -126,7 +126,7 @@ typedef struct _TR_PropVariant
 
 #ifdef INITGUID
 #define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
-    const uuid_t IID_##name = { \
+    __attribute__((visibility("default"))) const uuid_t IID_##name = { \
         (unsigned char)(((l) >> 24) & 0xff), (unsigned char)(((l) >> 16) & 0xff), \
         (unsigned char)(((l) >> 8) & 0xff),  (unsigned char)((l) & 0xff), \
         (unsigned char)(((w1) >> 8) & 0xff), (unsigned char)((w1) & 0xff), \

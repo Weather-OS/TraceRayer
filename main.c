@@ -25,13 +25,10 @@
  *  Project Description: For my computer science class.
  */
 
-#include <stdio.h>
-
 #include <InitGUID.h>
-#include <Statics.h>
+
 #include <IO/Arguments.h>
 #include <IO/Logging.h>
-#include <UI/GTK/GTK.h>
 #include <Core/Application.h>
 
 int main( const int argc, char **argv )

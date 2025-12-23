@@ -53,8 +53,8 @@ typedef struct _TR_Log_Token
     Log_Category Category;
 } Log_Token;
 
-TR_STATUS InitializeLogging();
-void TraceRayer_DEBUG( IN Log_Category category, IN pid_t threadId, IN TRCString module, IN TRCString function, IN TRCString fmt, ... );
+TR_STATUS TR_API InitializeLogging();
+void TR_API TraceRayer_DEBUG( IN Log_Category category, IN pid_t threadId, IN TRCString module, IN TRCString function, IN TRCString fmt, ... );
 
 #define INFO(message, ...) \
     TraceRayer_DEBUG( LOG_CATEGORY_INFO, gettid(), __FILENAME__, __FUNCTION__, message, ##__VA_ARGS__)
@@ -76,7 +76,7 @@ void TraceRayer_DEBUG( IN Log_Category category, IN pid_t threadId, IN TRCString
         exit(125);                                              \
     }                                                           \
 
-TRChar* debugstr_uuid( IN const uuid_t uuid );
+TRString TR_API debugstr_uuid( IN const uuid_t uuid );
 
 #ifdef __cplusplus
 } // extern "C"

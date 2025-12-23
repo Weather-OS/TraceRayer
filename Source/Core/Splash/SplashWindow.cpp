@@ -42,12 +42,13 @@ SplashWindow(
     UI::GTKPictureObject picture;
     UI::GTKWindowHandleObject windowHandle{};
     UI::GTKSpinnerObject spinner{};
-    UI::GTKBoxObject box( GTK_ORIENTATION_HORIZONTAL, 5 );
     UI::GTKOverlayObject overlay{};
+    UI::GTKBoxObject box( GTK_ORIENTATION_HORIZONTAL, 5 );
 
     FetchResource( "launch.png", &splashPicturePath );
 
     picture = UI::GTKPictureObject( splashPicturePath );
+    free( splashPicturePath );
 
     spinner.Spinning( true );
     spinner.QueryInterface<UI::GTKWidgetObject>().Alignment( { .Horizontal = GTK_ALIGN_START, .Vertical = GTK_ALIGN_END } );

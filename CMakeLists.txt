@@ -45,7 +45,6 @@ target_compile_options(comui PRIVATE
 
 # comasync
 add_library( comasync SHARED
-        Source/Core/ActivationLoop.cpp
         Source/Core/Async/AsyncOperation.c
         Source/Core/Async/AsyncState.c
         Source/Core/Async/AsyncInfo.c )
@@ -72,6 +71,11 @@ add_executable(TraceRayer main.c
         Source/Core/Splash/SplashWindow.cpp)
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
+
+target_compile_options(TraceRayer PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:-O3 -fvisibility=hidden>
+        $<$<COMPILE_LANGUAGE:C>:-O2 -fvisibility=hidden>
+)
 
 target_link_libraries(TraceRayer ${UUID_LIBRARIES})
 target_link_libraries(TraceRayer comui)
