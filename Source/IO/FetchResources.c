@@ -28,7 +28,7 @@
 
 TR_STATUS
 FetchResource(
-    IN TRString resourceName,
+    IN TRCString resourceName,
     OUT TRPath **outResourcePath
 ) {
     TR_STATUS status;

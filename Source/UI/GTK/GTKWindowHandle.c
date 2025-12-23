@@ -146,7 +146,7 @@ static GTKWindowHandleInterface gtk_drawing_area_interface =
     gtk_window_handle_object_set_ChildWidget
 };
 
-TR_STATUS new_gtk_window_handle_object( OUT GTKWindowHandleObject **out )
+TR_STATUS TR_API new_gtk_window_handle_object( OUT GTKWindowHandleObject **out )
 {
     TR_STATUS status;
     GtkWidget *window_handle;

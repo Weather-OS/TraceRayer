@@ -20,19 +20,14 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_FETCHRESOURCES_H
-#define TRACERAYER_FETCHRESOURCES_H
+#include <Core/Splash/SplashWindow.hpp>
 
-#include <IO/Path.h>
+#include <Core/ActivationLoop.hpp>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-TR_STATUS FetchResource( IN TRCString resourceName, OUT TRPath **outResourcePath );
-
-#ifdef __cplusplus
-} //extern "C"
-#endif
-
-#endif
+void
+ActivationLoop(
+    IN TR::GTKObject *invoker,
+    IN void *user_data
+) {
+    SplashWindow( *invoker );
+}

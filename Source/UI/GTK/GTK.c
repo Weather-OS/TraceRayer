@@ -66,7 +66,7 @@ static void ActivationCallback( GtkApplication *app, void *user_data )
 
 DEFINE_SHALLOW_UNKNOWNOBJECT( GTKObject, gtk_object )
 
-static TR_STATUS gtk_object_CreateWindow( GTKObject *iface, GTKWindowObject **out )
+TR_STATUS gtk_object_CreateWindow( GTKObject *iface, GTKWindowObject **out )
 {
     TR_STATUS status;
 
@@ -175,7 +175,7 @@ static GTKInterface gtk_interface =
     gtk_object_eventremove_OnActivation
 };
 
-TR_STATUS new_gtk_object( IN TRCString appName, OUT GTKObject **out )
+TR_STATUS TR_API new_gtk_object( IN TRCString appName, OUT GTKObject **out )
 {
     struct gtk_object *impl;
 

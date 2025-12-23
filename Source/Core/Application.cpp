@@ -20,19 +20,22 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_FETCHRESOURCES_H
-#define TRACERAYER_FETCHRESOURCES_H
+#include <Core/Application.h>
 
-#include <IO/Path.h>
+#include <Statics.h>
+#include <Core/ActivationLoop.hpp>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-TR_STATUS FetchResource( IN TRCString resourceName, OUT TRPath **outResourcePath );
-
-#ifdef __cplusplus
-} //extern "C"
-#endif
-
-#endif
+TR_STATUS InitApplication()
+{
+    TRULong token;
+    try
+    {
+        TR::GTKObject app( GTK_APPNAME );
+        token = app.OnActivation( ActivationLoop, &token );
+        app.RunApplication();
+    } catch ( const TRException& e )
+    {
+        return e.status;
+    }
+    return T_SUCCESS;
+}

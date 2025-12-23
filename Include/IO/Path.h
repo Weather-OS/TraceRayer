@@ -25,6 +25,10 @@
 
 #include <Types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum _TR_AccessType
 {
     T_READ = 0,
@@ -41,11 +45,15 @@ typedef struct _TR_Path
     TRString Name;
     TRString Location;
     TRBool IsDirectory;
-    AccessType AccessType;
+    AccessType Access;
     FILE *FileHandle;
 } TRPath;
 
 TR_STATUS FetchPath( IN TRString path, IN TRBool create, IN AccessType accessType, OUT TRPath **pathObject );
 TR_STATUS FetchSubpath( IN TRPath *pathObject, IN TRString name, IN TRBool create, IN AccessType accessType, OUT TRPath **outPath );
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif //TRACERAYER_PATH_H

@@ -29,23 +29,10 @@
 
 #include <InitGUID.h>
 #include <Statics.h>
-
-#include <Core/ActivationLoop.h>
-
 #include <IO/Arguments.h>
 #include <IO/Logging.h>
-
 #include <UI/GTK/GTK.h>
-
-extern void mai2();
-
-TR_STATUS async_test( UnknownObject *invoker, void *param, PropVariant *out )
-{
-    const auto obj = (GTKObject *)invoker;
-    TR_STATUS status;
-    TRACE("Reached here!\n");
-    return T_SUCCESS;
-}
+#include <Core/Application.h>
 
 int main( const int argc, char **argv )
 {
@@ -55,31 +42,5 @@ int main( const int argc, char **argv )
     status = InitializeLogging();
     if ( FAILED( status ) ) return status;
 
-    mai2();
-    return 0;
-
-    TRULong activationToken;
-    GTKObject *obj;
-    AsyncOperationObject *operation;
-
-    status = new_gtk_object( GTK_APPNAME, &obj );
-    if ( FAILED( status ) ) return status;
-
-    status = obj->lpVtbl->eventadd_OnActivation( obj, ActivationLoop, nullptr, &activationToken );
-    if ( FAILED( status ) ) return status;
-
-    status = new_async_operation_object_override_callback( (UnknownObject *)obj, nullptr, async_test, &operation );
-    if ( FAILED( status ) ) return status;
-
-    status = obj->lpVtbl->RunApplication( obj );
-    if ( FAILED( status ) ) return status;
-
-    status = obj->lpVtbl->eventremove_OnActivation( obj, activationToken );
-    if ( FAILED( status ) ) return status;
-
-    obj->lpVtbl->Release( obj );
-
-    operation->lpVtbl->Release( operation );
-
-    return status;
+    return InitApplication();
 }

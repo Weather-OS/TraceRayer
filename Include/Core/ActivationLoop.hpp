@@ -20,19 +20,12 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_FETCHRESOURCES_H
-#define TRACERAYER_FETCHRESOURCES_H
+#ifndef TRACERAYER_WINDOWLOOP_H
+#define TRACERAYER_WINDOWLOOP_H
 
-#include <IO/Path.h>
+#include <UI/GTK/GTK.h>
+#include <Types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-TR_STATUS FetchResource( IN TRCString resourceName, OUT TRPath **outResourcePath );
-
-#ifdef __cplusplus
-} //extern "C"
-#endif
+void ActivationLoop( TR::GTKObject *invoker, void *user_data );
 
 #endif

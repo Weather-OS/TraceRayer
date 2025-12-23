@@ -39,7 +39,7 @@ static gboolean DeleteCallback( GtkWidget *widget, void *user_data )
     GSList *snapshot = nullptr;
     GSList *handlerList;
     SignalHandler *handler;
-    const auto window = (GTKWindowObject *)user_data;
+    auto const window = (GTKWindowObject *)user_data;
 
     struct gtk_window_object *impl = impl_from_GTKWindowObject( window );
 
@@ -201,7 +201,7 @@ static TR_STATUS gtk_window_object_set_ChildWidget( GTKWindowObject *iface, GTKW
     return T_SUCCESS;
 }
 
-static TR_STATUS gtk_window_object_SetWindowTitle( GTKWindowObject *iface, TRString title )
+static TR_STATUS gtk_window_object_SetWindowTitle( GTKWindowObject *iface, TRCString title )
 {
     TR_STATUS status;
     GtkWidget *window;
@@ -338,9 +338,8 @@ static GTKWindowInterface gtk_window_interface =
     gtk_window_object_eventremove_OnDelete
 };
 
-TR_STATUS new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out )
+TR_STATUS TR_API new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out )
 {
-    TR_STATUS status;
     GtkWidget *window;
     struct gtk_window_object *impl;
 

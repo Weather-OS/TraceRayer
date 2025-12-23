@@ -20,12 +20,19 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_WINDOWLOOP_H
-#define TRACERAYER_WINDOWLOOP_H
+#ifndef TRACERAYER_APPLICATION_HPP
+#define TRACERAYER_APPLICATION_HPP
 
-#include <UI/GTK/GTK.h>
 #include <Types.h>
 
-void ActivationLoop( IN UnknownObject *invoker, IN void *user_data );
-
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+TR_STATUS InitApplication();
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif //TRACERAYER_APPLICATION_HPP

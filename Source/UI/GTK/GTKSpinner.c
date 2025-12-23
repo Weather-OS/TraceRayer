@@ -127,7 +127,7 @@ static GTKSpinnerInterface gtk_drawing_area_interface =
     gtk_spinner_object_set_Spinning
 };
 
-TR_STATUS new_gtk_spinner_object( OUT GTKSpinnerObject **out )
+TR_STATUS TR_API new_gtk_spinner_object( OUT GTKSpinnerObject **out )
 {
     TR_STATUS status;
     GtkWidget *spinner;

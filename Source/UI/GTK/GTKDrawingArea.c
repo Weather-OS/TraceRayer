@@ -91,7 +91,7 @@ static GTKDrawingAreaInterface gtk_drawing_area_interface =
     gtk_drawing_area_object_Release
 };
 
-TR_STATUS new_gtk_drawing_area_object( OUT GTKDrawingAreaObject **out )
+TR_STATUS TR_API new_gtk_drawing_area_object( OUT GTKDrawingAreaObject **out )
 {
     TR_STATUS status;
     GtkWidget *drawing_area;

@@ -31,6 +31,10 @@
 
 #include <UI/GTK/GTKWidget.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _GTKWindowObject GTKWindowObject;
 
 typedef void (*WindowLoopCallback)( IN GTKWindowObject *This );
@@ -93,7 +97,7 @@ typedef struct _GTKWindowInterface
      */
     TR_STATUS (*SetWindowTitle)(
         IN GTKWindowObject *This,
-        IN TRString         title);
+        IN TRCString         title);
 
     /**
      * @Method: void GTKWindowObject::SetResizable( TRBool resizable )
@@ -159,6 +163,74 @@ DEFINE_GUID( GTKWindowObject, 0x1b731a66, 0x153d, 0x4e54, 0x89, 0x8c, 0x6d, 0x4d
  * @Note: This constructor must not be called outside an "Activation Context".
  *        Refer to GTKObject on how to register "Activation Context" events.
  */
-TR_STATUS new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out );
+TR_STATUS TR_API new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out );
+
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    class GTKWindowObject : public UnknownObject<_GTKWindowObject>
+    {
+    public:
+        using UnknownObject::UnknownObject;
+        static constexpr const TRUUID &classId = IID_GTKWindowObject;
+
+        explicit GTKWindowObject( GtkApplication *app )
+        {
+            check_tr_( new_gtk_window_object( app, put() ) );
+        }
+
+        // Implements a GTKWidgetObject
+        operator GTKWidgetObject() const
+        {
+            return QueryInterface<GTKWidgetObject>();
+        }
+
+        [[nodiscard]]
+        GdkRectangle WindowRect() const noexcept
+        {
+            GdkRectangle out;
+            get()->lpVtbl->get_WindowRect( get(), &out );
+            return out;
+        }
+
+        void WindowRect( GdkRectangle rect ) const noexcept
+        {
+            get()->lpVtbl->set_WindowRect( get(), rect );
+        }
+
+        [[nodiscard]]
+        GTKWidgetObject ChildWidget() const
+        {
+            _GTKWidgetObject *ChildWidget;
+            check_tr_( get()->lpVtbl->get_ChildWidget( get(), &ChildWidget ) );
+            return GTKWidgetObject( ChildWidget );
+        }
+
+        void ChildWidget( const GTKWidgetObject& widget ) const
+        {
+            check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
+        }
+
+        void SetWindowTitle( const std::string& title ) const
+        {
+            check_tr_( get()->lpVtbl->SetWindowTitle( get(), title.c_str() ) );
+        }
+
+        void SetResizable( TRBool resizable ) const
+        {
+            check_tr_( get()->lpVtbl->SetResizable( get(), resizable ) );
+        }
+
+        void Show() const
+        {
+            check_tr_( get()->lpVtbl->Show( get() ) );
+        }
+
+        implements_event( OnDelete, TR::GTKWindowObject )
+    };
+}
+#endif
 
 #endif

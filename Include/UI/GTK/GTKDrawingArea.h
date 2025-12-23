@@ -69,6 +69,6 @@ struct gtk_drawing_area_object
 DEFINE_GUID( GTKDrawingAreaObject, 0xfa685c6a, 0xdc44, 0x4e0e, 0xa4, 0xfb, 0x4d, 0x54, 0x57, 0xd8, 0x59, 0xa1 );
 
 // Constructors
-TR_STATUS new_gtk_drawing_area_object( OUT GTKDrawingAreaObject **out );
+TR_STATUS TR_API new_gtk_drawing_area_object( OUT GTKDrawingAreaObject **out );
 
 #endif

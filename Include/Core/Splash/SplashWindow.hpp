@@ -20,19 +20,14 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_FETCHRESOURCES_H
-#define TRACERAYER_FETCHRESOURCES_H
+#ifndef TRACERAYER_SPLASHWINDOW_H
+#define TRACERAYER_SPLASHWINDOW_H
 
-#include <IO/Path.h>
+#include <Types.h>
+#include <Object.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <UI/GTK/GTK.h>
 
-TR_STATUS FetchResource( IN TRCString resourceName, OUT TRPath **outResourcePath );
-
-#ifdef __cplusplus
-} //extern "C"
-#endif
+void SplashWindow( const TR::GTKObject &inGtk );
 
 #endif

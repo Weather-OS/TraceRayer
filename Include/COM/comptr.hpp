@@ -20,18 +20,50 @@
  * THE SOFTWARE.
  */
 
-#include <Core/Splash/SplashWindow.h>
+#ifndef TRACERAYER_COMPTR_HPP
+#define TRACERAYER_COMPTR_HPP
 
-#include <Core/ActivationLoop.h>
+template<typename T>
+class ComRAII
+{
+public:
+    ComRAII( const ComRAII& ) = delete;
+    ComRAII& operator = ( const ComRAII& ) = delete;
 
-void
-ActivationLoop(
-    IN UnknownObject *invoker,
-    IN void *user_data
-) {
-    TR_STATUS status;
+    ComRAII( ComRAII&& other ) noexcept : ptr_(other.ptr_) { other.ptr_ = nullptr; }
+    ComRAII& operator = ( ComRAII&& other ) noexcept
+    {
+        if (this != &other)
+        {
+            reset( other.ptr_ );
+            other.ptr_ = nullptr;
+        }
+        return *this;
+    }
 
-    status = SplashWindow( (GTKObject *)invoker );
-    if ( FAILED( status ) )
-        ERROR( "SplashWindow failed with %ld\n", status );
-}
+    explicit ComRAII( T* p = nullptr ) : ptr_(p) {}
+
+    ~ComRAII() noexcept
+    {
+        if (ptr_) ptr_->lpVtbl->Release(ptr_);
+    }
+
+    T* get() const { return ptr_; }
+
+protected:
+    T* ptr_ = nullptr;
+
+    T** put() { reset(); return &ptr_; }
+
+    void reset( T* p = nullptr ) noexcept
+    {
+        if ( ptr_ )
+            ptr_->lpVtbl->Release(ptr_);
+        ptr_ = p;
+    }
+
+    [[nodiscard]]
+    T* detach() { T* t = ptr_; ptr_ = nullptr; return t; }
+};
+
+#endif

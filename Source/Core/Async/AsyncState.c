@@ -273,7 +273,7 @@ static void async_state_object_callback( void *iface, void *user_data )
 
     struct async_state_object *impl = impl_from_AsyncStateObject( (AsyncStateObject *)iface );
 
-    TRACE( "iface %p\n", iface );
+    TRACE( "iface %p, user_data %p\n", iface, user_data );
 
     PropVariantInit( &result );
 
@@ -330,7 +330,8 @@ TR_STATUS new_async_state_object_override_callback_and_outer( IN UnknownObject *
         return error->code;
     }
 
-    if ( impl->invoker = invoker )
+    impl->invoker = invoker;
+    if ( invoker )
         invoker->lpVtbl->AddRef( invoker );
 
     impl->param = param;

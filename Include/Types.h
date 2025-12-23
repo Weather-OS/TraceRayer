@@ -28,6 +28,8 @@
 #include <stdbool.h>
 #include <uuid/uuid.h>
 
+#define TR_API __attribute__((visibility("default")))
+
 #define IN
 #define OUT
 #define INOUT

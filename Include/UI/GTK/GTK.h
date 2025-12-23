@@ -98,26 +98,40 @@ struct gtk_object
 DEFINE_GUID( GTKObject, 0x71e34ecd, 0xfd1e, 0x4e3c, 0x94, 0xfa, 0xd3, 0x29, 0xc7, 0x30, 0x13, 0x25 );
 
 // Constructors
-TR_STATUS new_gtk_object( IN TRCString appName, OUT GTKObject **out );
+TR_STATUS TR_API new_gtk_object( IN TRCString appName, OUT GTKObject **out );
 
 #ifdef __cplusplus
+} // extern "C"
 
 namespace TR
 {
-    class GTKObject : UnknownObject
+    class GTKObject : public UnknownObject<_GTKObject>
     {
-        _GTKObject *&obj = *reinterpret_cast<_GTKObject**>( &unknwn );
-
     public:
-        explicit GTKObject( std::string appName )
+        using UnknownObject::UnknownObject;
+        static constexpr const TRUUID &classId = IID_GTKObject;
+
+        explicit GTKObject( const std::string& appName )
         {
-            TR_STATUS ts = new_gtk_object( appName.c_str(), &obj );
-            if ( FAILED( ts ) ) throw TRException( ts );
+            check_tr_( new_gtk_object( appName.c_str(), put() ) );
         }
+
+        [[nodiscard]]
+        GTKWindowObject CreateWindow() const
+        {
+            _GTKWindowObject *wobj;
+            check_tr_( get()->lpVtbl->CreateWindow( get(), &wobj ) );
+            return GTKWindowObject( wobj );
+        }
+
+        void RunApplication() const
+        {
+            check_tr_( get()->lpVtbl->RunApplication( get() ) );
+        }
+
+        implements_event( OnActivation, TR::GTKObject )
     };
 }
-
-} // extern "C"
 #endif
 
 #endif

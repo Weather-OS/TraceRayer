@@ -28,6 +28,10 @@
 #include <Object.h>
 #include <Types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _GTKWidgetObject GTKWidgetObject;
 
 typedef struct _GTKWidgetInterface
@@ -81,6 +85,40 @@ struct gtk_widget_object
 DEFINE_GUID( GTKWidgetObject, 0xcfe1afb8, 0x34c3, 0x4ba0, 0x95, 0x12, 0xb0, 0x2e, 0xf6, 0xad, 0xa3, 0xef );
 
 // Constructors
-TR_STATUS new_gtk_widget_object_override_widget( IN GtkWidget *widget, OUT GTKWidgetObject **out );
+TR_STATUS TR_API new_gtk_widget_object_override_widget( IN GtkWidget *widget, OUT GTKWidgetObject **out );
+
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    class GTKWidgetObject : public UnknownObject<_GTKWidgetObject>
+    {
+    public:
+        using UnknownObject::UnknownObject;
+        static constexpr const TRUUID &classId = IID_GTKWidgetObject;
+
+        explicit GTKWidgetObject( GtkWidget *widget )
+        {
+            check_tr_( new_gtk_widget_object_override_widget( widget, put() ) );
+        }
+
+        [[nodiscard]]
+        GtkWidget *Widget() const noexcept
+        {
+            GtkWidget *out;
+            get()->lpVtbl->get_Widget( get(), &out );
+            return out;
+        }
+
+        void SetVisibility( TRBool visibility ) const noexcept
+        {
+            get()->lpVtbl->setVisibility( get() , visibility );
+        }
+    };
+}
+
+#endif
+
 
 #endif

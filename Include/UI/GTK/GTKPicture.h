@@ -31,6 +31,10 @@
 
 #include <UI/GTK/GTKWidget.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _GTKPictureObject GTKPictureObject;
 
 typedef struct _GTKPictureInterface
@@ -79,6 +83,32 @@ struct gtk_picture_object
 DEFINE_GUID( GTKPictureObject, 0xaf332f42, 0xa0ec, 0x4ee2, 0xb8, 0x82, 0xd9, 0x75, 0x92, 0x6c, 0x15, 0xf0 );
 
 // Constructors
-TR_STATUS new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT GTKPictureObject **out );
+TR_STATUS TR_API new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT GTKPictureObject **out );
+
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    class GTKPictureObject : public UnknownObject<_GTKPictureObject>
+    {
+    public:
+        using UnknownObject::UnknownObject;
+        static constexpr const TRUUID &classId = IID_GTKPictureObject;
+
+        explicit GTKPictureObject( TRPath *&imagePath )
+        {
+            check_tr_( new_gtk_picture_object_override_path( imagePath, put() ) );
+        }
+
+        // Implements a GTKWidgetObject
+        operator GTKWidgetObject() const
+        {
+            return QueryInterface<GTKWidgetObject>();
+        }
+    };
+}
+
+#endif
 
 #endif

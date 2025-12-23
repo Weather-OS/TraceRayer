@@ -91,7 +91,7 @@ static GTKOverlayInterface gtk_overlay_interface =
     gtk_overlay_object_Release
 };
 
-TR_STATUS new_gtk_overlay_object( OUT GTKOverlayObject **out )
+TR_STATUS TR_API new_gtk_overlay_object( OUT GTKOverlayObject **out )
 {
     TR_STATUS status;
     GtkWidget *overlay;

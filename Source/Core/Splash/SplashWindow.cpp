@@ -20,14 +20,32 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_SPLASHWINDOW_H
-#define TRACERAYER_SPLASHWINDOW_H
+#include <Statics.h>
 
-#include <Types.h>
-#include <Object.h>
+#include <Core/Splash/SplashWindow.hpp>
+#include <UI/GTK/GTKPicture.h>
+#include <UI/GTK/GTKWindowHandle.h>
+#include <IO/FetchResources.h>
 
-#include <UI/GTK/GTK.h>
+void
+SplashWindow(
+    const TR::GTKObject &inGtk
+) {
+    TRPath *splashPicturePath;
 
-TR_STATUS SplashWindow( IN GTKObject *inGtk );
+    TR::GTKWindowObject window = inGtk.CreateWindow();
+    TR::GTKPictureObject picture;
+    TR::GTKWindowHandleObject windowHandle{};
 
-#endif
+    FetchResource( "launch.png", &splashPicturePath );
+
+    picture = TR::GTKPictureObject( splashPicturePath );
+
+    window.ChildWidget( windowHandle );
+    window.SetResizable( true );
+    window.SetWindowTitle( APPNAME );
+    window.WindowRect( { .width = 600, .height = 450 } );
+    window.Show();
+
+    windowHandle.ChildWidget( picture );
+}

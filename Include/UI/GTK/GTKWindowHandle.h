@@ -30,6 +30,10 @@
 
 #include <UI/GTK/GTKWidget.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _GTKWindowHandleObject GTKWindowHandleObject;
 
 typedef struct _GTKWindowHandleInterface
@@ -93,6 +97,45 @@ struct gtk_window_handle_object
 DEFINE_GUID( GTKWindowHandleObject, 0x674b7bc3, 0xac8b, 0x411e, 0xb9, 0x3a, 0xd5, 0x93, 0x19, 0x55, 0x4a, 0xcd );
 
 // Constructors
-TR_STATUS new_gtk_window_handle_object( OUT GTKWindowHandleObject **out );
+TR_STATUS TR_API new_gtk_window_handle_object( OUT GTKWindowHandleObject **out );
+
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    class GTKWindowHandleObject : public UnknownObject<_GTKWindowHandleObject>
+    {
+    public:
+        using UnknownObject::UnknownObject;
+        static constexpr const TRUUID &classId = IID_GTKWindowHandleObject;
+
+        explicit GTKWindowHandleObject()
+        {
+            check_tr_( new_gtk_window_handle_object( put() ) );
+        }
+
+        // Implements a GTKWidgetObject
+        operator GTKWidgetObject() const
+        {
+            return QueryInterface<GTKWidgetObject>();
+        }
+
+        [[nodiscard]]
+        GTKWidgetObject ChildWidget() const
+        {
+            _GTKWidgetObject *ChildWidget;
+            check_tr_( get()->lpVtbl->get_ChildWidget( get(), &ChildWidget ) );
+            return GTKWidgetObject( ChildWidget );
+        }
+
+        void ChildWidget( const GTKWidgetObject& widget ) const
+        {
+            _GTKWidgetObject *ChildWidget = widget.get();
+            check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
+        }
+    };
+}
+#endif
 
 #endif

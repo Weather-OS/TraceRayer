@@ -152,7 +152,7 @@ FetchPath(
     name = strrchr( path, '/' ) + 1;
     newPath->Name = (TRString)malloc( (strlen( name ) + 1) * sizeof( TRString ) );
     strcpy( newPath->Name, name );
-    newPath->AccessType = accessType;
+    newPath->Access = accessType;
 
     switch ( accessType )
     {

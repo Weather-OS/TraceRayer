@@ -24,10 +24,10 @@
 #define TRACERAYER_OBJECT_H
 
 #include <stdlib.h>
+#include <stdatomic.h>
 
 #include <Types.h>
 #include <IO/Logging.h>
-#include <stdatomic.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,9 +67,8 @@ interface _UnknownObject
 DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 );
 
 #define DEFINE_SHALLOW_UNKNOWNOBJECT( type_name, impl ) \
-    TR_STATUS impl##_QueryInterface( type_name *iface, const TRUUID uuid, void **out )              \
+    static TR_STATUS impl##_QueryInterface( type_name *iface, const TRUUID uuid, void **out )       \
     {                                                                                               \
-        struct impl *root = impl_from_##type_name( iface );                                         \
         TRACE( "iface %p, uuid %s, out %p\n", iface, debugstr_uuid( uuid ), out );                  \
         if ( !out ) throw_NullPtrException();                                                       \
         if ( !uuid_compare( uuid, IID_UnknownObject ) || !uuid_compare( uuid, IID_##type_name ) )   \
@@ -82,7 +81,7 @@ DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 
         return T_NOTIMPL;                                                                           \
     }                                                                                               \
     \
-    TRLong impl##_AddRef( type_name *iface )                                                        \
+    static TRLong impl##_AddRef( type_name *iface )                                                 \
     {                                                                                               \
         struct impl *root = impl_from_##type_name( iface );                                         \
         const TRLong added = atomic_fetch_add( &root->ref, 1 ) + 1;                                 \
@@ -90,7 +89,7 @@ DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 
         return added;                                                                               \
     }                                                                                               \
     \
-    TRLong impl##_Release( type_name *iface )                                                       \
+    static TRLong impl##_Release( type_name *iface )                                                \
     {                                                                                               \
         struct impl *root = impl_from_##type_name( iface );                                         \
         const TRLong removed = atomic_fetch_sub( &root->ref, 1 );                                   \
@@ -102,39 +101,48 @@ DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 
 
 
 #ifdef __cplusplus
+} // extern "C"
+
+#include <cstring>
+#include <COM/comptr.hpp>
 
 namespace TR
 {
-    class UnknownObject
+    template <typename Inheritance>
+    class UnknownObject : public ComRAII<Inheritance>
     {
     public:
-        _UnknownObject *unknwn = nullptr;
+        using ComRAII<Inheritance>::ComRAII;
 
-        ~UnknownObject()
+        // Must only be used within QueryInterface.
+        explicit UnknownObject( _UnknownObject *p = nullptr )
         {
-            if (unknwn) unknwn->lpVtbl->Release( unknwn );
+            this->ptr_ = reinterpret_cast<Inheritance *>(p);
         }
 
-        void QueryInterface( IN const TRUUID uuid, OUT void **out )
+        template <typename To>
+        [[nodiscard]]
+        To QueryInterface() const
         {
-            TR_STATUS ts;
-            ts = unknwn->lpVtbl->QueryInterface( unknwn, uuid, out );
-            if ( FAILED( ts ) ) throw TRException( ts );
+            _UnknownObject *out;
+            check_tr_( this->ptr_->lpVtbl->QueryInterface( this->ptr_, To::classId, reinterpret_cast<void **>(&out) ) );
+            return To( out );
         }
 
-        TRLong AddRef()
+    // AddRef and Release are handled by RAII
+    private:
+        TRLong AddRef() const
         {
-            return unknwn->lpVtbl->AddRef( unknwn );
+            return this->ptr_->lpVtbl->AddRef( this->ptr_ );
         }
 
-        TRLong Release()
+        TRLong Release() const
         {
-            return unknwn->lpVtbl->Release( unknwn );
+            return this->ptr_->lpVtbl->Release( this->ptr_ );
         }
     };
 }
 
-} // extern "C"
 #endif
 
 #endif

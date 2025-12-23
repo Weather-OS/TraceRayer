@@ -62,7 +62,7 @@ static GTKWidgetInterface gtk_widget_interface =
     gtk_widget_object_setVisibility
 };
 
-TR_STATUS new_gtk_widget_object_override_widget( IN GtkWidget *widget, OUT GTKWidgetObject **out )
+TR_STATUS TR_API new_gtk_widget_object_override_widget( IN GtkWidget *widget, OUT GTKWidgetObject **out )
 {
     struct gtk_widget_object *impl;
 

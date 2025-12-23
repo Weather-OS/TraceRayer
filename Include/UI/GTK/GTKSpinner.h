@@ -87,6 +87,6 @@ struct gtk_spinner_object
 DEFINE_GUID( GTKSpinnerObject, 0x68e7c87b, 0x7e17, 0x4b34, 0x8e, 0xf5, 0x67, 0x61, 0xca, 0xab, 0x41, 0x7b );
 
 // Constructors
-TR_STATUS new_gtk_spinner_object( OUT GTKSpinnerObject **out );
+TR_STATUS TR_API new_gtk_spinner_object( OUT GTKSpinnerObject **out );
 
 #endif

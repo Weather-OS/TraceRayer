@@ -79,20 +79,28 @@ void TraceRayer_DEBUG( IN Log_Category category, IN pid_t threadId, IN TRCString
 TRChar* debugstr_uuid( IN const uuid_t uuid );
 
 #ifdef __cplusplus
-
 } // extern "C"
 
 #include <stdexcept>
 #include <string>
 
-struct TRException : std::runtime_error
+struct TRException final : std::runtime_error
 {
     TR_STATUS status;
+    std::string msg;
+
     explicit TRException( TR_STATUS s ): std::runtime_error( "Unhandled Exception: " + std::to_string(s) ), status(s)
     {
-        ERROR("Unhandled exception %d within C++ code.\n", status);
+        ERROR( "Exception %d within C++ code.\n", status );
+    }
+
+    explicit TRException( TR_STATUS s, const std::string &message ): std::runtime_error( "Unhandled Exception: " + std::to_string(s) + " with message " + message ), status(s), msg(message)
+    {
+        ERROR( "Exception %d within C++ code with message %s.\n", status, message.c_str() );
     }
 };
+
+#define check_tr_( tr ){ if ( FAILED( tr ) ) throw TRException( tr ); }
 
 #endif
 

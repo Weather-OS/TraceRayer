@@ -121,11 +121,10 @@ static GTKPictureInterface gtk_picture_interface =
     gtk_picture_object_GetPictureRect
 };
 
-TR_STATUS new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT GTKPictureObject **out )
+TR_STATUS TR_API new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT GTKPictureObject **out )
 {
     TR_STATUS status;
     GtkWidget *picture;
-    TRInt width, height;
     struct gtk_picture_object *impl;
 
     TRACE( "out %p\n", out );
