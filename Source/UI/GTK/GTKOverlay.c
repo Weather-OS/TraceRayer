@@ -78,9 +78,97 @@ static TRLong gtk_overlay_object_Release( GTKOverlayObject *iface )
     {
         if ( impl->GTKWidgetObject_impl )
             impl->GTKWidgetObject_impl->lpVtbl->Release( impl->GTKWidgetObject_impl );
+        if ( impl->ChildWidget )
+            impl->ChildWidget->lpVtbl->Release( impl->ChildWidget );
         free( impl );
     }
     return removed;
+}
+
+static TR_STATUS gtk_overlay_object_get_ChildWidget( GTKOverlayObject *iface, GTKWidgetObject **out )
+{
+    const struct gtk_overlay_object *impl = impl_from_GTKOverlayObject( iface );
+    TRACE( "iface %p, out %p\n", iface, out );
+    if ( !out ) throw_NullPtrException();
+    if ( impl->ChildWidget )
+    {
+        impl->ChildWidget->lpVtbl->AddRef( impl->ChildWidget );
+        *out = impl->ChildWidget;
+        return T_SUCCESS;
+    }
+    return T_NOINIT;
+}
+
+static TR_STATUS gtk_overlay_object_set_ChildWidget( GTKOverlayObject *iface, GTKWidgetObject *widget )
+{
+    TR_STATUS status;
+    GtkWidget *overlay;
+    GtkWidget *childWidget;
+    GTKWidgetObject *widgetObject;
+
+    struct gtk_overlay_object *impl = impl_from_GTKOverlayObject( iface );
+
+    if ( !widget ) throw_NullPtrException();
+
+    TRACE( "iface %p, widget %p\n", iface, widget );
+
+    if (impl->ChildWidget)
+        // prevent dangling pointers
+        impl->ChildWidget->lpVtbl->Release(impl->ChildWidget);
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widgetObject );
+    if ( FAILED( status ) ) return status;
+
+    status = widgetObject->lpVtbl->get_Widget( widgetObject, &overlay );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &childWidget );
+    if ( FAILED( status ) ) return status;
+
+    gtk_overlay_set_child( GTK_OVERLAY( overlay ), childWidget );
+
+    widget->lpVtbl->AddRef( widget );
+    impl->ChildWidget = widget;
+
+    widgetObject->lpVtbl->Release( widgetObject );
+
+    return T_SUCCESS;
+}
+
+static TR_STATUS gtk_overlay_object_AddWidget( GTKOverlayObject *iface, GTKWidgetObject *widget )
+{
+    TR_STATUS status;
+    GtkWidget *overlay;
+    GtkWidget *childWidget;
+    GTKWidgetObject *widgetObject;
+
+    struct gtk_overlay_object *impl = impl_from_GTKOverlayObject( iface );
+
+    if ( !widget ) throw_NullPtrException();
+
+    TRACE( "iface %p, widget %p\n", iface, widget );
+
+    if (impl->ChildWidget)
+        // prevent dangling pointers
+            impl->ChildWidget->lpVtbl->Release(impl->ChildWidget);
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widgetObject );
+    if ( FAILED( status ) ) return status;
+
+    status = widgetObject->lpVtbl->get_Widget( widgetObject, &overlay );
+    if ( FAILED( status ) ) return status;
+
+    status = widget->lpVtbl->get_Widget( widget, &childWidget );
+    if ( FAILED( status ) ) return status;
+
+    gtk_overlay_add_overlay( GTK_OVERLAY( overlay ), childWidget );
+
+    widget->lpVtbl->AddRef( widget );
+    impl->ChildWidget = widget;
+
+    widgetObject->lpVtbl->Release( widgetObject );
+
+    return T_SUCCESS;
 }
 
 static GTKOverlayInterface gtk_overlay_interface =
@@ -88,7 +176,11 @@ static GTKOverlayInterface gtk_overlay_interface =
     /* UnknownObject Methods */
     gtk_overlay_object_QueryInterface,
     gtk_overlay_object_AddRef,
-    gtk_overlay_object_Release
+    gtk_overlay_object_Release,
+    /* GTKOverlayObject Methods */
+    gtk_overlay_object_get_ChildWidget,
+    gtk_overlay_object_set_ChildWidget,
+    gtk_overlay_object_AddWidget
 };
 
 TR_STATUS TR_API new_gtk_overlay_object( OUT GTKOverlayObject **out )

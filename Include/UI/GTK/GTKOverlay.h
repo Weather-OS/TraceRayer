@@ -30,6 +30,10 @@
 
 #include <UI/GTK/GTKWidget.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _GTKOverlayObject GTKOverlayObject;
 
 typedef struct _GTKOverlayInterface
@@ -37,6 +41,39 @@ typedef struct _GTKOverlayInterface
     BEGIN_INTERFACE
 
     IMPLEMENTS_UNKNOWNOBJECT( GTKOverlayObject )
+
+    /**
+     * @Method: GTKWidgetObject* GTKOverlayObject::ChildWidget()
+     * @Description: Retrieves the child GTKWidgetObject associated with this
+     *               GTKOverlayObject.
+     * @Returns: The child GTKWidgetObject, or nullptr if no child is set.
+     * @Status: Returns T_NOINIT if no child widget is initialized; otherwise
+     *          returns T_SUCCESS.
+     */
+    TR_STATUS (*get_ChildWidget)(
+        IN  GTKOverlayObject *This,
+        OUT GTKWidgetObject **out);
+
+    /**
+     * @Method: void GTKOverlayObject::ChildWidget( GTKWidgetObject *widget )
+     * @Description: Assigns a child GTKWidgetObject to this GTKOverlayObject.
+     *               Ownership of the widget is transferred to the window handle,
+     *               which becomes responsible for its lifetime.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*set_ChildWidget)(
+        IN GTKOverlayObject *This,
+        IN GTKWidgetObject *widget);
+
+    /**
+     * @Method: void GTKOverlayObject::AddWidget( GTKWidgetObject *widget )
+     * @Description: Adds a child GTKWidgetObject to this GTKOverlayObject.
+     *               Ownership of the widget is NOT transferred.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*AddWidget)(
+        IN GTKOverlayObject *This,
+        IN GTKWidgetObject *widget);
 
     END_INTERFACE
 } GTKOverlayInterface;
@@ -57,6 +94,7 @@ struct gtk_overlay_object
 {
     // --- Public Members --- //
     GTKOverlayObject GTKOverlayObject_iface;
+    GTKWidgetObject *ChildWidget;
 
     // --- Subclasses --- //
     implements( GTKWidgetObject )
@@ -70,5 +108,52 @@ DEFINE_GUID( GTKOverlayObject, 0xfa685c6a, 0xdc44, 0x4e0e, 0xa4, 0xfb, 0x4d, 0x5
 
 // Constructors
 TR_STATUS TR_API new_gtk_overlay_object( OUT GTKOverlayObject **out );
+
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    namespace UI
+    {
+        class GTKOverlayObject : public UnknownObject<_GTKOverlayObject>
+        {
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_GTKOverlayObject;
+
+            explicit GTKOverlayObject()
+            {
+                check_tr_( new_gtk_overlay_object( put() ) );
+            }
+
+            // Implements a GTKWidgetObject
+            operator GTKWidgetObject() const
+            {
+                return QueryInterface<GTKWidgetObject>();
+            }
+
+            [[nodiscard]]
+            GTKWidgetObject ChildWidget() const
+            {
+                _GTKWidgetObject *ChildWidget;
+                check_tr_( get()->lpVtbl->get_ChildWidget( get(), &ChildWidget ) );
+                return GTKWidgetObject( ChildWidget );
+            }
+
+            void ChildWidget( const GTKWidgetObject& widget ) const
+            {
+                check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
+            }
+
+            void AddWidget( const GTKWidgetObject &widget ) const
+            {
+                check_tr_( get()->lpVtbl->AddWidget( get(), widget.get() ) );
+            }
+        };
+    }
+}
+
+#endif
 
 #endif
