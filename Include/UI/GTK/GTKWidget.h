@@ -34,6 +34,12 @@ extern "C" {
 
 typedef struct _GTKWidgetObject GTKWidgetObject;
 
+typedef struct _WidgetAlignment
+{
+    GtkAlign Horizontal;
+    GtkAlign Vertical;
+} WidgetAlignment;
+
 typedef struct _GTKWidgetInterface
 {
     BEGIN_INTERFACE
@@ -48,6 +54,24 @@ typedef struct _GTKWidgetInterface
     TR_STATUS (*get_Widget)(
         IN GTKWidgetObject *This,
         OUT GtkWidget      **out);
+
+    /**
+     * @Method: WidgetAlignment GTKWidgetObject::Alignment()
+     * @Description: Gets the widget alignment, such as horizontal and vertical alignments.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*get_Alignment)(
+        IN GTKWidgetObject  *This,
+        OUT WidgetAlignment *out);
+
+    /**
+     * @Method: void GTKWidgetObject::Alignment( WidgetAlignment alignment )
+     * @Description: Sets the widget alignment.
+     * @Status: Returns T_SUCCESS if the alignment is correctly parsed.
+     */
+    TR_STATUS (*set_Alignment)(
+        IN GTKWidgetObject  *This,
+        IN WidgetAlignment   out);
 
     /**
      * @Method: void GTKWidgetObject::setVisibility( TRBool visibility )
@@ -75,6 +99,7 @@ struct gtk_widget_object
 {
     // --- Public Members --- //
     GTKWidgetObject GTKWidgetObject_iface;
+    WidgetAlignment Alignment;
     GtkWidget *Widget;
 
     // --- Private Members --- //
@@ -111,6 +136,18 @@ namespace TR
                 GtkWidget *out;
                 get()->lpVtbl->get_Widget( get(), &out );
                 return out;
+            }
+
+            WidgetAlignment Alignment() const noexcept
+            {
+                WidgetAlignment out;
+                get()->lpVtbl->get_Alignment( get(), &out );
+                return out;
+            }
+
+            void Alignment( WidgetAlignment alignment ) const
+            {
+                check_tr_( get()->lpVtbl->set_Alignment( get(), alignment ) );
             }
 
             void SetVisibility( TRBool visibility ) const noexcept

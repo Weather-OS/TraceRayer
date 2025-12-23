@@ -37,9 +37,28 @@ DEFINE_SHALLOW_UNKNOWNOBJECT( GTKWidgetObject, gtk_widget_object );
 static TR_STATUS gtk_widget_object_get_Widget( GTKWidgetObject *iface, GtkWidget **out )
 {
     const struct gtk_widget_object *impl = impl_from_GTKWidgetObject( iface );
-    TRACE( "iface %p, widget %p\n", iface, out );
+    TRACE( "iface %p, out %p\n", iface, out );
     if ( !out ) throw_NullPtrException();
     *out = impl->Widget;
+    return T_SUCCESS;
+}
+
+static TR_STATUS gtk_widget_object_get_Alignment( GTKWidgetObject *iface, WidgetAlignment *out )
+{
+    const struct gtk_widget_object *impl = impl_from_GTKWidgetObject( iface );
+    TRACE( "iface %p, out %p\n", iface, out );
+    if ( !out ) throw_NullPtrException();
+    *out = impl->Alignment;
+    return T_SUCCESS;
+}
+
+static TR_STATUS gtk_widget_object_set_Alignment( GTKWidgetObject *iface, WidgetAlignment alignment )
+{
+    const struct gtk_widget_object *impl = impl_from_GTKWidgetObject( iface );
+    TRACE( "iface %p, alignment %p\n", iface, &alignment );
+
+    gtk_widget_set_halign( impl->Widget, alignment.Horizontal );
+    gtk_widget_set_valign( impl->Widget, alignment.Vertical );
     return T_SUCCESS;
 }
 
@@ -59,6 +78,8 @@ static GTKWidgetInterface gtk_widget_interface =
     gtk_widget_object_Release,
     /* GTKObject Methods */
     gtk_widget_object_get_Widget,
+    gtk_widget_object_get_Alignment,
+    gtk_widget_object_set_Alignment,
     gtk_widget_object_setVisibility
 };
 
