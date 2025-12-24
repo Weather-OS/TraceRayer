@@ -74,7 +74,7 @@ struct async_operation_object
     implements( AsyncInfoObject );
 
     // --- Private Members --- //
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 delegate( async_operation_completed_handler_object ) // Implementation dependent

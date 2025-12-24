@@ -97,7 +97,7 @@ struct async_state_object
     void *param;
     pthread_mutex_t lock;
     PropVariant *result;
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 delegate( async_state_completed_handler_object )

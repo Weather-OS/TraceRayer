@@ -91,7 +91,7 @@ struct gtk_object
     GtkApplication *app;
     TRBool isInActivationThread;
     implements_glib_eventlist( OnActivation )
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // 71e34ecd-fd1e-4e3c-94fa-d329c7301325

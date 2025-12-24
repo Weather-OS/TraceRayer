@@ -49,6 +49,14 @@ typedef size_t TRSize;
 typedef double TRFloat;
 typedef uuid_t TRUUID;
 
+#ifdef __cplusplus
+#include <atomic>
+#define ATOMIC(type) std::atomic<type>
+#else
+#include <stdatomic.h>
+#define ATOMIC(type) _Atomic type
+#endif
+
 typedef wchar_t TRWChar;
 typedef wchar_t *TRWString;
 

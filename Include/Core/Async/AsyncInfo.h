@@ -58,7 +58,7 @@ struct async_info_object
     implements( AsyncStateObject );
 
     // --- Private Members --- //
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // 00000036-0000-0000-c000-000000000046

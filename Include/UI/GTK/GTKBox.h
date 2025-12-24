@@ -75,7 +75,7 @@ struct gtk_box_object
     implements( GTKWidgetObject )
 
     // --- Private Members --- //
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // b2c82c2a-c717-403e-9dba-c7bc0b8ee17e

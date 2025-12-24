@@ -84,7 +84,7 @@ struct gtk_spinner_object
     implements( GTKWidgetObject )
 
     // --- Private Members --- //
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // 68e7c87b-7e17-4b34-8ef5-6761caab417b

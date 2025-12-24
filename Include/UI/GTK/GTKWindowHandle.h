@@ -90,7 +90,7 @@ struct gtk_window_handle_object
     implements( GTKWidgetObject );
 
     // --- Private Members --- //
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // 674b7bc3-ac8b-411e-b93a-d59319554acd

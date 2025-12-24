@@ -76,7 +76,7 @@ struct gtk_picture_object
     implements( GTKWidgetObject );
 
     // --- Private Members --- //
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // af332f42-a0ec-4ee2-b882-d975926c15f0

@@ -112,7 +112,7 @@ struct gtk_widget_object
     GtkWidget *Widget;
 
     // --- Private Members --- //
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // cfe1afb8-34c3-4ba0-9512-b02ef6ada3ef

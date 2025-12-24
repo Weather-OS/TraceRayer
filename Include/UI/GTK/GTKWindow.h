@@ -152,7 +152,7 @@ struct gtk_window_object
     // --- Private Members --- //
     WindowLoopCallback callback;
     implements_glib_eventlist( OnDelete )
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // 1b731a66-153d-4e54-898c-6d4de5c47e08

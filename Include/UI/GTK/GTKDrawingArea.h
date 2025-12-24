@@ -62,7 +62,7 @@ struct gtk_drawing_area_object
     implements( GTKWidgetObject )
 
     // --- Private Members --- //
-    TRLong ref;
+    ATOMIC(TRLong) ref;
 };
 
 // fa685c6a-dc44-4e0e-a4fb-4d5457d859a1
