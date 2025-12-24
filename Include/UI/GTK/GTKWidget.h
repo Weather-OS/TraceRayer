@@ -74,6 +74,15 @@ typedef struct _GTKWidgetInterface
         IN WidgetAlignment   out);
 
     /**
+     * @Method: void GTKWidgetObject::SetSizeRequest( TRInt width, TRInt height )
+     * @Description: Requests the widget to resize to the specified size.
+     */
+    void (*SetSizeRequest)(
+        IN GTKWidgetObject  *This,
+        TRInt                width,
+        TRInt                height);
+
+    /**
      * @Method: void GTKWidgetObject::setVisibility( TRBool visibility )
      * @Description: Determines the visibility of the current widget.
      */
@@ -148,6 +157,11 @@ namespace TR
             void Alignment( WidgetAlignment alignment ) const
             {
                 check_tr_( get()->lpVtbl->set_Alignment( get(), alignment ) );
+            }
+
+            void SetSizeRequest( TRInt width, TRInt height ) const noexcept
+            {
+                get()->lpVtbl->SetSizeRequest( get(), width, height );
             }
 
             void SetVisibility( TRBool visibility ) const noexcept

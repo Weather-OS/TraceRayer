@@ -52,6 +52,7 @@ SplashWindow(
 
     spinner.Spinning( true );
     spinner.QueryInterface<UI::GTKWidgetObject>().Alignment( { .Horizontal = GTK_ALIGN_START, .Vertical = GTK_ALIGN_END } );
+    spinner.QueryInterface<UI::GTKWidgetObject>().SetSizeRequest( 48, 48 );
 
     overlay.ChildWidget( picture );
     overlay.AddWidget( spinner );

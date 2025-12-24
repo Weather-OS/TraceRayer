@@ -62,6 +62,14 @@ static TR_STATUS gtk_widget_object_set_Alignment( GTKWidgetObject *iface, Widget
     return T_SUCCESS;
 }
 
+static void gtk_widget_object_SetSizeRequest( GTKWidgetObject *iface, TRInt width, TRInt height )
+{
+    const struct gtk_widget_object *impl = impl_from_GTKWidgetObject( iface );
+    TRACE( "iface %p, width %d, height %d\n", iface, height );
+
+    gtk_widget_set_size_request( impl->Widget, width, height );
+}
+
 static void gtk_widget_object_setVisibility( GTKWidgetObject *iface, TRBool visibility )
 {
     const struct gtk_widget_object *impl = impl_from_GTKWidgetObject( iface );
@@ -80,6 +88,7 @@ static GTKWidgetInterface gtk_widget_interface =
     gtk_widget_object_get_Widget,
     gtk_widget_object_get_Alignment,
     gtk_widget_object_set_Alignment,
+    gtk_widget_object_SetSizeRequest,
     gtk_widget_object_setVisibility
 };
 
