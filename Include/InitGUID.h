@@ -42,5 +42,7 @@
 #include <Core/Async/AsyncOperation.h>  /** IID_AsyncOperationObject **/
 #include <Core/Async/AsyncInfo.h>       /** IID_AsyncInfoObject **/
 #include <Core/Async/AsyncState.h>      /** IID_AsyncStateObject **/
+#include <Core/Vulkan/Vulkan.h>         /** IID_VulkanObject **/
+#include <Core/Vulkan/VulkanDevice.h>   /** IID_VulkanDeviceObject **/
 
 #endif
