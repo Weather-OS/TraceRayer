@@ -24,9 +24,11 @@
 #define TRACERAYER_STATICS_H
 
 #define TRACERAYER_VERSION "0.0.1"
+#define TRACERAYER_FORMATTED_VERSION (FormattedVersion){ .Major = 1, .Minor = 2, .Patch = 3 };
 
 // Application Name
 #define APPNAME "Trace Rayer"
+#define ENGINE_NAME "Trace Rayer"
 #define GTK_APPNAME "org.Weather.TraceRayer"
 
 #define LOGFILE_HEADER "// --- ($DATE) ($TIME) Trace Rayer ($VERSION), A Ray Tracing Demo Written in GTK and Vulkan --- //\n"
