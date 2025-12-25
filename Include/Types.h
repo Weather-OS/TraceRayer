@@ -77,6 +77,14 @@ typedef enum _TR_STATUS
     T_ILLEGAL_STATE_CHANGE = 332,
 } TR_STATUS;
 
+typedef enum _TR_Platform
+{
+    Platform_macOS,
+    Platform_Wayland,
+    Platform_win32,
+    Platform_X11
+} Platform;
+
 typedef enum _TR_VariantType
 {
     VT_EMPTY,
