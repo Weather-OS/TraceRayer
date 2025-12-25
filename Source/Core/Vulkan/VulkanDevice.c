@@ -60,7 +60,56 @@ static TRLong vulkan_device_object_Release( VulkanDeviceObject *iface )
     struct vulkan_device_object *impl = impl_from_VulkanDeviceObject( iface );
     const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
+    if ( !(removed - 1) )
+    {
+        free( impl );
+    }
     return removed;
+}
+
+static TR_STATUS vulkan_device_object_SupportsExtension( VulkanDeviceObject *iface, TRCString extension, TRBool *out )
+{
+    TRUInt iterator;
+    VkResult result = VK_SUCCESS;
+    TR_STATUS status = T_SUCCESS;
+    TRUInt extensionCount = 0;
+    VkExtensionProperties *extensions = nullptr;
+
+    struct vulkan_device_object *impl = impl_from_VulkanDeviceObject( iface );
+
+    TRACE( "iface %p, extension %s, out %p\n", iface, extension, out );
+
+    *out = false;
+
+    result = vkEnumerateDeviceExtensionProperties( impl->device, nullptr, &extensionCount, nullptr );
+    if ( result != VK_SUCCESS )
+    {
+        ERROR( "Vulkan device extension enumeration failed with %d\n", result );
+        return T_ERROR;
+    }
+
+    if (!(extensions = malloc( sizeof(VkExtensionProperties) * extensionCount ))) return T_OUTOFMEMORY;
+
+    result = vkEnumerateDeviceExtensionProperties( impl->device, nullptr, &extensionCount, extensions );
+    if ( result != VK_SUCCESS )
+    {
+        ERROR( "Vulkan device extension enumeration failed with %d\n", result );
+        free( extensions );
+        return T_ERROR;
+    }
+
+    for ( iterator = 0; iterator < extensionCount; iterator++ )
+    {
+        if ( !strcmp( extensions[iterator].extensionName, extension ) )
+        {
+            *out = true;
+            break;
+        }
+    }
+
+    free( extensions );
+
+    return status;
 }
 
 static VulkanDeviceInterface vulkan_device_interface =
@@ -68,10 +117,13 @@ static VulkanDeviceInterface vulkan_device_interface =
     /* UnknownObject Methods */
     vulkan_device_object_QueryInterface,
     vulkan_device_object_AddRef,
-    vulkan_device_object_Release
+    vulkan_device_object_Release,
+    /* VulkanDeviceObject Methods */
+    vulkan_device_object_SupportsExtension
+
 };
 
-TR_STATUS TR_API new_vulkan_device_object_override_device_name( IN VkPhysicalDevice device, OUT VulkanDeviceObject **out )
+TR_STATUS TR_API new_vulkan_device_object_override_device( IN VkPhysicalDevice device, OUT VulkanDeviceObject **out )
 {
     struct vulkan_device_object *impl;
 

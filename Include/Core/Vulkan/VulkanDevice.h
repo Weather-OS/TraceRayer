@@ -40,6 +40,16 @@ typedef struct _VulkanDeviceInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( VulkanDeviceObject )
 
+    /**
+     * @Method: TRBool VulkanObject::SupportsExtension( TRCString extension )
+     * @Description: Checks if a device supports an extension. Returns true if so.
+     * @Status: Returns T_ERROR if a vulkan call fails.
+     */
+    TR_STATUS (*SupportsExtension)(
+        VulkanDeviceObject *iface,
+        TRCString           extension,
+        TRBool             *out);
+
     END_INTERFACE
 } VulkanDeviceInterface;
 
@@ -50,7 +60,7 @@ interface _VulkanDeviceObject
 
 /**
  * @Object: VulkanDeviceObject
- * @Description: Root GTK object, used to build a GTK application, layer by layer.
+ * @Description: A Vulkan device that represents a physical GPU device.
  */
 struct vulkan_device_object
 {
@@ -66,6 +76,7 @@ struct vulkan_device_object
 DEFINE_GUID( VulkanDeviceObject, 0xb054c6a8, 0x90a0, 0x4383, 0xbc, 0x88, 0x42, 0x43, 0xfc, 0x91, 0xcb, 0xfe );
 
 // Constructors
+// NOTE: This should not be called outside of a VulkanObject.
 TR_STATUS TR_API new_vulkan_device_object_override_device( IN VkPhysicalDevice device, OUT VulkanDeviceObject **out );
 
 #ifdef __cplusplus
@@ -83,7 +94,14 @@ namespace TR
 
             explicit VulkanDeviceObject( VkPhysicalDevice device )
             {
-                check_tr_( new_vulkan_device_object_override_device_name( device, put() ) );
+                check_tr_( new_vulkan_device_object_override_device( device, put() ) );
+            }
+
+            TRBool SupportsExtension( const std::string& extension ) const
+            {
+                TRBool out;
+                check_tr_( get()->lpVtbl->SupportsExtension( get(), extension.c_str(), &out ) );
+                return out;
             }
         };
     }
