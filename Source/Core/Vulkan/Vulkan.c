@@ -27,6 +27,8 @@
 
 #include <Core/Vulkan/Vulkan.h>
 
+#include <Statics.h>
+
 static struct vulkan_object *impl_from_VulkanObject( VulkanObject *iface )
 {
     return CONTAINING_RECORD( iface, struct vulkan_object, VulkanObject_iface );
@@ -60,6 +62,11 @@ static TRLong vulkan_object_Release( VulkanObject *iface )
     struct vulkan_object *impl = impl_from_VulkanObject( iface );
     const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
+    if ( !(removed - 1) )
+    {
+        vkDestroyInstance( impl->instance, nullptr );
+        free( impl );
+    }
     return removed;
 }
 
@@ -71,11 +78,15 @@ static VulkanInterface vulkan_interface =
     vulkan_object_Release
 };
 
-TR_STATUS TR_API new_vulkan_object_override_device_name( OUT VulkanObject **out )
+TR_STATUS TR_API new_vulkan_object_override_app_name_and_version( IN TRCString appName, IN FormattedVersion version, OUT VulkanObject **out )
 {
+    VkResult result = VK_SUCCESS;
+    VkApplicationInfo appInfo = {0};
+    VkInstanceCreateInfo createInfo = {0};
+    FormattedVersion engineVer = TRACERAYER_FORMATTED_VERSION;
     struct vulkan_object *impl;
 
-    TRACE( "out %p\n", out );
+    TRACE( "appName %s, version %p, out %p\n", appName, &version, out );
 
     if ( !out ) throw_NullPtrException();
 
@@ -83,6 +94,23 @@ TR_STATUS TR_API new_vulkan_object_override_device_name( OUT VulkanObject **out 
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
     impl->VulkanObject_iface.lpVtbl = &vulkan_interface;
     impl->ref = 1;
+
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = appName;
+    appInfo.applicationVersion = VK_MAKE_VERSION( version.Major, version.Minor, version.Patch );
+    appInfo.pEngineName = ENGINE_NAME;
+    appInfo.engineVersion = VK_MAKE_VERSION( engineVer.Major, engineVer.Minor, engineVer.Patch );
+    appInfo.apiVersion = VK_API_VERSION_1_4;
+
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
+
+    result = vkCreateInstance( &createInfo, nullptr, &impl->instance );
+    if ( result != VK_SUCCESS )
+    {
+        ERROR( "Vk Device creation failed with %d\n", result );
+        return T_ERROR;
+    }
 
     *out = &impl->VulkanObject_iface;
 

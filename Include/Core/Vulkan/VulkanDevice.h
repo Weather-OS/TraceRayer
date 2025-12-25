@@ -73,7 +73,7 @@ TR_STATUS TR_API new_vulkan_device_object_override_device( IN VkPhysicalDevice d
 
 namespace TR
 {
-    namespace UI
+    namespace Core::Vulkan
     {
         class VulkanDeviceObject : public UnknownObject<_VulkanDeviceObject>
         {

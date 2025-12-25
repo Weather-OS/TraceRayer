@@ -58,6 +58,7 @@ struct vulkan_object
     VulkanObject VulkanObject_iface;
 
     // --- Private Members --- //
+    VkInstance instance;
     ATOMIC(TRLong) ref;
 };
 
@@ -72,7 +73,7 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version( IN TRCString a
 
 namespace TR
 {
-    namespace UI
+    namespace Core::Vulkan
     {
         class VulkanObject : public UnknownObject<_VulkanObject>
         {
