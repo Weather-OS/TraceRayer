@@ -47,7 +47,7 @@ typedef enum _TR_Argument_ValueType
 
 typedef struct _TR_Argument
 {
-    TRString Name;
+    TRCString Name;
     Argument_ValueType ValueType;
     OPTIONAL void *Value;
     OPTIONAL TR_STATUS (*Callback)();
