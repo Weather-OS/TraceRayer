@@ -28,6 +28,8 @@
 #include <Object.h>
 #include <Types.h>
 
+#include <Core/Vulkan/VulkanDevice.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,6 +42,28 @@ typedef struct _VulkanInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( VulkanObject )
 
+    /**
+     * @Method: VulkanDeviceObject* VulkanObject::CreateDevice( TRCString deviceName )
+     * @Description: Creates a Vulkan device from the given Name
+     * @Status: Returns T_SUCCESS if the device was found, otherwise, T_NOINIT.
+     *          Returns T_ERROR if a vulkan call fails.
+     */
+    TR_STATUS (*CreateDeviceOverloadDeviceName)(
+        VulkanObject        *This,
+        TRCString            deviceName,
+        VulkanDeviceObject  **out );
+
+    /**
+     * @Method: VulkanDeviceObject* VulkanObject::CreateDevice( TRUInt index )
+     * @Description: Creates a Vulkan device with the given device index.
+     * @Status: Returns T_SUCCESS if the device was found, otherwise, T_NOINIT.
+     *          Returns T_ERROR if a vulkan call fails.
+     */
+    TR_STATUS (*CreateDeviceOverloadIndex)(
+        VulkanObject        *This,
+        TRUInt               index,
+        VulkanDeviceObject  **out );
+
     END_INTERFACE
 } VulkanInterface;
 
@@ -50,7 +74,7 @@ interface _VulkanObject
 
 /**
  * @Object: VulkanObject
- * @Description: Root GTK object, used to build a GTK application, layer by layer.
+ * @Description: Root Vulkan Object, represents an Instance that can be used to create Vulkan devices.
  */
 struct vulkan_object
 {
@@ -59,6 +83,7 @@ struct vulkan_object
 
     // --- Private Members --- //
     VkInstance instance;
+    Platform platform;
     ATOMIC(TRLong) ref;
 };
 
@@ -66,7 +91,7 @@ struct vulkan_object
 DEFINE_GUID( VulkanObject, 0x76e09a11, 0x2a01, 0x4127, 0x8b, 0x64, 0x58, 0x6f, 0x25, 0xc1, 0x81, 0xab );
 
 // Constructors
-TR_STATUS TR_API new_vulkan_object_override_app_name_and_version( IN TRCString appName, IN FormattedVersion version, OUT VulkanObject **out );
+TR_STATUS TR_API new_vulkan_object_override_app_name_and_version_and_platform( IN TRCString appName, IN FormattedVersion version, IN Platform platform, OUT VulkanObject **out );
 
 #ifdef __cplusplus
 } // extern "C"
@@ -81,9 +106,24 @@ namespace TR
             using UnknownObject::UnknownObject;
             static constexpr const TRUUID &classId = IID_VulkanObject;
 
-            explicit VulkanObject( const std::string& appName, FormattedVersion version )
+            explicit VulkanObject( const std::string& appName, FormattedVersion version, Platform platform )
             {
-                check_tr_( new_vulkan_object_override_app_name_and_version( appName.c_str(), version, put() ) );
+                check_tr_( new_vulkan_object_override_app_name_and_version_and_platform( appName.c_str(), version, platform, put() ) );
+            }
+
+            [[nodiscard]]
+            VulkanDeviceObject CreateDevice( const std::string& deviceName ) const
+            {
+                _VulkanDeviceObject *vkdevobj;
+                check_tr_( get()->lpVtbl->CreateDeviceOverloadDeviceName( get(), deviceName.c_str(), &vkdevobj ) );
+                return VulkanDeviceObject( vkdevobj );
+            }
+
+            VulkanDeviceObject CreateDevice( TRUInt index ) const
+            {
+                _VulkanDeviceObject *vkdevobj;
+                check_tr_( get()->lpVtbl->CreateDeviceOverloadIndex( get(), index, &vkdevobj ) );
+                return VulkanDeviceObject( vkdevobj );
             }
         };
     }

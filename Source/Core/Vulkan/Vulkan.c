@@ -27,6 +27,24 @@
 
 #include <Core/Vulkan/Vulkan.h>
 
+// TODO: Better way of obtaining windowing information at compile time.
+#include <gdk/gdk.h>
+
+#ifdef GDK_WINDOWING_X11
+#include <xcb/xcb.h>
+#include <vulkan/vulkan_xcb.h>
+#endif
+#ifdef GDK_WINDOWING_WAYLAND
+#include <vulkan/vulkan_wayland.h>
+#endif
+#ifdef GDK_WINDOWING_WIN32
+#include <vulkan/vulkan_win32.h>
+#endif
+#ifdef GDK_WINDOWING_MACOS
+#include <vulkan/vulkan_macos.h>
+#endif
+
+
 #include <Statics.h>
 
 static struct vulkan_object *impl_from_VulkanObject( VulkanObject *iface )
@@ -70,20 +88,80 @@ static TRLong vulkan_object_Release( VulkanObject *iface )
     return removed;
 }
 
+static TR_STATUS vulkan_object_CreateDeviceOverloadDeviceName( VulkanObject *iface, TRCString deviceName, VulkanDeviceObject **out )
+{
+    TR_STATUS status;
+    VkResult result = VK_SUCCESS;
+    VkPhysicalDevice *vkDevices = nullptr;
+    VkPhysicalDevice vkDevice = VK_NULL_HANDLE;
+    TRUInt deviceCount = 0;
+    TRUInt iterator;
+
+    struct vulkan_object *impl = impl_from_VulkanObject( iface );
+
+    TRACE( "iface %p, deviceName %s, out %p\n", iface, deviceName, out );
+
+    result = vkEnumeratePhysicalDevices( impl->instance, &deviceCount, nullptr );
+    if ( result != VK_SUCCESS || !deviceCount )
+    {
+        ERROR( "Vulkan device enumeration failed with %d\n", result );
+        return T_ERROR;
+    }
+
+    if (!(vkDevices = malloc( sizeof(VkPhysicalDevice) * deviceCount ))) return T_OUTOFMEMORY;
+
+    result = vkEnumeratePhysicalDevices( impl->instance, &deviceCount, vkDevices );
+    if ( result != VK_SUCCESS )
+    {
+        ERROR( "Vulkan device enumeration failed with %d\n", result );
+        free( vkDevices );
+        return T_ERROR;
+    }
+
+    for ( iterator = 0; iterator < deviceCount; iterator++ )
+    {
+        VkPhysicalDeviceProperties deviceProperties;
+
+        vkGetPhysicalDeviceProperties( vkDevices[iterator], &deviceProperties );
+        if ( !strcmp( deviceName, deviceProperties.deviceName ) )
+        {
+            vkDevice = vkDevices[iterator];
+            break;
+        }
+        WARN( "device %s did not match\n", deviceProperties.deviceName );
+    }
+
+    if ( vkDevice == VK_NULL_HANDLE )
+    {
+        ERROR( "Could not find a vulkan device with name %s\n", deviceName );
+        free( vkDevices );
+        return T_NOINIT;
+    }
+
+    status = new_vulkan_device_object_override_device( vkDevice, out );
+
+    free( vkDevices );
+
+    return status;
+}
+
 static VulkanInterface vulkan_interface =
 {
     /* UnknownObject Methods */
     vulkan_object_QueryInterface,
     vulkan_object_AddRef,
-    vulkan_object_Release
+    vulkan_object_Release,
+    /* VulkanObject Methods */
+    vulkan_object_CreateDeviceOverloadDeviceName
 };
 
-TR_STATUS TR_API new_vulkan_object_override_app_name_and_version( IN TRCString appName, IN FormattedVersion version, OUT VulkanObject **out )
+TR_STATUS TR_API new_vulkan_object_override_app_name_and_version_and_platform( IN TRCString appName, IN FormattedVersion version, IN Platform platform, OUT VulkanObject **out )
 {
     VkResult result = VK_SUCCESS;
     VkApplicationInfo appInfo = {0};
     VkInstanceCreateInfo createInfo = {0};
     FormattedVersion engineVer = TRACERAYER_FORMATTED_VERSION;
+    TRCString extensions[2] = { VK_KHR_SURFACE_EXTENSION_NAME };
     struct vulkan_object *impl;
 
     TRACE( "appName %s, version %p, out %p\n", appName, &version, out );
@@ -93,6 +171,7 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version( IN TRCString a
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
     impl->VulkanObject_iface.lpVtbl = &vulkan_interface;
+    impl->platform = platform;
     impl->ref = 1;
 
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -105,10 +184,49 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version( IN TRCString a
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
+    switch ( platform )
+    {
+        case Platform_Wayland:
+        {
+#ifdef GDK_WINDOWING_WAYLAND
+            INFO( "Vulkan: Creating an Instance for a Wayland surface...\n" );
+            extensions[1] = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+#endif
+            break;
+        }
+        case Platform_X11:
+        {
+#ifdef GDK_WINDOWING_X11
+            INFO( "Vulkan: Creating an Instance for an X11 surface...\n" );
+            extensions[1] = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+#endif
+            break;
+        }
+        case Platform_win32:
+        {
+#ifdef GDK_WINDOWING_WIN32
+            INFO( "Vulkan: Creating an Instance for a win32 surface...\n" );
+            extensions[1] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+#endif
+            break;
+        }
+        case Platform_macOS:
+        {
+#ifdef GDK_WINDOWING_MACOS
+            INFO( "Vulkan: Creating an Instance for a macOS surface...\n" );
+            extensions[1] = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
+#endif
+            break;
+        }
+    }
+
+    createInfo.enabledExtensionCount = 2;
+    createInfo.ppEnabledExtensionNames = extensions;
+
     result = vkCreateInstance( &createInfo, nullptr, &impl->instance );
     if ( result != VK_SUCCESS )
     {
-        ERROR( "Vk Device creation failed with %d\n", result );
+        ERROR( "Vulkan Instance creation failed with %d\n", result );
         return T_ERROR;
     }
 
