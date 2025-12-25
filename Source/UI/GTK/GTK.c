@@ -25,6 +25,21 @@
  *  Description: Root GTK object to create sub-objects.
  */
 
+#include <gdk/gdk.h>
+
+#ifdef GDK_WINDOWING_X11
+#include <gdk/x11/gdkx.h>
+#endif
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/wayland/gdkwayland.h>
+#endif
+#ifdef GDK_WINDOWING_WIN32
+#include <gdk/win32/gdkwin32.h>
+#endif
+#ifdef GDK_WINDOWING_MACOS
+#include <gdk/macos/gdkmacos.h>
+#endif
+
 #include <UI/GTK/GTK.h>
 
 static struct gtk_object *impl_from_GTKObject( GTKObject *iface )
@@ -162,6 +177,47 @@ static TR_STATUS gtk_object_eventremove_OnActivation( GTKObject *iface, TRULong 
     return T_SUCCESS;
 }
 
+static void gtk_object_CurrentPlatform( GTKObject *iface, Platform *out )
+{
+    GdkDisplay *display;
+
+    TRACE( "iface %p, out %ld\n", iface, out );
+
+    display = gdk_display_get_default();
+
+#ifdef GDK_WINDOWING_X11
+    if ( GDK_IS_X11_DISPLAY( display ) )
+    {
+        *out = Platform_X11;
+        return;
+    }
+#endif
+
+#ifdef GDK_WINDOWING_WAYLAND
+    if ( GDK_IS_WAYLAND_DISPLAY( display ) )
+    {
+        *out = Platform_Wayland;
+        return;
+    }
+#endif
+
+#ifdef GDK_WINDOWING_WIN32
+    if ( GDK_IS_WIN32_DISPLAY( display ) )
+    {
+        *out = Platform_win32;
+        return;
+    }
+#endif
+
+#ifdef GDK_WINDOWING_MACOS
+    if ( GDK_IS_QUARTZ_DISPLAY( display ) )
+    {
+        *out = Platform_macOS;
+        return;
+    }
+#endif
+}
+
 static GTKInterface gtk_interface =
 {
     /* UnknownObject Methods */
@@ -171,6 +227,7 @@ static GTKInterface gtk_interface =
     /* GTKObject Methods */
     gtk_object_CreateWindow,
     gtk_object_RunApplication,
+    gtk_object_CurrentPlatform,
     gtk_object_eventadd_OnActivation,
     gtk_object_eventremove_OnActivation
 };
@@ -180,6 +237,8 @@ TR_STATUS TR_API new_gtk_object( IN TRCString appName, OUT GTKObject **out )
     struct gtk_object *impl;
 
     TRACE( "appName %s, out %p\n", appName, out );
+
+    gtk_init();
 
     if ( !out ) throw_NullPtrException();
 

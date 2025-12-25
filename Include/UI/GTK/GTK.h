@@ -64,6 +64,14 @@ typedef struct _GTKInterface
         IN GTKObject *This);
 
     /**
+     * @Method: Platform GTKObject::CurrentPlatform()
+     * @Description: Gets the current Platform.
+     */
+    void (*CurrentPlatform)(
+        IN GTKObject *This,
+        OUT Platform *out);
+
+    /**
      * @Event: GTKObject::OnActivation
      * @Description: Fired on GTKObject::RunApplication()
      *               Callbacks provided run within an "Activated Context"
@@ -129,6 +137,13 @@ namespace TR
             void RunApplication() const
             {
                 check_tr_( get()->lpVtbl->RunApplication( get() ) );
+            }
+
+            Platform CurrentPlatform() const noexcept
+            {
+                Platform out;
+                get()->lpVtbl->CurrentPlatform( get(), &out );
+                return out;
             }
 
             implements_event( OnActivation, GTKObject )
