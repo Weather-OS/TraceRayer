@@ -117,6 +117,13 @@ typedef struct _TR_PropVariant
 #define PropVariantInit(p) \
     memset((p), 0, sizeof(PropVariant))
 
+typedef struct _FormattedVersion
+{
+    TRInt Major;
+    TRInt Minor;
+    TRInt Patch;
+} FormattedVersion;
+
 #define FAILED( status ) \
     (status != T_SUCCESS)
 

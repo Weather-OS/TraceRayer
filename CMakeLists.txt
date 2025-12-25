@@ -5,6 +5,7 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_CXX_STANDARD 23)
 
 find_package(PkgConfig REQUIRED)
+find_package(Vulkan REQUIRED)
 
 pkg_check_modules(GTK4 REQUIRED gtk4)
 include_directories(${GTK4_INCLUDE_DIRS})
@@ -61,6 +62,22 @@ target_compile_options(comasync PRIVATE
         $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -O2 -fvisibility=hidden>
 )
 
+# comvulkan
+add_library( comvulkan SHARED
+        Source/Core/Vulkan/Vulkan.c
+        Source/Core/Vulkan/VulkanDevice.c )
+
+target_include_directories(comvulkan PRIVATE ${CMAKE_SOURCE_DIR}/Include)
+target_include_directories(comvulkan PRIVATE ${Vulkan_INCLUDE_DIRS})
+
+target_link_libraries(comvulkan ${UUID_LIBRARIES})
+target_link_libraries(comvulkan ${Vulkan_LIBRARIES})
+
+target_compile_options(comvulkan PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -O3 -fvisibility=hidden>
+        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -O2 -fvisibility=hidden>
+)
+
 # TraceRayer
 add_executable(TraceRayer main.c
         Source/IO/Arguments.c
@@ -81,6 +98,7 @@ target_compile_options(TraceRayer PRIVATE
 target_link_libraries(TraceRayer ${UUID_LIBRARIES})
 target_link_libraries(TraceRayer comui)
 target_link_libraries(TraceRayer comasync)
+target_link_libraries(TraceRayer comvulkan)
 
 target_compile_definitions(TraceRayer PRIVATE
         RESOURCE_DIR="${CMAKE_INSTALL_PREFIX}/share/TraceRayer/Resources"
