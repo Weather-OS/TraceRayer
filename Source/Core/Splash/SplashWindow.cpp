@@ -23,6 +23,7 @@
 #include <Core/Splash/SplashWindow.hpp>
 
 #include <UI/GTK/GTKPicture.h>
+#include <UI/GTK/GTKLabel.h>
 #include <UI/GTK/GTKSpinner.h>
 #include <UI/GTK/GTKBox.h>
 #include <UI/GTK/GTKOverlay.h>
@@ -44,6 +45,7 @@ SplashWindow(
     UI::GTKSpinnerObject spinner{};
     UI::GTKOverlayObject overlay{};
     UI::GTKBoxObject box( GTK_ORIENTATION_HORIZONTAL, 5 );
+    UI::GTKLabelObject label( "Loading..." );
 
     FetchResource( "launch.png", &splashPicturePath );
 
@@ -54,8 +56,11 @@ SplashWindow(
     spinner.QueryInterface<UI::GTKWidgetObject>().Alignment( { .Horizontal = GTK_ALIGN_START, .Vertical = GTK_ALIGN_END } );
     spinner.QueryInterface<UI::GTKWidgetObject>().SetSizeRequest( 48, 48 );
 
+    label.QueryInterface<UI::GTKWidgetObject>().Alignment( { .Horizontal = GTK_ALIGN_CENTER, .Vertical = GTK_ALIGN_END } );
+
     overlay.ChildWidget( picture );
     overlay.AddWidget( spinner );
+    overlay.AddWidget( label );
 
     box.AppendWidget( overlay );
 

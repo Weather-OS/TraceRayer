@@ -29,6 +29,7 @@ add_library( comui SHARED
         Source/UI/GTK/GTKDrawingArea.c
         Source/UI/GTK/GTKWindowHandle.c
         Source/UI/GTK/GTKPicture.c
+        Source/UI/GTK/GTKLabel.c
         Source/UI/GTK/GTKSpinner.c
         Source/UI/GTK/GTKOverlay.c )
 

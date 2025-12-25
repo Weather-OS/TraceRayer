@@ -36,6 +36,7 @@
 #include <UI/GTK/GTKWindowHandle.h>     /** IID_GTKWindowHandleObject **/
 #include <UI/GTK/GTKDrawingArea.h>      /** IID_GTKDrawingAreaObject **/
 #include <UI/GTK/GTKPicture.h>          /** IID_GTKSpinnerObject **/
+#include <UI/GTK/GTKLabel.h>            /** IID_GTKLabelObject **/
 #include <UI/GTK/GTKSpinner.h>          /** IID_GTKSpinnerObject **/
 #include <UI/GTK/GTKOverlay.h>          /** IID_GTKOverlayObject **/
 #include <Core/Async/AsyncOperation.h>  /** IID_AsyncOperationObject **/

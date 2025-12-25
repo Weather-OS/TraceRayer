@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef TRACERAYER_GTKPICTURE_H
-#define TRACERAYER_GTKPICTURE_H
+#ifndef TRACERAYER_GTKLABEL_H
+#define TRACERAYER_GTKLABEL_H
 
 #include <gdk/gdk.h>
 
@@ -35,42 +35,32 @@
 extern "C" {
 #endif
 
-typedef struct _GTKPictureObject GTKPictureObject;
+typedef struct _GTKLabelObject GTKLabelObject;
 
-typedef struct _GTKPictureInterface
+typedef struct _GTKLabelInterface
 {
     BEGIN_INTERFACE
 
-    IMPLEMENTS_UNKNOWNOBJECT( GTKPictureObject )
+    IMPLEMENTS_UNKNOWNOBJECT( GTKLabelObject )
 
-    /**
-     * @Method: GdkRectangle GTKPictureObject::GetPictureRect()
-     * @Description: Gets the picture rectangle, including its size.
-     * @Status: Always returns T_SUCCESS.
-     */
-    TR_STATUS (*GetPictureRect)(
-        IN GTKPictureObject *This,
-        OUT GdkRectangle    *out);
-    
     END_INTERFACE
-} GTKPictureInterface;
+} GTKLabelInterface;
 
-interface _GTKPictureObject
+interface _GTKLabelObject
 {
-    CONST_VTBL GTKPictureInterface *lpVtbl;
+    CONST_VTBL GTKLabelInterface *lpVtbl;
 };
 
 /**
- * @Object: GTKPictureObject
- * @Description: A GTK Picture Object that represents a picture that
- *               can be painted on surfaces.
+ * @Object: GTKLabelObject
+ * @Description: A GTK Label object that represents a text.
  * @Implements:
  *      GTKWidgetObject
  */
-struct gtk_picture_object
+struct gtk_label_object
 {
     // --- Public Members --- //
-    GTKPictureObject GTKPictureObject_iface;
+    GTKLabelObject GTKLabelObject_iface;
 
     // --- Subclasses --- //
     implements( GTKWidgetObject );
@@ -79,11 +69,11 @@ struct gtk_picture_object
     ATOMIC(TRLong) ref;
 };
 
-// af332f42-a0ec-4ee2-b882-d975926c15f0
-DEFINE_GUID( GTKPictureObject, 0xaf332f42, 0xa0ec, 0x4ee2, 0xb8, 0x82, 0xd9, 0x75, 0x92, 0x6c, 0x15, 0xf0 );
+// 799390ab-f9f0-4e7e-b737-848363218e72
+DEFINE_GUID( GTKLabelObject, 0x799390ab, 0xf9f0, 0x4e7e, 0xb7, 0x37, 0x84, 0x83, 0x63, 0x21, 0x8e, 0x72 );
 
 // Constructors
-TR_STATUS TR_API new_gtk_picture_object_override_path( IN TRPath *imagePath, OUT GTKPictureObject **out );
+TR_STATUS TR_API new_gtk_label_object_override_text( IN TRCString text, OUT GTKLabelObject **out );
 
 #ifdef __cplusplus
 } // extern "C"
@@ -92,28 +82,21 @@ namespace TR
 {
     namespace UI
     {
-        class GTKPictureObject : public UnknownObject<_GTKPictureObject>
+        class GTKLabelObject : public UnknownObject<_GTKLabelObject>
         {
         public:
             using UnknownObject::UnknownObject;
-            static constexpr const TRUUID &classId = IID_GTKPictureObject;
+            static constexpr const TRUUID &classId = IID_GTKLabelObject;
 
-            explicit GTKPictureObject( TRPath *&imagePath )
+            explicit GTKLabelObject( const std::string& text )
             {
-                check_tr_( new_gtk_picture_object_override_path( imagePath, put() ) );
+                check_tr_( new_gtk_label_object_override_text( text.c_str(), put() ) );
             }
 
             // Implements a GTKWidgetObject
             operator GTKWidgetObject() const
             {
                 return QueryInterface<GTKWidgetObject>();
-            }
-
-            GdkRectangle GetPictureRect() const
-            {
-                GdkRectangle rect;
-                check_tr_( get()->lpVtbl->GetPictureRect( get(), &rect ) );
-                return rect;
             }
         };
     }
