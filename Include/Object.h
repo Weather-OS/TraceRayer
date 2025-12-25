@@ -92,7 +92,7 @@ DEFINE_GUID( UnknownObject, 0x00000000, 0x0000, 0x0000, 0xC0, 0x00, 0x00, 0x00, 
     static TRLong impl##_Release( type_name *iface )                                                \
     {                                                                                               \
         struct impl *root = impl_from_##type_name( iface );                                         \
-        const TRLong removed = atomic_fetch_sub( &root->ref, 1 );                                   \
+        const ATOMIC(TRLong) removed = atomic_fetch_sub( &root->ref, 1 );                           \
         TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );                      \
         if ( !(removed - 1) )                                                                       \
             free( root );                                                                           \
