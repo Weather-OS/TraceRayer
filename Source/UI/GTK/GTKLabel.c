@@ -72,7 +72,7 @@ static TRLong gtk_label_object_AddRef( GTKLabelObject *iface )
 static TRLong gtk_label_object_Release( GTKLabelObject *iface )
 {
     struct gtk_label_object *impl = impl_from_GTKLabelObject( iface );
-    const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
+    const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {

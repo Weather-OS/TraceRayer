@@ -72,7 +72,7 @@ static TRLong gtk_picture_object_AddRef( GTKPictureObject *iface )
 static TRLong gtk_picture_object_Release( GTKPictureObject *iface )
 {
     struct gtk_picture_object *impl = impl_from_GTKPictureObject( iface );
-    const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
+    const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {

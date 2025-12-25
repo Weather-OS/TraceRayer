@@ -72,7 +72,7 @@ static TRLong gtk_drawing_area_object_AddRef( GTKDrawingAreaObject *iface )
 static TRLong gtk_drawing_area_object_Release( GTKDrawingAreaObject *iface )
 {
     struct gtk_drawing_area_object *impl = impl_from_GTKDrawingAreaObject( iface );
-    const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
+    const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {

@@ -72,7 +72,7 @@ static TRLong gtk_window_handle_object_AddRef( GTKWindowHandleObject *iface )
 static TRLong gtk_window_handle_object_Release( GTKWindowHandleObject *iface )
 {
     struct gtk_window_handle_object *impl = impl_from_GTKWindowHandleObject( iface );
-    const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
+    const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {

@@ -38,7 +38,7 @@
 typedef char TRChar;
 typedef char *TRString;
 typedef const char *TRCString;
-typedef unsigned char TRBool;
+typedef bool TRBool;
 typedef unsigned short TRUShort;
 typedef short TRShort;
 typedef int TRInt;

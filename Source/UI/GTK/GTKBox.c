@@ -72,7 +72,7 @@ static TRLong gtk_box_object_AddRef( GTKBoxObject *iface )
 static TRLong gtk_box_object_Release( GTKBoxObject *iface )
 {
     struct gtk_box_object *impl = impl_from_GTKBoxObject( iface );
-    const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
+    const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {

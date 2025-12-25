@@ -72,7 +72,7 @@ static TRLong async_info_object_AddRef( AsyncInfoObject *iface )
 static TRLong async_info_object_Release( AsyncInfoObject *iface )
 {
     struct async_info_object *impl = impl_from_AsyncInfoObject( iface );
-    const TRLong removed = atomic_fetch_sub( &impl->ref, 1 );
+    const ATOMIC(TRLong) removed = atomic_fetch_sub( &impl->ref, 1 );
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {

@@ -62,7 +62,7 @@ static TRLong async_state_object_AddRef( AsyncStateObject *iface )
 static TRLong async_state_object_Release( AsyncStateObject *iface )
 {
     struct async_state_object *impl = impl_from_AsyncStateObject( iface );
-    const TRLong removed = atomic_fetch_sub( &impl->ref, 1 );
+    const ATOMIC(TRLong) removed = atomic_fetch_sub( &impl->ref, 1 );
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {

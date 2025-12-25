@@ -72,7 +72,7 @@ static TRLong gtk_overlay_object_AddRef( GTKOverlayObject *iface )
 static TRLong gtk_overlay_object_Release( GTKOverlayObject *iface )
 {
     struct gtk_overlay_object *impl = impl_from_GTKOverlayObject( iface );
-    const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
+    const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {

@@ -72,7 +72,7 @@ static TRLong gtk_spinner_object_AddRef( GTKSpinnerObject *iface )
 static TRLong gtk_spinner_object_Release( GTKSpinnerObject *iface )
 {
     struct gtk_spinner_object *impl = impl_from_GTKSpinnerObject( iface );
-    const TRLong removed = atomic_fetch_sub(&impl->ref, 1);
+    const ATOMIC(TRLong) removed = atomic_fetch_sub(&impl->ref, 1);
     TRACE( "iface %p decreasing ref count to %ld\n", iface, removed - 1 );
     if ( !(removed - 1) )
     {
