@@ -405,7 +405,7 @@ TraceRayer_DEBUG(
 
 TRString TR_API debugstr_uuid( IN const uuid_t uuid )
 {
-    static _Thread_local TRChar str[37];
+    static thread_local TRChar str[37];
     uuid_unparse( uuid, str );
     return str;
 }
