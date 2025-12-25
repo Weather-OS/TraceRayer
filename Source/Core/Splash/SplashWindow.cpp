@@ -22,6 +22,8 @@
 
 #include <Core/Splash/SplashWindow.hpp>
 
+#include <Core/Vulkan/Vulkan.h>
+
 #include <UI/GTK/GTKPicture.h>
 #include <UI/GTK/GTKLabel.h>
 #include <UI/GTK/GTKSpinner.h>
@@ -31,6 +33,8 @@
 #include <IO/FetchResources.h>
 #include <Statics.h>
 
+#include "IO/Arguments.h"
+
 using namespace TR;
 
 void
@@ -39,6 +43,8 @@ SplashWindow(
 ) {
     TRPath *splashPicturePath;
 
+    Core::Vulkan::VulkanObject vkInst;
+    Core::Vulkan::VulkanDeviceObject device;
     UI::GTKWindowObject window = inGtk.CreateWindow();
     UI::GTKPictureObject picture;
     UI::GTKWindowHandleObject windowHandle{};
@@ -51,6 +57,13 @@ SplashWindow(
 
     picture = UI::GTKPictureObject( splashPicturePath );
     free( splashPicturePath );
+
+    vkInst = Core::Vulkan::VulkanObject( "Test", {1, 0, 0}, inGtk.CurrentPlatform() );
+
+    device = vkInst.CreateDevice( GlobalArgumentsDefault.GPUName );
+
+    if ( !device.SupportsExtension( "VK_KHR_ray_tracing_pipeline" ) )
+        WARN( "This device does not support ray tracing!\n" );
 
     spinner.Spinning( true );
     spinner.QueryInterface<UI::GTKWidgetObject>().Alignment( { .Horizontal = GTK_ALIGN_START, .Vertical = GTK_ALIGN_END } );
