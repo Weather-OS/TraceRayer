@@ -20,24 +20,16 @@
  * THE SOFTWARE.
  */
 
-#include <Core/Application.h>
+#include <Application/Splash/SplashWindow.hpp>
 
-#include <Statics.h>
-#include <Core/ActivationLoop.hpp>
+#include <Application/ActivationLoop.hpp>
 
 using namespace TR;
 
-TR_STATUS InitApplication()
-{
-    TRULong token;
-    try
-    {
-        UI::GTKObject app( GTK_APPNAME );
-        token = app.OnActivation( ActivationLoop, &token );
-        app.RunApplication();
-    } catch ( const TRException& e )
-    {
-        return e.status;
-    }
-    return T_SUCCESS;
+void
+ActivationLoop(
+    IN UI::GTKObject *invoker,
+    IN void *user_data
+) {
+    SplashWindow( *invoker );
 }

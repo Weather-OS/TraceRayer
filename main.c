@@ -29,7 +29,7 @@
 
 #include <IO/Arguments.h>
 #include <IO/Logging.h>
-#include <Core/Application.h>
+#include <Application/Application.h>
 
 int main( const int argc, char **argv )
 {

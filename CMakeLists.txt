@@ -84,9 +84,9 @@ add_executable(TraceRayer main.c
         Source/IO/Logging.c
         Source/IO/Path.c
         Source/IO/FetchResources.c
-        Source/Core/Application.cpp
-        Source/Core/ActivationLoop.cpp
-        Source/Core/Splash/SplashWindow.cpp)
+        Source/Application/Application.cpp
+        Source/Application/ActivationLoop.cpp
+        Source/Application/Splash/SplashWindow.cpp)
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 
