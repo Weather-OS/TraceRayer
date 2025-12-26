@@ -113,11 +113,17 @@ namespace TR
     {
     public:
         using ComRAII<Inheritance>::ComRAII;
+        static constexpr const TRUUID &classId = IID_UnknownObject;
 
         // Must only be used within QueryInterface.
         explicit UnknownObject( _UnknownObject *p = nullptr )
         {
             this->ptr_ = reinterpret_cast<Inheritance *>(p);
+        }
+
+        operator UnknownObject<_UnknownObject>() const
+        {
+            return QueryInterface<UnknownObject<_UnknownObject>>();
         }
 
         template <typename To>
