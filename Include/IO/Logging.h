@@ -100,7 +100,7 @@ struct TRException final : std::runtime_error
     }
 };
 
-#define check_tr_( tr ){ if ( FAILED( tr ) ) throw TRException( tr ); }
+#define check_tr_( tr ){ TR_STATUS st = tr; if ( FAILED( st ) ) throw TRException( st ); }
 
 #endif
 
