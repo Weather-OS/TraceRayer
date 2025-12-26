@@ -66,15 +66,17 @@ SignalCallbackHandler(
 }
 
 #define implements_event( name, from ) \
-    std::unordered_map<TRULong, std::unique_ptr<void, void(*)(void*)>> name##_callback_store_;                      \
-    std::mutex name##_callback_store_mutex_;                                                                        \
+    std::shared_ptr<std::unordered_map<TRULong, std::unique_ptr<void, void(*)(void*)>>> name##_callback_store_      \
+        = std::make_shared<std::unordered_map<TRULong, std::unique_ptr<void, void(*)(void*)>>>();                   \
+    std::shared_ptr<std::mutex> name##_callback_store_mutex_                                                        \
+        = std::make_shared<std::mutex>();                                                                           \
     TRULong name( SignalCallbackSafe<from> callback, void *context )                                                \
     {                                                                                                               \
         TRULong out;                                                                                                \
         SignalCallbackSafeObj<from>* callbackObj = new SignalCallbackSafeObj<from>{ this, callback, context };      \
         {                                                                                                           \
-            std::scoped_lock lock( name##_callback_store_mutex_ );                                                  \
-            name##_callback_store_.emplace(                                                                         \
+            std::scoped_lock lock( *name##_callback_store_mutex_ );                                                 \
+            name##_callback_store_->emplace(                                                                        \
                     out,                                                                                            \
                     std::unique_ptr<void, void(*)(void*)>( callbackObj, [](void *p)                                 \
                         {                                                                                           \
@@ -88,8 +90,8 @@ SignalCallbackHandler(
     void name( TRULong token )                                                                                      \
     {                                                                                                               \
         check_tr_( get()->lpVtbl->eventremove_##name( get(), token ) );                                             \
-        std::scoped_lock lock( name##_callback_store_mutex_ );                                                      \
-        name##_callback_store_.erase( token );                                                                      \
+        std::scoped_lock lock( *name##_callback_store_mutex_ );                                                     \
+        name##_callback_store_->erase( token );                                                                     \
     }
 
 #endif
