@@ -309,7 +309,7 @@ TR_STATUS TR_API new_async_state_object_override_callback_and_outer( IN UnknownO
 
     TRACE( "invoker %p, param %p, callback %p, outer %p, out %p\n", invoker, param, callback, outer, out );
 
-    if ( !out ) throw_NullPtrException();
+    if ( !out || !callback ) throw_NullPtrException();
 
     // Freed in Release();
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
