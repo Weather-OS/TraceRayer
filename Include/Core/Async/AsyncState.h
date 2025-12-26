@@ -109,6 +109,6 @@ DEFINE_GUID( AsyncStateObject, 0xd81ab70d, 0x82e0, 0x481c, 0x98, 0x3d, 0x40, 0x1
 DEFINE_GUID( AsyncStateCompletedHandlerObject, 0xfcdcf02c, 0xe5d8, 0x4478, 0x91, 0x5a, 0x4d, 0x90, 0xb7, 0x4b, 0x83, 0xa5 );
 
 // Constructors
-TR_STATUS new_async_state_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncStateObject **out );
+TR_STATUS TR_API new_async_state_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncStateObject **out );
 
 #endif

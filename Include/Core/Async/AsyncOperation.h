@@ -86,6 +86,6 @@ DEFINE_GUID( AsyncOperationObject, 0x9fc2b0bb, 0xe446, 0x44e2, 0xaa, 0x61, 0xb0,
 DEFINE_GUID( AsyncOperationCompletedHandlerObject, 0xfcdcf02c, 0xe5d8, 0x4478, 0x91, 0x5a, 0x4d, 0x90, 0xb7, 0x4b, 0x83, 0xa5 );
 
 // Constructors
-TR_STATUS new_async_operation_object_override_callback( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, OUT AsyncOperationObject **out );
+TR_STATUS TR_API new_async_operation_object_override_callback( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, OUT AsyncOperationObject **out );
 
 #endif

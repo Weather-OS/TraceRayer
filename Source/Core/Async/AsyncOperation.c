@@ -152,7 +152,7 @@ static AsyncOperationInterface async_operation_interface =
     async_operation_object_GetResults
 };
 
-TR_STATUS new_async_operation_object_override_callback( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, OUT AsyncOperationObject **out )
+TR_STATUS TR_API new_async_operation_object_override_callback( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, OUT AsyncOperationObject **out )
 {
     TR_STATUS status;
     AsyncStateObject *state;

@@ -156,7 +156,7 @@ static AsyncInfoInterface async_info_interface =
     async_info_object_Close
 };
 
-TR_STATUS new_async_info_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncInfoObject **out )
+TR_STATUS TR_API new_async_info_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncInfoObject **out )
 {
     struct async_info_object *impl;
 

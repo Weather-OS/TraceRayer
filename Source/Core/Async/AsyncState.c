@@ -301,7 +301,7 @@ static void async_state_object_callback( void *iface, void *user_data )
     impl->outer->lpVtbl->Release( impl->outer );
 }
 
-TR_STATUS new_async_state_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncStateObject **out )
+TR_STATUS TR_API new_async_state_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncStateObject **out )
 {
     GError *error = nullptr;
 

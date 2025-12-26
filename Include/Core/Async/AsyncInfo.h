@@ -28,6 +28,10 @@
 
 #include <Core/Async/AsyncState.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _AsyncInfoObject AsyncInfoObject;
 
 typedef struct _AsyncInfoInterface
@@ -65,6 +69,28 @@ struct async_info_object
 DEFINE_GUID( AsyncInfoObject, 0x00000036, 0x0000, 0x0000, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 );
 
 // Constructors
-TR_STATUS new_async_info_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncInfoObject **out );
+TR_STATUS TR_API new_async_info_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncInfoObject **out );
 
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    namespace Core::Async
+    {
+        class AsyncInfoObject : public UnknownObject<_AsyncInfoObject>
+        {
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_AsyncInfoObject;
+
+            explicit AsyncInfoObject( UnknownObject<_UnknownObject> invoker, void *param, async_operation_callback callback, UnknownObject<_UnknownObject> outer )
+            {
+                check_tr_( new_async_info_object_override_callback_and_outer( invoker.get(), param, callback, outer.get(), put() ) );
+            }
+        };
+    }
+}
+#endif
+    
 #endif
