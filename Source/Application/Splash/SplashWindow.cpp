@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-#include <Application//Splash/SplashWindow.hpp>
+#include <Application/Splash/SplashWindow.hpp>
 
 #include <Core/Vulkan/Vulkan.h>
 
