@@ -21,21 +21,26 @@
  */
 
 #include <Application/Splash/SplashWindow.hpp>
+#include <memory>
 
 #include <Core/Vulkan/Vulkan.h>
+#include <Core/Async/AsyncOperation.h>
 
-#include <UI/GTK/GTKPicture.h>
-#include <UI/GTK/GTKLabel.h>
-#include <UI/GTK/GTKSpinner.h>
-#include <UI/GTK/GTKBox.h>
-#include <UI/GTK/GTKOverlay.h>
-#include <UI/GTK/GTKWindowHandle.h>
-#include <IO/FetchResources.h>
+#include <UI/UI.h>
 #include <Statics.h>
 
-#include "IO/Arguments.h"
+#include <IO/Arguments.h>
+#include <IO/FetchResources.h>
 
 using namespace TR;
+
+void
+CustomAsync( UI::GTKWindowObject *window, void *param, PropVariant *result )
+{
+    sleep(2);
+    window->SetResizable( true );
+    throw TRException( T_OUTOFMEMORY );
+}
 
 void
 SplashWindow(
@@ -45,11 +50,11 @@ SplashWindow(
 
     Core::Vulkan::VulkanObject vkInst;
     Core::Vulkan::VulkanDeviceObject device;
-    UI::GTKWindowObject window = inGtk.CreateWindow();
     UI::GTKPictureObject picture;
     UI::GTKWindowHandleObject windowHandle{};
     UI::GTKSpinnerObject spinner{};
     UI::GTKOverlayObject overlay{};
+    UI::GTKWindowObject window = inGtk.CreateWindow();
     UI::GTKBoxObject box( GTK_ORIENTATION_HORIZONTAL, 5 );
     UI::GTKLabelObject label( "Loading..." );
 
@@ -57,6 +62,8 @@ SplashWindow(
 
     picture = UI::GTKPictureObject( splashPicturePath );
     free( splashPicturePath );
+
+    Core::Async::AsyncOperationObject asyncOperation( &window, nullptr, CustomAsync );
 
     vkInst = Core::Vulkan::VulkanObject( "Test", {1, 0, 0}, inGtk.CurrentPlatform() );
 
@@ -79,7 +86,7 @@ SplashWindow(
     box.AppendWidget( overlay );
 
     window.ChildWidget( windowHandle );
-    window.SetResizable( true );
+    window.SetResizable( false );
     window.SetWindowTitle( APPNAME );
     window.WindowRect( picture.GetPictureRect() );
 

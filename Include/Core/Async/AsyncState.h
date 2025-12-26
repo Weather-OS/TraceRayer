@@ -34,6 +34,10 @@
 typedef struct _AsyncStateObject AsyncStateObject;
 typedef struct _AsyncStateCompletedHandlerObject AsyncStateCompletedHandlerObject;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef TR_STATUS (*async_operation_callback)( UnknownObject *invoker, void *param, PropVariant *result );
 
 typedef enum AsyncStatus {
@@ -113,5 +117,47 @@ DEFINE_GUID( AsyncStateCompletedHandlerObject, 0xfcdcf02c, 0xe5d8, 0x4478, 0x91,
 
 // Constructors
 TR_STATUS TR_API new_async_state_object_override_callback_and_outer( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, IN UnknownObject *outer, OUT AsyncStateObject **out );
+
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    namespace Core::Async
+    {
+        template <typename From>
+        using AsyncOperationCallbackSafe = void (*)( From invoker, void *param, PropVariant *result );
+
+        template <typename From>
+        struct AsyncOperationCallbackSafeObj
+        {
+            AsyncOperationCallbackSafe<From> callback;
+            void *param;
+        };
+
+        inline TR_STATUS
+        AsyncOperationCallbackHandler(
+            IN _UnknownObject *invoker,
+            IN void *param,
+            OUT PropVariant *result
+        ) {
+            const auto *safeCallback = static_cast<AsyncOperationCallbackSafeObj<TR::UnknownObject<_UnknownObject>> *>( param );
+
+            try
+            {
+                invoker->lpVtbl->AddRef( invoker );
+                safeCallback->callback( TR::UnknownObject<_UnknownObject>( invoker ), safeCallback->param, result );
+            } catch ( const TRException &e )
+            {
+                return e.status;
+            }
+
+            // Callback is only invoked once. It's safe to delete here.
+            delete safeCallback;
+            return T_SUCCESS;
+        }
+    }
+}
+#endif
 
 #endif

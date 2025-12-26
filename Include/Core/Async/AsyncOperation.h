@@ -117,9 +117,12 @@ namespace TR
             using UnknownObject::UnknownObject;
             static constexpr const TRUUID &classId = IID_AsyncOperationObject;
 
-            explicit AsyncOperationObject( UnknownObject<_UnknownObject> invoker, void *param, async_operation_callback callback )
+            template<typename From>
+            explicit AsyncOperationObject( From invoker, void *param, AsyncOperationCallbackSafe<From> callback )
             {
-                check_tr_( new_async_operation_object_override_callback( invoker.get(), param, callback, put() ) );
+                // Deleted in AsyncOperationCallbackHandler.
+                AsyncOperationCallbackSafeObj<From>* callbackObj = new AsyncOperationCallbackSafeObj<From>{ callback, param };
+                check_tr_( new_async_operation_object_override_callback( reinterpret_cast<_UnknownObject *>( invoker->get() ), callbackObj, AsyncOperationCallbackHandler, put() ) );
             }
 
             AsyncOperationCompletedHandlerObject Completed() const
