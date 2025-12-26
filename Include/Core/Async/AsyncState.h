@@ -28,6 +28,9 @@
 
 #include <glib.h>
 
+//// AsyncState is too unsafe to be exposed to C++ targets ////
+//// Use AsyncOperation as an abstraction of this object ////
+
 typedef struct _AsyncStateObject AsyncStateObject;
 typedef struct _AsyncStateCompletedHandlerObject AsyncStateCompletedHandlerObject;
 

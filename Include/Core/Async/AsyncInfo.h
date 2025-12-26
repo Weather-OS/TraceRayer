@@ -88,6 +88,30 @@ namespace TR
             {
                 check_tr_( new_async_info_object_override_callback_and_outer( invoker.get(), param, callback, outer.get(), put() ) );
             }
+
+            AsyncStatus Status() const noexcept
+            {
+                AsyncStatus out;
+                get()->lpVtbl->get_Status( get(), &out );
+                return out;
+            }
+
+            TRException ErrorCode() const noexcept
+            {
+                TR_STATUS out;
+                get()->lpVtbl->get_ErrorCode( get(), &out );
+                return TRException( out );
+            }
+
+            void Cancel() const
+            {
+                check_tr_( get()->lpVtbl->Cancel( get() ) );
+            }
+
+            void Close() const
+            {
+                check_tr_( get()->lpVtbl->Close( get() ) );
+            }
         };
     }
 }

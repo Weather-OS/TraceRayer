@@ -28,6 +28,10 @@
 
 #include <Core/Async/AsyncInfo.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _AsyncOperationObject AsyncOperationObject;
 typedef struct _AsyncOperationCompletedHandlerObject AsyncOperationCompletedHandlerObject;
 
@@ -87,5 +91,59 @@ DEFINE_GUID( AsyncOperationCompletedHandlerObject, 0xfcdcf02c, 0xe5d8, 0x4478, 0
 
 // Constructors
 TR_STATUS TR_API new_async_operation_object_override_callback( IN UnknownObject *invoker, IN void *param, IN async_operation_callback callback, OUT AsyncOperationObject **out );
+
+#ifdef __cplusplus
+} // extern "C"
+
+namespace TR
+{
+    namespace Core::Async
+    {
+        struct AsyncOperationCompletedHandlerObject : public UnknownObject<_AsyncOperationCompletedHandlerObject>
+        {
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_AsyncOperationCompletedHandlerObject;
+
+            void Invoke( AsyncOperationObject *info, AsyncStatus status ) const
+            {
+                check_tr_( get()->lpVtbl->Invoke( get(), info, status ) );
+            }
+        };
+
+        class AsyncOperationObject : public UnknownObject<_AsyncOperationObject>
+        {
+        public:
+            using UnknownObject::UnknownObject;
+            static constexpr const TRUUID &classId = IID_AsyncOperationObject;
+
+            explicit AsyncOperationObject( UnknownObject<_UnknownObject> invoker, void *param, async_operation_callback callback )
+            {
+                check_tr_( new_async_operation_object_override_callback( invoker.get(), param, callback, put() ) );
+            }
+
+            AsyncOperationCompletedHandlerObject Completed() const
+            {
+                _AsyncOperationCompletedHandlerObject *out;
+                check_tr_( get()->lpVtbl->get_Completed( get(), &out ) );
+                return AsyncOperationCompletedHandlerObject( out );
+            }
+
+            void Completed( AsyncOperationCompletedHandlerObject completed ) const
+            {
+                check_tr_( get()->lpVtbl->set_Completed( get(), completed.get() ) );
+            }
+
+            // TODO: Use std::any conversion
+            PropVariant* GetResults()
+            {
+                PropVariant* out;
+                check_tr_( get()->lpVtbl->GetResults( get(), &out ) );
+                return out;
+            }
+        };
+    }
+}
+#endif
 
 #endif
