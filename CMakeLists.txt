@@ -6,10 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 
 find_package(PkgConfig REQUIRED)
 find_package(Vulkan REQUIRED)
-
-pkg_check_modules(GTK4 REQUIRED gtk4)
-include_directories(${GTK4_INCLUDE_DIRS})
-link_directories(${GTK4_LIBRARY_DIRS})
+find_package(GTK REQUIRED)
 
 pkg_check_modules(UUID REQUIRED uuid)
 include_directories(${UUID_INCLUDE_DIRS})
@@ -18,6 +15,8 @@ link_directories(${UUID_LIBRARY_DIRS})
 pkg_check_modules(ADWAITA REQUIRED libadwaita-1)
 include_directories(${ADWAITA_INCLUDE_DIRS})
 link_directories(${ADWAITA_LIBRARY_DIRS})
+
+include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 
 # comui
 add_library( comui SHARED
@@ -31,8 +30,6 @@ add_library( comui SHARED
         Source/UI/GTK/GTKLabel.c
         Source/UI/GTK/GTKSpinner.c
         Source/UI/GTK/GTKOverlay.c )
-
-target_include_directories(comui PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 
 target_link_libraries(comui ${GTK4_LIBRARIES})
 target_link_libraries(comui ${UUID_LIBRARIES})
@@ -49,8 +46,6 @@ add_library( comasync SHARED
         Source/Core/Async/AsyncInfo.c
         Source/Core/Async/AsyncOperationCompletedHandlerDefault.c )
 
-target_include_directories(comasync PRIVATE ${CMAKE_SOURCE_DIR}/Include)
-
 target_link_libraries(comasync ${GTK4_LIBRARIES})
 target_link_libraries(comasync ${UUID_LIBRARIES})
 target_link_libraries(comasync ${ADWAITA_LIBRARIES})
@@ -64,7 +59,6 @@ add_library( comvulkan SHARED
         Source/Core/Vulkan/Vulkan.c
         Source/Core/Vulkan/VulkanDevice.c )
 
-target_include_directories(comvulkan PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 target_include_directories(comvulkan PRIVATE ${Vulkan_INCLUDE_DIRS})
 
 target_link_libraries(comvulkan ${UUID_LIBRARIES})
@@ -84,8 +78,6 @@ add_executable(TraceRayer main.c
         Source/Application/ActivationLoop.cpp
         Source/Application/Splash/SplashWindow.cpp )
 
-target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
-
 target_compile_options(TraceRayer PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:-O3 -fvisibility=hidden>
         $<$<COMPILE_LANGUAGE:C>:-O2 -fvisibility=hidden> )
@@ -96,7 +88,7 @@ target_link_libraries(TraceRayer comasync)
 target_link_libraries(TraceRayer comvulkan)
 
 target_compile_definitions(TraceRayer PRIVATE
-        RESOURCE_DIR="${CMAKE_INSTALL_PREFIX}/share/TraceRayer/Resources" )
+        RESOURCE_DIR=\"${CMAKE_INSTALL_PREFIX}/share/TraceRayer/Resources\" )
 
 install( TARGETS TraceRayer
          RUNTIME DESTINATION bin )
