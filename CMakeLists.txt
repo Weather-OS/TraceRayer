@@ -19,8 +19,6 @@ pkg_check_modules(ADWAITA REQUIRED libadwaita-1)
 include_directories(${ADWAITA_INCLUDE_DIRS})
 link_directories(${ADWAITA_LIBRARY_DIRS})
 
-enable_language(CXX)
-
 # comui
 add_library( comui SHARED
         Source/UI/GTK/GTKWindow.c
@@ -42,14 +40,14 @@ target_link_libraries(comui ${ADWAITA_LIBRARIES})
 
 target_compile_options(comui PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-parameter -O3 -fvisibility=hidden>
-        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -Wno-unused-parameter -O2 -fvisibility=hidden>
-)
+        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -Wno-unused-parameter -O2 -fvisibility=hidden> )
 
 # comasync
 add_library( comasync SHARED
         Source/Core/Async/AsyncOperation.c
         Source/Core/Async/AsyncState.c
-        Source/Core/Async/AsyncInfo.c )
+        Source/Core/Async/AsyncInfo.c
+        Source/Core/Async/AsyncOperationCompletedHandlerDefault.c )
 
 target_include_directories(comasync PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 
@@ -59,8 +57,7 @@ target_link_libraries(comasync ${ADWAITA_LIBRARIES})
 
 target_compile_options(comasync PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -O3 -fvisibility=hidden>
-        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -O2 -fvisibility=hidden>
-)
+        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -O2 -fvisibility=hidden> )
 
 # comvulkan
 add_library( comvulkan SHARED
@@ -75,8 +72,7 @@ target_link_libraries(comvulkan ${Vulkan_LIBRARIES})
 
 target_compile_options(comvulkan PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -O3 -fvisibility=hidden>
-        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -O2 -fvisibility=hidden>
-)
+        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -O2 -fvisibility=hidden> )
 
 # TraceRayer
 add_executable(TraceRayer main.c
@@ -86,14 +82,13 @@ add_executable(TraceRayer main.c
         Source/IO/FetchResources.c
         Source/Application/Application.cpp
         Source/Application/ActivationLoop.cpp
-        Source/Application/Splash/SplashWindow.cpp)
+        Source/Application/Splash/SplashWindow.cpp )
 
 target_include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 
 target_compile_options(TraceRayer PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:-O3 -fvisibility=hidden>
-        $<$<COMPILE_LANGUAGE:C>:-O2 -fvisibility=hidden>
-)
+        $<$<COMPILE_LANGUAGE:C>:-O2 -fvisibility=hidden> )
 
 target_link_libraries(TraceRayer ${UUID_LIBRARIES})
 target_link_libraries(TraceRayer comui)
@@ -101,8 +96,7 @@ target_link_libraries(TraceRayer comasync)
 target_link_libraries(TraceRayer comvulkan)
 
 target_compile_definitions(TraceRayer PRIVATE
-        RESOURCE_DIR="${CMAKE_INSTALL_PREFIX}/share/TraceRayer/Resources"
-)
+        RESOURCE_DIR="${CMAKE_INSTALL_PREFIX}/share/TraceRayer/Resources" )
 
 install( TARGETS TraceRayer
          RUNTIME DESTINATION bin )

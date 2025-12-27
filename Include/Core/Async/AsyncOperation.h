@@ -57,7 +57,7 @@ typedef struct _AsyncOperationCompletedHandlerObjectInterface
     TR_STATUS (*Invoke)( AsyncOperationCompletedHandlerObject *This, AsyncOperationObject *info, AsyncStatus status );
 
     END_INTERFACE
-} AsyncOperationCompletedHandlerObjectInterface;
+} AsyncOperationCompletedHandlerInterface;
 
 interface _AsyncOperationObject
 {
@@ -66,7 +66,7 @@ interface _AsyncOperationObject
 
 interface _AsyncOperationCompletedHandlerObject
 {
-    CONST_VTBL AsyncOperationCompletedHandlerObjectInterface *lpVtbl;
+    CONST_VTBL AsyncOperationCompletedHandlerInterface *lpVtbl;
 };
 
 struct async_operation_object
@@ -125,6 +125,12 @@ namespace TR
                 check_tr_( new_async_operation_object_override_callback( reinterpret_cast<_UnknownObject *>( invoker->get() ), callbackObj, AsyncOperationCallbackHandler, put() ) );
             }
 
+            // Implements an AsyncInfoObject
+            operator AsyncInfoObject() const
+            {
+                return QueryInterface<AsyncInfoObject>();
+            }
+
             AsyncOperationCompletedHandlerObject Completed() const
             {
                 _AsyncOperationCompletedHandlerObject *out;
@@ -132,13 +138,13 @@ namespace TR
                 return AsyncOperationCompletedHandlerObject( out );
             }
 
-            void Completed( AsyncOperationCompletedHandlerObject completed ) const
+            void Completed( const AsyncOperationCompletedHandlerObject &completed ) const
             {
                 check_tr_( get()->lpVtbl->set_Completed( get(), completed.get() ) );
             }
 
             // TODO: Use std::any conversion
-            PropVariant* GetResults()
+            PropVariant* GetResults() const
             {
                 PropVariant* out;
                 check_tr_( get()->lpVtbl->GetResults( get(), &out ) );

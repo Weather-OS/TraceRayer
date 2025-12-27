@@ -27,7 +27,8 @@
 
 using namespace TR;
 
-TR_STATUS InitApplication()
+TR_STATUS
+InitApplication()
 {
     TRULong token;
     try

@@ -66,7 +66,7 @@ static TR_STATUS async_operation_object_QueryInterface( AsyncOperationObject *if
             ERROR( "Subclass AsyncStateObject for AsyncOperationObject %p is not initialized yet!\n", iface );
             return T_NOINIT;
         }
-        impl->AsyncInfoObject_impl->lpVtbl->QueryInterface( impl->AsyncInfoObject_impl, IID_AsyncInfoObject, out );
+        impl->AsyncInfoObject_impl->lpVtbl->QueryInterface( impl->AsyncInfoObject_impl, IID_AsyncStateObject, out );
         return T_SUCCESS;
     }
 

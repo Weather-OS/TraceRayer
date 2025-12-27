@@ -281,7 +281,7 @@ static void async_state_object_callback( void *iface, void *user_data )
     status = impl->callback( impl->invoker, impl->param, &result );
 
     pthread_mutex_lock( &impl->lock );
-    if ( impl->Status == AsyncStatus_Closed )
+    if ( impl->Status != AsyncStatus_Closed )
         impl->Status = FAILED( status ) ? AsyncStatus_Error : AsyncStatus_Completed;
     impl->result = &result;
     impl->ErrorCode = status;
@@ -298,7 +298,6 @@ static void async_state_object_callback( void *iface, void *user_data )
     else
         pthread_mutex_unlock( &impl->lock );
 
-    // release ref acquired in Start()
     impl->outer->lpVtbl->Release( impl->outer );
 }
 

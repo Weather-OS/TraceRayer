@@ -34,8 +34,8 @@
 
 GlobalArguments GlobalArgumentsDefault =
 {
-    .GPUName = nullptr,
-    .LogLevel = 2,
+    .GPUName = "AMD Radeon RX 5600 XT (RADV NAVI10)",
+    .LogLevel = 3,
     .LogFile = nullptr,
     .ColoredTerminalOutput = true,
 };
