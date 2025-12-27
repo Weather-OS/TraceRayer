@@ -1,0 +1,15 @@
+----------------------------------------------------------------------
+LGPL-LICENSED COMPONENTS
+----------------------------------------------------------------------
+
+This project contains components that are licensed under the
+GNU Lesser General Public License v2.1 or later.
+
+In particular, the async operation implementation located in:
+
+    Source/Core/Async/
+
+is licensed under LGPL-2.1-or-later and is derived from Wine
+(https://www.winehq.org/).
+
+The full text of the LGPL v2.1 license is provided in LICENSE.LGPL-2.1.
