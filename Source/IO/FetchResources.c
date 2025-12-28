@@ -26,6 +26,10 @@
 #include <IO/FetchResources.h>
 #include <IO/Logging.h>
 
+#ifdef __linux__
+#include <linux/limits.h>
+#endif
+
 TR_STATUS
 FetchResource(
     IN TRCString resourceName,
@@ -33,23 +37,32 @@ FetchResource(
 ) {
     TR_STATUS status;
     TRString path;
+    TRString slash;
     TRString resourcePath;
     TRSize resourcePathSize;
+    TRChar pathBuf[PATH_MAX];
+    TRSize pathLen;
+
+    pathLen = readlink( "/proc/self/exe", pathBuf, PATH_MAX - 1 );
+    pathBuf[ pathLen ] = '\0';
+    slash = strrchr( pathBuf, '/' );
+    *slash = '\0';
 
     // First pass: Binary root
     path = "./Resources";
-    resourcePathSize = strlen( path ) + strlen( resourceName ) + 3;
+    resourcePathSize = strlen( pathBuf ) + strlen( path ) + strlen( resourceName ) + 4;
     resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
-    snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
+    snprintf( resourcePath, resourcePathSize, "%s/%s/%s", pathBuf, path, resourceName );
     status = FetchPath( resourcePath, false, T_READ, outResourcePath );
     free( resourcePath );
     if ( !FAILED( status ) ) return T_SUCCESS;
 
     // Second pass: Source dir
     path = "../Resources";
-    resourcePathSize = strlen( path ) + strlen( resourceName ) + 3;
+    resourcePathSize = strlen( pathBuf ) + strlen( path ) + strlen( resourceName ) + 5;
     resourcePath = (TRString)malloc( resourcePathSize * sizeof( TRChar ) );
-    snprintf( resourcePath, resourcePathSize, "%s/%s", path, resourceName );
+    snprintf( resourcePath, resourcePathSize, "%s/%s/%s", pathBuf, path, resourceName );
+    TRACE(" resourcePath is %s\n", resourcePath);
     status = FetchPath( resourcePath, false, T_READ, outResourcePath );
     free( resourcePath );
     if ( !FAILED( status ) ) return T_SUCCESS;

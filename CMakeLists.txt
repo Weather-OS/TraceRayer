@@ -93,5 +93,5 @@ target_compile_definitions(TraceRayer PRIVATE
 install( TARGETS TraceRayer
          RUNTIME DESTINATION bin )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources
-        DESTINATION share/TraceRayer)
+install( DIRECTORY ${CMAKE_SOURCE_DIR}/Resources
+         DESTINATION share/TraceRayer )

@@ -59,19 +59,6 @@ FetchPath(
     newPath = (TRPath *)calloc( 1, sizeof( *newPath ) );
     if ( !newPath ) return T_OUTOFMEMORY;
 
-#ifdef _WIN32
-    if ( strlen( path ) >= MAX_PATH )
-        return T_INVALIDARG;
-
-    for ( TRString iter = path; iter; iter++ )
-        if ( strchr( "<>:\"|?*", *iter ) )
-            return T_INVALIDARG;
-
-    TRSize len = strlen( path );
-    if ( path[len - 1] == ' ' || path[len - 1] == '.' )
-        return T_INVALIDARG;
-    return T_OK;
-#else
     if ( strlen( path ) >= PATH_MAX )
         return T_INVALIDARG;
 
@@ -145,12 +132,10 @@ FetchPath(
         free ( rootPath );
     }
 
-#endif
-
     newPath->Location = (TRString)malloc( PATH_MAX * sizeof( TRChar ) );
     realpath( path, newPath->Location );
     name = strrchr( path, '/' ) + 1;
-    newPath->Name = (TRString)malloc( (strlen( name ) + 1) * sizeof( TRString ) );
+    newPath->Name = (TRString)malloc( (strlen( name ) + 1) * sizeof( TRChar ) );
     strcpy( newPath->Name, name );
     newPath->Access = accessType;
 
