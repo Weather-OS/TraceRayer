@@ -351,6 +351,7 @@ TR_STATUS TR_API new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObj
     if (!(impl = calloc( 1, sizeof(*impl) ))) return T_OUTOFMEMORY;
 
     impl->GTKWindowObject_iface.lpVtbl = &gtk_window_interface;
+    impl->OnDelete_events = nullptr; // <-- TODO: OnDelete_events gets mutated here. Find the cause.
     atomic_init( &impl->ref, 1 );
 
     window = adw_window_new();
