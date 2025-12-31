@@ -201,6 +201,15 @@ static TR_STATUS gtk_window_object_set_ChildWidget( GTKWindowObject *iface, GTKW
     return T_SUCCESS;
 }
 
+static TR_STATUS gtk_window_object_get_Representation( GTKWindowObject *iface, WindowRepresentation *out )
+{
+    const struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
+    TRACE( "iface %p, out %p\n", iface, out );
+    if ( !out ) throw_NullPtrException();
+    *out = impl->Representation;
+    return T_SUCCESS;
+}
+
 static TR_STATUS gtk_window_object_SetWindowTitle( GTKWindowObject *iface, TRCString title )
 {
     TR_STATUS status;
@@ -256,11 +265,20 @@ static TR_STATUS gtk_window_object_Show( GTKWindowObject *iface )
 
 static TR_STATUS gtk_window_object_eventadd_OnDelete( GTKWindowObject *iface, SignalCallback callback, void *context, TRULong *token )
 {
+    TR_STATUS status;
+    GtkWidget *window;
+    GTKWidgetObject *widgetObject;
     SignalHandler *handler;
 
     struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
 
     TRACE( "iface %p, callback %p, context %p, token %p\n", iface, callback, context, token );
+
+    status = iface->lpVtbl->QueryInterface( iface, IID_GTKWidgetObject, (void**)&widgetObject );
+    if ( FAILED( status ) ) return status;
+
+    status = widgetObject->lpVtbl->get_Widget( widgetObject, &window );
+    if ( FAILED( status ) ) return status;
 
     g_mutex_lock( &impl->OnDelete_mutex );
     handler = g_new0( SignalHandler, 1 );
@@ -273,6 +291,8 @@ static TR_STATUS gtk_window_object_eventadd_OnDelete( GTKWindowObject *iface, Si
     handler->id = impl->OnDelete_next++;
     handler->user_data = context;
     impl->OnDelete_events = g_slist_prepend( impl->OnDelete_events, handler );
+    g_signal_connect( window, "close-request", G_CALLBACK( DeleteCallback ), iface );
+
     if ( !impl->OnDelete_events )
     {
         g_mutex_unlock( &impl->OnDelete_mutex );
@@ -331,6 +351,7 @@ static GTKWindowInterface gtk_window_interface =
     gtk_window_object_set_WindowRect,
     gtk_window_object_get_ChildWidget,
     gtk_window_object_set_ChildWidget,
+    gtk_window_object_get_Representation,
     gtk_window_object_SetWindowTitle,
     gtk_window_object_SetResizable,
     gtk_window_object_Show,
@@ -341,6 +362,8 @@ static GTKWindowInterface gtk_window_interface =
 TR_STATUS TR_API new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObject **out )
 {
     GtkWidget *window;
+    GdkSurface *surface;
+    GdkDisplay *display;
     struct gtk_window_object *impl;
 
     TRACE( "app %p, out %p\n", app, out );
@@ -352,15 +375,52 @@ TR_STATUS TR_API new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObj
 
     impl->GTKWindowObject_iface.lpVtbl = &gtk_window_interface;
     impl->OnDelete_events = nullptr; // <-- TODO: OnDelete_events gets mutated here. Find the cause.
+    impl->Representation.windowType = WindowType_GTK;
+    g_mutex_init( &impl->OnDelete_mutex );
     atomic_init( &impl->ref, 1 );
 
     window = adw_window_new();
     gtk_window_set_application( GTK_WINDOW(window), app );
     new_gtk_widget_object_override_widget( window, &impl->GTKWidgetObject_impl );
 
-    *out = &impl->GTKWindowObject_iface;
+    surface = gtk_native_get_surface( GTK_NATIVE( window ) );
+    display = gdk_surface_get_display( surface );
 
-    g_signal_connect( window, "close-request", G_CALLBACK( DeleteCallback ), *out );
+#ifdef PLATFORM_SUPPORTS_X11
+    if ( GDK_IS_X11_DISPLAY( display ) )
+    {
+        impl->Representation.surfaceType = SurfaceType_X11;
+        impl->Representation.x11_display = gdk_x11_display_get_xdisplay( display );
+        impl->Representation.x11_window = gdk_x11_surface_get_xid( surface );
+    }
+#endif
+
+#ifdef PLATFORM_SUPPORTS_WAYLAND
+    if ( GDK_IS_WAYLAND_DISPLAY( display ) )
+    {
+        impl->Representation.surfaceType = SurfaceType_Wayland;
+        impl->Representation.wayland_display = gdk_wayland_display_get_wl_display( display );
+        impl->Representation.wayland_surface = gdk_wayland_surface_get_wl_surface( surface );
+    }
+#endif
+
+#ifdef PLATFORM_SUPPORTS_WIN32
+    if ( GDK_IS_WIN32_DISPLAY( display ) )
+    {
+        impl->Representation.surfaceType = SurfaceType_Win32;
+        impl->Representation.win32_window = gdk_win32_window_get_handle( surface );
+    }
+#endif
+
+#ifdef PLATFORM_SUPPORTS_MACOS
+    if ( GDK_IS_QUARTZ_DISPLAY( display ) )
+    {
+        impl->Representation.surfaceType = SurfaceType_macOS;
+        impl->Representation.metal_layer = CAMetalLayer_from_nsview( gdk_quartz_window_get_nsview( window ) );
+    }
+#endif
+
+    *out = &impl->GTKWindowObject_iface;
 
     TRACE( "created GTKWindowObject %p\n", *out );
 
