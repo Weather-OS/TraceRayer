@@ -65,7 +65,7 @@ static Argument Available_Arguments[] =
     },
     {
         .Name         = "gpu-name",
-        .ValueType    = TYPE_STRING,
+        .ValueType    = TYPE_STRING
     },
     {
         .Name         = "log-level",

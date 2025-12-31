@@ -63,8 +63,8 @@ ParseCommandLineArguments(
     TR_STATUS status = T_SUCCESS;
 
     TRInt iterator;
-    TRInt secondIterator;
-    TRInt stringIterator;
+    TRSize secondIterator;
+    TRSize stringIterator;
     TRSize valSize = 0;
     TRLong longVal;
     TRBool boolVal;
@@ -114,7 +114,7 @@ ParseCommandLineArguments(
                             {
                                 return T_ERROR;
                             }
-                            const auto target = (TRString *)Available_Arguments[secondIterator].Value;
+                            auto const target = (TRString *)Available_Arguments[secondIterator].Value;
                             *target = val;
                             break;
                         }
@@ -134,7 +134,7 @@ ParseCommandLineArguments(
                                 }
                             }
                             longVal = strtol( val, nullptr, 10 );
-                            const auto target = (TRLong *)Available_Arguments[secondIterator].Value;
+                            auto const target = (TRLong *)Available_Arguments[secondIterator].Value;
                             *target = longVal;
                             break;
                         }
@@ -156,7 +156,7 @@ ParseCommandLineArguments(
                                     exit( 1 );
                                 }
                             }
-                            const auto target = (TRBool *)Available_Arguments[secondIterator].Value;
+                            auto const target = (TRBool *)Available_Arguments[secondIterator].Value;
                             *target = boolVal;
                             break;
                         }
@@ -182,7 +182,7 @@ ParseCommandLineArguments(
                                 //TODO: Handle errors
                                 exit( 1 );
                             }
-                            const auto target = (TRPath **)Available_Arguments[secondIterator].Value;
+                            auto const target = (TRPath **)Available_Arguments[secondIterator].Value;
 
                             status = FetchPath( val, true, T_READWRITE, target );
                             if ( FAILED( status ) ) return status;
