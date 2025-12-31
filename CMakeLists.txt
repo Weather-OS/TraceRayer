@@ -18,6 +18,14 @@ link_directories(${ADWAITA_LIBRARY_DIRS})
 
 include_directories(TraceRayer PRIVATE ${CMAKE_SOURCE_DIR}/Include)
 
+add_library(options INTERFACE)
+target_compile_options( options INTERFACE
+        $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-missing-field-initializers -Wno-deprecated-declarations -fvisibility=hidden>
+        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-missing-field-initializers -Wno-deprecated-declarations -fvisibility=hidden>
+
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:Release>:-O3> )
+
 # comui
 add_library( comui SHARED
         Source/UI/GTK/GTKWindow.c
@@ -31,13 +39,10 @@ add_library( comui SHARED
         Source/UI/GTK/GTKSpinner.c
         Source/UI/GTK/GTKOverlay.c )
 
+target_link_libraries(comui options)
 target_link_libraries(comui ${GTK4_LIBRARIES})
 target_link_libraries(comui ${UUID_LIBRARIES})
 target_link_libraries(comui ${ADWAITA_LIBRARIES})
-
-target_compile_options(comui PRIVATE
-        $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wno-unused-parameter -O3 -fvisibility=hidden>
-        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -Wno-unused-parameter -O2 -fvisibility=hidden> )
 
 # comasync
 add_library( comasync SHARED
@@ -46,13 +51,10 @@ add_library( comasync SHARED
         Source/Core/Async/AsyncInfo.c
         Source/Core/Async/AsyncOperationCompletedHandlerDefault.c )
 
+target_link_libraries(comasync options)
 target_link_libraries(comasync ${GTK4_LIBRARIES})
 target_link_libraries(comasync ${UUID_LIBRARIES})
 target_link_libraries(comasync ${ADWAITA_LIBRARIES})
-
-target_compile_options(comasync PRIVATE
-        $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -O3 -fvisibility=hidden>
-        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -O2 -fvisibility=hidden> )
 
 # comvulkan
 add_library( comvulkan SHARED
@@ -61,12 +63,9 @@ add_library( comvulkan SHARED
 
 target_include_directories(comvulkan PRIVATE ${Vulkan_INCLUDE_DIRS})
 
+target_link_libraries(comvulkan options)
 target_link_libraries(comvulkan ${UUID_LIBRARIES})
 target_link_libraries(comvulkan ${Vulkan_LIBRARIES})
-
-target_compile_options(comvulkan PRIVATE
-        $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -O3 -fvisibility=hidden>
-        $<$<COMPILE_LANGUAGE:C>:-Wall -Wextra -O2 -fvisibility=hidden> )
 
 # TraceRayer
 add_executable(TraceRayer main.c

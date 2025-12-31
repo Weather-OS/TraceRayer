@@ -41,7 +41,7 @@ typedef struct _GTKDrawingAreaInterface
     END_INTERFACE
 } GTKDrawingAreaInterface;
 
-interface _GTKDrawingAreaObject
+com_interface _GTKDrawingAreaObject
 {
     CONST_VTBL GTKDrawingAreaInterface *lpVtbl;
 };

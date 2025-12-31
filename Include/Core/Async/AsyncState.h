@@ -56,7 +56,7 @@ typedef struct _AsyncStateInterface
 
     TR_STATUS (*get_Completed)( IN AsyncStateObject *This, OUT AsyncStateCompletedHandlerObject **out ); // getter
     TR_STATUS (*set_Completed)( IN AsyncStateObject *This, IN AsyncStateCompletedHandlerObject *completed ); // setter
-    TR_STATUS (*get_Status)( IN AsyncStateObject *This, OUT AsyncStatus *out ); // getter
+    TR_STATUS (*get_CurrentStatus)( IN AsyncStateObject *This, OUT AsyncStatus *out ); // getter
     TR_STATUS (*get_ErrorCode)( IN AsyncStateObject *This, OUT TR_STATUS *out ); // getter
     TR_STATUS (*Result)( IN AsyncStateObject *This, OUT PropVariant **out );
     TR_STATUS (*Start)( IN AsyncStateObject *This );
@@ -78,12 +78,12 @@ typedef struct _AsyncStateCompletedHandlerInterface
     END_INTERFACE
 } AsyncStateCompletedHandlerInterface;
 
-interface _AsyncStateObject
+com_interface _AsyncStateObject
 {
     CONST_VTBL AsyncStateInterface *lpVtbl;
 };
 
-interface _AsyncStateCompletedHandlerObject
+com_interface _AsyncStateCompletedHandlerObject
 {
     CONST_VTBL AsyncStateCompletedHandlerInterface *lpVtbl;
 };
@@ -93,7 +93,7 @@ struct async_state_object
     // --- Public Members --- //
     AsyncStateObject AsyncStateObject_iface;
     AsyncStateCompletedHandlerObject *Completed;
-    AsyncStatus Status;
+    AsyncStatus CurrentStatus;
     TR_STATUS ErrorCode;
 
     // --- Private Members --- //

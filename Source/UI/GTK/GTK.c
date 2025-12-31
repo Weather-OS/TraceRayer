@@ -27,19 +27,7 @@
 
 #include <gdk/gdk.h>
 
-#ifdef GDK_WINDOWING_X11
-#include <gdk/x11/gdkx.h>
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-#include <gdk/wayland/gdkwayland.h>
-#endif
-#ifdef GDK_WINDOWING_WIN32
-#include <gdk/win32/gdkwin32.h>
-#endif
-#ifdef GDK_WINDOWING_MACOS
-#include <gdk/macos/gdkmacos.h>
-#endif
-
+#include <UI/Representation.h>
 #include <UI/GTK/GTK.h>
 
 static struct gtk_object *impl_from_GTKObject( GTKObject *iface )
@@ -185,7 +173,7 @@ static void gtk_object_CurrentPlatform( GTKObject *iface, Platform *out )
 
     display = gdk_display_get_default();
 
-#ifdef GDK_WINDOWING_X11
+#ifdef PLATFORM_SUPPORTS_X11
     if ( GDK_IS_X11_DISPLAY( display ) )
     {
         *out = Platform_X11;
@@ -193,7 +181,7 @@ static void gtk_object_CurrentPlatform( GTKObject *iface, Platform *out )
     }
 #endif
 
-#ifdef GDK_WINDOWING_WAYLAND
+#ifdef PLATFORM_SUPPORTS_WAYLAND
     if ( GDK_IS_WAYLAND_DISPLAY( display ) )
     {
         *out = Platform_Wayland;
@@ -201,7 +189,7 @@ static void gtk_object_CurrentPlatform( GTKObject *iface, Platform *out )
     }
 #endif
 
-#ifdef GDK_WINDOWING_WIN32
+#ifdef PLATFORM_SUPPORTS_WIN32
     if ( GDK_IS_WIN32_DISPLAY( display ) )
     {
         *out = Platform_win32;
@@ -209,7 +197,7 @@ static void gtk_object_CurrentPlatform( GTKObject *iface, Platform *out )
     }
 #endif
 
-#ifdef GDK_WINDOWING_MACOS
+#ifdef PLATFORM_SUPPORTS_MACOS
     if ( GDK_IS_QUARTZ_DISPLAY( display ) )
     {
         *out = Platform_macOS;

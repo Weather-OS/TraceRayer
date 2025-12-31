@@ -93,7 +93,7 @@ typedef struct _GTKWidgetInterface
     END_INTERFACE
 } GTKWidgetInterface;
 
-interface _GTKWidgetObject
+com_interface _GTKWidgetObject
 {
     CONST_VTBL GTKWidgetInterface *lpVtbl;
 };

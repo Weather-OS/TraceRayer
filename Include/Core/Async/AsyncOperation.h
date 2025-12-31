@@ -59,12 +59,12 @@ typedef struct _AsyncOperationCompletedHandlerObjectInterface
     END_INTERFACE
 } AsyncOperationCompletedHandlerInterface;
 
-interface _AsyncOperationObject
+com_interface _AsyncOperationObject
 {
     CONST_VTBL AsyncOperationInterface *lpVtbl;
 };
 
-interface _AsyncOperationCompletedHandlerObject
+com_interface _AsyncOperationCompletedHandlerObject
 {
     CONST_VTBL AsyncOperationCompletedHandlerInterface *lpVtbl;
 };

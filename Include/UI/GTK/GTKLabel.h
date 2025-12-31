@@ -46,7 +46,7 @@ typedef struct _GTKLabelInterface
     END_INTERFACE
 } GTKLabelInterface;
 
-interface _GTKLabelObject
+com_interface _GTKLabelObject
 {
     CONST_VTBL GTKLabelInterface *lpVtbl;
 };

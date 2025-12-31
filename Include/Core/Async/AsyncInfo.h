@@ -40,7 +40,7 @@ typedef struct _AsyncInfoInterface
 
     IMPLEMENTS_UNKNOWNOBJECT( AsyncInfoObject )
 
-    TR_STATUS (*get_Status)( IN AsyncInfoObject *This, OUT AsyncStatus *out ); // getter
+    TR_STATUS (*get_CurrentStatus)( IN AsyncInfoObject *This, OUT AsyncStatus *out ); // getter
     TR_STATUS (*get_ErrorCode)( IN AsyncInfoObject *This, OUT TR_STATUS *out ); // getter
     TR_STATUS (*Cancel)( IN AsyncInfoObject *This );
     TR_STATUS (*Close)( IN AsyncInfoObject *This );
@@ -48,7 +48,7 @@ typedef struct _AsyncInfoInterface
     END_INTERFACE
 } AsyncInfoInterface;
 
-interface _AsyncInfoObject
+com_interface _AsyncInfoObject
 {
     CONST_VTBL AsyncInfoInterface *lpVtbl;
 };
@@ -89,10 +89,10 @@ namespace TR
                 check_tr_( new_async_info_object_override_callback_and_outer( invoker.get(), param, callback, outer.get(), put() ) );
             }
 
-            AsyncStatus Status() const noexcept
+            AsyncStatus CurrentStatus() const noexcept
             {
                 AsyncStatus out;
-                get()->lpVtbl->get_Status( get(), &out );
+                get()->lpVtbl->get_CurrentStatus( get(), &out );
                 return out;
             }
 

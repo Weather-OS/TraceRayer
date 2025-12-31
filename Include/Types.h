@@ -109,7 +109,7 @@ typedef struct _TR_PropVariant
     union
     {
         TRChar charVal;
-        TRString stringVal;
+        TRCString stringVal;
         TRBool boolVal;
         TRUShort ushortVal;
         TRShort shortVal;

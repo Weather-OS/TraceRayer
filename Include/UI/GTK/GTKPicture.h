@@ -55,7 +55,7 @@ typedef struct _GTKPictureInterface
     END_INTERFACE
 } GTKPictureInterface;
 
-interface _GTKPictureObject
+com_interface _GTKPictureObject
 {
     CONST_VTBL GTKPictureInterface *lpVtbl;
 };

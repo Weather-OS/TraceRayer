@@ -30,6 +30,7 @@
 #include <Types.h>
 
 #include <UI/GTK/GTKWidget.h>
+#include <UI/Representation.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -91,6 +92,15 @@ typedef struct _GTKWindowInterface
         IN GTKWidgetObject *widget);
 
     /**
+     * @Method: void GTKWindowObject::Representation()
+     * @Description: Gets display and surface information from the current Window.
+     * @Status: Always returns T_SUCCESS.
+     */
+    TR_STATUS (*get_Representation)(
+        IN GTKWindowObject       *This,
+        OUT WindowRepresentation *out);
+
+    /**
      * @Method: void GTKWindowObject::SetWindowTitle( TRString title )
      * @Description: Set the current title of the window.
      * @Status: Returns T_SUCCESS unless QueryInterface from GTKWidgetObject fails.
@@ -127,7 +137,7 @@ typedef struct _GTKWindowInterface
     END_INTERFACE
 } GTKWindowInterface;
 
-interface _GTKWindowObject
+com_interface _GTKWindowObject
 {
     CONST_VTBL GTKWindowInterface *lpVtbl;
 };
@@ -145,6 +155,7 @@ struct gtk_window_object
     GTKWindowObject GTKWindowObject_iface;
     volatile GdkRectangle WindowRect; // <-- It can be modified outside of the object context
     GTKWidgetObject *ChildWidget;
+    WindowRepresentation Representation;
 
     // --- Base Interfaces --- //
     implements( GTKWidgetObject );
@@ -213,6 +224,14 @@ namespace TR
             void ChildWidget( const GTKWidgetObject& widget ) const
             {
                 check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
+            }
+
+            [[nodiscard]]
+            WindowRepresentation Represenation() const noexcept
+            {
+                WindowRepresentation out;
+                get()->lpVtbl->get_Representation( get(), &out );
+                return out;
             }
 
             void SetWindowTitle( const std::string& title ) const

@@ -36,7 +36,7 @@ extern "C" {
 #define BEGIN_INTERFACE
 #define END_INTERFACE
 
-#define interface struct
+#define com_interface struct
 #define CONST_VTBL
 #define implements(obj) obj *obj##_impl;
 #define delegate(strct)
@@ -58,7 +58,7 @@ typedef struct _UnknownObjectInterface
     END_INTERFACE
 } UnknownObjectInterface;
 
-interface _UnknownObject
+com_interface _UnknownObject
 {
     CONST_VTBL UnknownObjectInterface *lpVtbl;
 };

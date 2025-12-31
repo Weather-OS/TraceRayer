@@ -147,7 +147,7 @@ ParseMessage(
 
             if ( strlen( format + iterator ) >= 8 && strncmp( format + iterator, "$VERSION", 8 ) == 0 )
             {
-                const auto versionString = TRACERAYER_VERSION;
+                auto const versionString = TRACERAYER_VERSION;
                 fmtSize -= strlen( "$VERSION" );
                 if ( useOutputColoring )
                 {

@@ -27,20 +27,19 @@
 
 #include <Core/Vulkan/Vulkan.h>
 
-// TODO: Better way of obtaining windowing information at compile time.
-#include <gdk/gdk.h>
+#include <UI/Representation.h>
 
-#ifdef GDK_WINDOWING_X11
+#ifdef PLATFORM_SUPPORTS_X11
 #include <xcb/xcb.h>
 #include <vulkan/vulkan_xcb.h>
 #endif
-#ifdef GDK_WINDOWING_WAYLAND
+#ifdef PLATFORM_SUPPORTS_WAYLAND
 #include <vulkan/vulkan_wayland.h>
 #endif
-#ifdef GDK_WINDOWING_WIN32
+#ifdef PLATFORM_SUPPORTS_WIN32
 #include <vulkan/vulkan_win32.h>
 #endif
-#ifdef GDK_WINDOWING_MACOS
+#ifdef PLATFORM_SUPPORTS_MACOS
 #include <vulkan/vulkan_macos.h>
 #endif
 
@@ -161,7 +160,7 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version_and_platform( I
     VkApplicationInfo appInfo = {0};
     VkInstanceCreateInfo createInfo = {0};
     FormattedVersion engineVer = TRACERAYER_FORMATTED_VERSION;
-    TRCString extensions[2] = { VK_KHR_SURFACE_EXTENSION_NAME };
+    TRCString extensions[2] = { VK_KHR_SURFACE_EXTENSION_NAME, nullptr };
     struct vulkan_object *impl;
 
     TRACE( "appName %s, version %p, out %p\n", appName, &version, out );
@@ -188,7 +187,7 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version_and_platform( I
     {
         case Platform_Wayland:
         {
-#ifdef GDK_WINDOWING_WAYLAND
+#ifdef PLATFORM_SUPPORTS_WAYLAND
             INFO( "Vulkan: Creating an Instance for a Wayland surface...\n" );
             extensions[1] = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 #endif
@@ -196,7 +195,7 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version_and_platform( I
         }
         case Platform_X11:
         {
-#ifdef GDK_WINDOWING_X11
+#ifdef PLATFORM_SUPPORTS_X11
             INFO( "Vulkan: Creating an Instance for an X11 surface...\n" );
             extensions[1] = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 #endif
@@ -204,7 +203,7 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version_and_platform( I
         }
         case Platform_win32:
         {
-#ifdef GDK_WINDOWING_WIN32
+#ifdef PLATFORM_SUPPORTS_WIN32
             INFO( "Vulkan: Creating an Instance for a win32 surface...\n" );
             extensions[1] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 #endif
@@ -212,12 +211,19 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version_and_platform( I
         }
         case Platform_macOS:
         {
-#ifdef GDK_WINDOWING_MACOS
+#ifdef PLATFORM_SUPPORTS_MACOS
             INFO( "Vulkan: Creating an Instance for a macOS surface...\n" );
             extensions[1] = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
 #endif
             break;
         }
+    }
+
+    if ( !extensions[1] )
+    {
+        ERROR( "Vulkan: Unsupported platform!\n" );
+        free( impl );
+        return T_NOTIMPL;
     }
 
     createInfo.enabledExtensionCount = 2;
@@ -227,6 +233,7 @@ TR_STATUS TR_API new_vulkan_object_override_app_name_and_version_and_platform( I
     if ( result != VK_SUCCESS )
     {
         ERROR( "Vulkan Instance creation failed with %d\n", result );
+        free( impl );
         return T_ERROR;
     }
 

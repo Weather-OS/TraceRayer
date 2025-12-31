@@ -55,7 +55,7 @@ typedef struct _GTKBoxInterface
     END_INTERFACE
 } GTKBoxInterface;
 
-interface _GTKBoxObject
+com_interface _GTKBoxObject
 {
     CONST_VTBL GTKBoxInterface *lpVtbl;
 };

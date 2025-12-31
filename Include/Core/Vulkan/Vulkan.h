@@ -67,7 +67,7 @@ typedef struct _VulkanInterface
     END_INTERFACE
 } VulkanInterface;
 
-interface _VulkanObject
+com_interface _VulkanObject
 {
     CONST_VTBL VulkanInterface *lpVtbl;
 };

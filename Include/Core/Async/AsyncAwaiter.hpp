@@ -74,7 +74,7 @@ namespace TR
             // If operation already completed we can return immediately.
             bool await_ready()
             {
-                AsyncStatus status = op.QueryInterface<AsyncInfoObject>().Status();
+                AsyncStatus status = op.QueryInterface<AsyncInfoObject>().CurrentStatus();
                 if ( status != AsyncStatus_Completed && status != AsyncStatus_Error )
                 {
                     return false;

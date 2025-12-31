@@ -68,7 +68,7 @@ typedef struct _GTKWindowHandleInterface
     END_INTERFACE
 } GTKWindowHandleInterface;
 
-interface _GTKWindowHandleObject
+com_interface _GTKWindowHandleObject
 {
     CONST_VTBL GTKWindowHandleInterface *lpVtbl;
 };
@@ -133,7 +133,6 @@ namespace TR
 
             void ChildWidget( const GTKWidgetObject& widget ) const
             {
-                _GTKWidgetObject *ChildWidget = widget.get();
                 check_tr_( get()->lpVtbl->set_ChildWidget( get(), widget.get() ) );
             }
         };

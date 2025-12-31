@@ -63,7 +63,7 @@ typedef struct _GTKSpinnerInterface
     END_INTERFACE
 } GTKSpinnerInterface;
 
-interface _GTKSpinnerObject
+com_interface _GTKSpinnerObject
 {
     CONST_VTBL GTKSpinnerInterface *lpVtbl;
 };

@@ -78,7 +78,7 @@ typedef struct _GTKOverlayInterface
     END_INTERFACE
 } GTKOverlayInterface;
 
-interface _GTKOverlayObject
+com_interface _GTKOverlayObject
 {
     CONST_VTBL GTKOverlayInterface *lpVtbl;
 };

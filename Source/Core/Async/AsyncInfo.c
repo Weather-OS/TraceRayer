@@ -84,7 +84,7 @@ static TRLong async_info_object_Release( AsyncInfoObject *iface )
     return removed;
 }
 
-static TR_STATUS async_info_object_get_Status( AsyncInfoObject *iface, AsyncStatus *out )
+static TR_STATUS async_info_object_get_CurrentStatus( AsyncInfoObject *iface, AsyncStatus *out )
 {
     TR_STATUS status;
     AsyncStateObject *state;
@@ -94,7 +94,7 @@ static TR_STATUS async_info_object_get_Status( AsyncInfoObject *iface, AsyncStat
     status = iface->lpVtbl->QueryInterface( iface, IID_AsyncStateObject, (void **)&state );
     if ( FAILED( status ) ) return status;
 
-    status = state->lpVtbl->get_Status( state, out );
+    status = state->lpVtbl->get_CurrentStatus( state, out );
     state->lpVtbl->Release( state );
     return status;
 }
@@ -151,7 +151,7 @@ static AsyncInfoInterface async_info_interface =
     async_info_object_AddRef,
     async_info_object_Release,
     /* AsyncInfoObject Methods */
-    async_info_object_get_Status,
+    async_info_object_get_CurrentStatus,
     async_info_object_get_ErrorCode,
     async_info_object_Cancel,
     async_info_object_Close

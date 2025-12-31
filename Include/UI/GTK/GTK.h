@@ -81,7 +81,7 @@ typedef struct _GTKInterface
     END_INTERFACE
 } GTKInterface;
 
-interface _GTKObject
+com_interface _GTKObject
 {
     CONST_VTBL GTKInterface *lpVtbl;
 };
