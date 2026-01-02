@@ -28,8 +28,8 @@ using namespace TR;
 
 void
 ActivationLoop(
-    IN UI::GTKObject *invoker,
+    IN const UI::GTKObject &invoker,
     IN void *user_data
 ) {
-    SplashWindow( *invoker );
+    SplashWindow( invoker );
 }

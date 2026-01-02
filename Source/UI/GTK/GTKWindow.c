@@ -29,6 +29,8 @@
 
 #include <libadwaita-1/adwaita.h>
 
+static bool OnDelete_Registered = false;
+
 static struct gtk_window_object *impl_from_GTKWindowObject( GTKWindowObject *iface )
 {
     return CONTAINING_RECORD( iface, struct gtk_window_object, GTKWindowObject_iface );
@@ -42,6 +44,8 @@ static gboolean DeleteCallback( GtkWidget *widget, void *user_data )
     auto const window = (GTKWindowObject *)user_data;
 
     struct gtk_window_object *impl = impl_from_GTKWindowObject( window );
+
+    if ( !OnDelete_Registered ) return false;
 
     TRACE( "widget %p, user_data %p\n", widget, user_data );
 
@@ -62,7 +66,7 @@ static gboolean DeleteCallback( GtkWidget *widget, void *user_data )
 
     g_slist_free( snapshot );
 
-    return FALSE;
+    return false;
 }
 
 static TR_STATUS gtk_window_object_QueryInterface( GTKWindowObject *iface, const TRUUID uuid, void **out )
@@ -269,6 +273,7 @@ static TR_STATUS gtk_window_object_eventadd_OnDelete( GTKWindowObject *iface, Si
     GtkWidget *window;
     GTKWidgetObject *widgetObject;
     SignalHandler *handler;
+    TRULong randomNum = RANDOM();
 
     struct gtk_window_object *impl = impl_from_GTKWindowObject( iface );
 
@@ -280,6 +285,8 @@ static TR_STATUS gtk_window_object_eventadd_OnDelete( GTKWindowObject *iface, Si
     status = widgetObject->lpVtbl->get_Widget( widgetObject, &window );
     if ( FAILED( status ) ) return status;
 
+    widgetObject->lpVtbl->Release( widgetObject );
+
     g_mutex_lock( &impl->OnDelete_mutex );
     handler = g_new0( SignalHandler, 1 );
     if ( !handler )
@@ -288,10 +295,11 @@ static TR_STATUS gtk_window_object_eventadd_OnDelete( GTKWindowObject *iface, Si
         return T_OUTOFMEMORY;
     }
     handler->callback = callback;
-    handler->id = impl->OnDelete_next++;
+    handler->id = randomNum * randomNum % 9000000000000000ULL + 1000000000000000ULL;
     handler->user_data = context;
     impl->OnDelete_events = g_slist_prepend( impl->OnDelete_events, handler );
-    g_signal_connect( window, "close-request", G_CALLBACK( DeleteCallback ), iface );
+
+    OnDelete_Registered = true;
 
     if ( !impl->OnDelete_events )
     {
@@ -302,6 +310,8 @@ static TR_STATUS gtk_window_object_eventadd_OnDelete( GTKWindowObject *iface, Si
     g_mutex_unlock( &impl->OnDelete_mutex );
 
     *token = handler->id;
+
+    TRACE( "added event with token id %llu\n", *token );
 
     return T_SUCCESS;
 }
@@ -333,6 +343,10 @@ static TR_STATUS gtk_window_object_eventremove_OnDelete( GTKWindowObject *iface,
     }
 
     impl->OnDelete_events = g_slist_remove( impl->OnDelete_events, found );
+
+    if ( !impl->OnDelete_events )
+        OnDelete_Registered = false;
+
     g_mutex_unlock( &impl->OnDelete_mutex );
 
     g_free( found );
@@ -421,6 +435,8 @@ TR_STATUS TR_API new_gtk_window_object( IN GtkApplication *app, OUT GTKWindowObj
 #endif
 
     *out = &impl->GTKWindowObject_iface;
+
+    g_signal_connect( window, "close-request", G_CALLBACK( DeleteCallback ), *out );
 
     TRACE( "created GTKWindowObject %p\n", *out );
 

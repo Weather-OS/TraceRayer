@@ -21,10 +21,9 @@
  */
 
 #include <Application/Splash/SplashWindow.hpp>
-#include <memory>
 
 #include <Core/Vulkan/Vulkan.h>
-#include <Core/Async/AsyncOperation.h>
+#include <Core/Async/AsyncAwaiter.hpp>
 
 #include <UI/UI.h>
 #include <Statics.h>
@@ -39,13 +38,21 @@ CustomAsync( UI::GTKWindowObject *window, void *param, PropVariant *result )
 {
     sleep(2);
     window->SetResizable( true );
-    throw TRException( T_OUTOFMEMORY );
+    result->type = VT_STRING;
+    result->stringVal = "Hello, World!";
+}
+
+void
+OnDelete( const UI::GTKWindowObject &window, void *param )
+{
+    TRACE("hello!\n");
 }
 
 void
 SplashWindow(
     const UI::GTKObject &inGtk
 ) {
+    TRInt token;
     TRPath *splashPicturePath;
 
     Core::Vulkan::VulkanObject vkInst;
@@ -58,12 +65,16 @@ SplashWindow(
     UI::GTKBoxObject box( GTK_ORIENTATION_HORIZONTAL, 5 );
     UI::GTKLabelObject label( "Loading..." );
 
+    auto windowPtr = std::make_shared<UI::GTKWindowObject>( std::move( window ) );
+
     FetchResource( "launch.png", &splashPicturePath );
 
     picture = UI::GTKPictureObject( splashPicturePath );
     free( splashPicturePath );
 
-    Core::Async::AsyncOperationObject asyncOperation( &window, nullptr, CustomAsync );
+    Core::Async::AwaitableAsyncOperationObject asyncOperation( windowPtr.get(), nullptr, CustomAsync );
+
+    asyncOperation.await();
 
     vkInst = Core::Vulkan::VulkanObject( "Test", {1, 0, 0}, inGtk.CurrentPlatform() );
 
@@ -85,12 +96,15 @@ SplashWindow(
 
     box.AppendWidget( overlay );
 
-    window.ChildWidget( windowHandle );
-    window.SetResizable( false );
-    window.SetWindowTitle( APPNAME );
-    window.WindowRect( picture.GetPictureRect() );
+    windowPtr->ChildWidget( windowHandle );
+    windowPtr->SetResizable( false );
+    windowPtr->SetWindowTitle( APPNAME );
+    windowPtr->WindowRect( picture.GetPictureRect() );
+
+    windowPtr->OnDelete( OnDelete, nullptr );
+    windowPtr->OnDelete( OnDelete, nullptr );
 
     windowHandle.ChildWidget( box );
 
-    window.Show();
+    windowPtr->Show();
 }

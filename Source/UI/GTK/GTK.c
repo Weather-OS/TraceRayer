@@ -102,6 +102,7 @@ static TR_STATUS gtk_object_RunApplication( GTKObject *iface )
 static TR_STATUS gtk_object_eventadd_OnActivation( GTKObject *iface, SignalCallback callback, void *context, TRULong *token )
 {
     SignalHandler *handler;
+    TRULong randomNum = RANDOM();
 
     struct gtk_object *impl = impl_from_GTKObject( iface );
 
@@ -115,7 +116,7 @@ static TR_STATUS gtk_object_eventadd_OnActivation( GTKObject *iface, SignalCallb
         return T_OUTOFMEMORY;
     }
     handler->callback = callback;
-    handler->id = impl->OnActivation_next++;
+    handler->id = randomNum * randomNum % 9000000000000000ULL + 1000000000000000ULL;
     handler->user_data = context;
     impl->OnActivation_events = g_slist_prepend( impl->OnActivation_events, handler );
     if ( !impl->OnActivation_events )
@@ -237,7 +238,6 @@ TR_STATUS TR_API new_gtk_object( IN TRCString appName, OUT GTKObject **out )
     impl->app = gtk_application_new( appName, G_APPLICATION_DEFAULT_FLAGS );
     atomic_init( &impl->ref, 1 );
     g_mutex_init( &impl->OnActivation_mutex );
-    impl->OnActivation_next = 0;
 
     *out = &impl->GTKObject_iface;
 

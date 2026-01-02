@@ -28,6 +28,12 @@
 #include <stdbool.h>
 #include <uuid/uuid.h>
 
+#ifdef __unix__
+#include <stdlib.h>
+#elifdef __win32__
+#include <bcrypt.h>
+#endif
+
 #define TR_API __attribute__((visibility("default")))
 
 #define IN
@@ -55,6 +61,10 @@ typedef uuid_t TRUUID;
 #else
 #include <stdatomic.h>
 #define ATOMIC(type) _Atomic type
+#endif
+
+#ifdef __unix__
+#define RANDOM() arc4random();
 #endif
 
 typedef wchar_t TRWChar;
