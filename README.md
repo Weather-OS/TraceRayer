@@ -1,4 +1,4 @@
-# Simple (Soon to be) Ray Tracing Engine Written in GTK and Vulkan
+# Simple (Soon to be) Engine Written in GTK and Vulkan
 
 This is for my CS major at college.  
 if you're my classmate, please write your own project.   
